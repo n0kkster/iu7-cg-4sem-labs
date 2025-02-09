@@ -2,6 +2,7 @@
 #define INPUTDIALOG_H
 
 #include <QDialog>
+#include <QMessageBox>
 
 namespace Ui {
 class InputDialog;
@@ -23,6 +24,10 @@ private slots:
 private:
     Ui::InputDialog *ui;
     std::array<QPointF, 3> trianglePoints;
+
+    bool isTrinagleSingular() { return ((trianglePoints[1].x() - trianglePoints[0].x()) 
+        * (trianglePoints[2].y() - trianglePoints[0].y()) == (trianglePoints[2].x() - trianglePoints[0].x()) 
+        * (trianglePoints[1].y() - trianglePoints[0].y())); };
 };
 
 #endif // INPUTDIALOG_H

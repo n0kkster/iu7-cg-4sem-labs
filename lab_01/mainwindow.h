@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QTableWidgetItem>
+#include <QMessageBox>
 #include <string>
 
 QT_BEGIN_NAMESPACE

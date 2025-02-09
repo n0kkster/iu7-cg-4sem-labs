@@ -51,14 +51,14 @@ void MainWindow::onAddBtnClicked()
     x = ui->xInput->text().toDouble(&ok);
     if (!ok)
     {
-        qDebug() << "X must be double!";
+        QMessageBox::critical(this, "Ошибка", "Координата X должна быть вещественным числом!");
         return;
     }
 
     y = ui->yInput->text().toDouble(&ok);
     if (!ok)
     {
-        qDebug() << "Y must be double!";
+        QMessageBox::critical(this, "Ошибка", "Координата Y должна быть вещественным числом!");
         return;
     }
 

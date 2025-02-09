@@ -15,8 +15,6 @@ void Plane::paintEvent(QPaintEvent *event)
 
     scale();
 
-    qDebug() << "scale factor: " << scaleFactor;
-
     drawGrid(painter, 50);
     drawAxis(painter);
 
@@ -85,6 +83,71 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
     this->viewport()->repaint();
 }
+
+// void Plane::painter.drawLine(QPainter &painter, const QPointF p1, const QPointF p2)
+// {
+//     painter.drawLine(painter, p1.x(), p1.y(), p2.x(), p2.y());
+// }
+
+// void Plane::painter.drawLine(QPainter &painter, double _x0, double _y0, double _x1, double _y1)
+// {
+//     int x0, x1, y0, y1;
+
+//     x0 = lround(_x0);
+//     x1 = lround(_x1);
+//     y0 = lround(_y0);
+//     y1 = lround(_y1);
+
+//     if (x0 > x1 && y0 > y1)
+//     {
+//         x0 = lround(_x1);
+//         x1 = lround(_x0);
+//         y0 = lround(_y1);
+//         y1 = lround(_y0);
+//     }
+    
+//     int deltaX = std::abs(x1 - x0);
+//     int deltaY = std::abs(y1 - y0);
+//     int theta = deltaX != 0 ? deltaY / deltaX : 1;
+//     int err = 0, deltaErr, p, dir;
+
+//     qDebug() << "Theta: " << theta;
+
+//     if (theta < 1)
+//     {
+//         deltaErr = deltaY + 1;
+//         p = y0;
+//         dir = y1 - y0 > 0 ? 1 : -1;
+//         for (int x = x0; x <= x1; x++)
+//         {
+//             qDebug() << "X: " << x << " Y: " << p;
+//             painter.drawPoint(x, p);
+//             err += deltaErr;
+//             if (err >= deltaX + 1)
+//             {
+//                 p += dir;
+//                 err -= (deltaX + 1);
+//             }
+//         }
+//     }
+//     else
+//     {
+//         deltaErr = deltaX + 1;
+//         p = x0;
+//         dir = x1 - x0 > 0 ? 1 : -1;
+//         for (int y = y0; y <= y1; y++)
+//         {
+//             qDebug() << "X: " << p << " Y: " << y;
+//             painter.drawPoint(p, y);
+//             err += deltaErr;
+//             if (err >= deltaY + 1)
+//             {
+//                 p += dir;
+//                 err -= (deltaY + 1);
+//             }
+//         }
+//     }
+// }
 
 void Plane::drawGrid(QPainter &painter, int span)
 {
