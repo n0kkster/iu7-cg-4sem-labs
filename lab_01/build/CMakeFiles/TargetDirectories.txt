@@ -1,9 +1,0 @@
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/lab_01.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/edit_cache.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/rebuild_cache.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/list_install_components.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/install.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/install/local.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/install/strip.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/lab_01_autogen_timestamp_deps.dir
-/home/zero/vuz/sem4/cg/lab_01_1/build/CMakeFiles/lab_01_autogen.dir
