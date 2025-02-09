@@ -1,0 +1,19 @@
+# ninja log v5
+10	14	0	clean	a31eedcededa8236
+1	10	0	CMakeFiles/clean.additional	ef993b15a92b8f11
+2468	2759	1739059327191445282	lab_01	d0cd413d4d8214d3
+222	1904	1739059326341445492	CMakeFiles/lab_01.dir/main.cpp.o	604053d922f0eaf4
+221	2060	1739059326501445452	CMakeFiles/lab_01.dir/lab_01_autogen/mocs_compilation.cpp.o	d40c1c156511451e
+222	1928	1739059326361445488	CMakeFiles/lab_01.dir/plane.cpp.o	86e0f88b3ff02dab
+2	221	1739059324651445917	/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/mocs_compilation.cpp	83185e5f4625bb86
+222	2468	1739059326901445354	CMakeFiles/lab_01.dir/mainwindow.cpp.o	209c0208c116af19
+2	221	1739059324651445917	/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/timestamp	83185e5f4625bb86
+2	221	1739059324651445917	lab_01_autogen/mocs_compilation.cpp	83185e5f4625bb86
+2	221	1739059324651445917	lab_01_autogen/timestamp	83185e5f4625bb86
+2	30	1739103075530867186	lab_01_autogen/timestamp	83185e5f4625bb86
+2	30	1739103075530867186	lab_01_autogen/mocs_compilation.cpp	83185e5f4625bb86
+2	30	1739103075530867186	/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/timestamp	83185e5f4625bb86
+2	30	1739103075530867186	/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/mocs_compilation.cpp	83185e5f4625bb86
+31	1660	1739103077160866868	CMakeFiles/lab_01.dir/plane.cpp.o	86e0f88b3ff02dab
+3	1944	1739103442100773478	CMakeFiles/lab_01.dir/mainwindow.cpp.o	209c0208c116af19
+1945	2257	1739103442410773400	lab_01	d0cd413d4d8214d3

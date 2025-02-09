@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/zero/vuz/sem4/cg/lab_01_1/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/include -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtCore -isystem /home/zero/Qt/6.5.3/gcc_64/include -isystem /home/zero/Qt/6.5.3/gcc_64/mkspecs/linux-g++ -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtWidgets -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtGui -g -fPIC -std=gnu++17 -o CMakeFiles/lab_01.dir/lab_01_autogen/mocs_compilation.cpp.o -c /home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/mocs_compilation.cpp",
+  "file": "/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/mocs_compilation.cpp"
+},
+{
+  "directory": "/home/zero/vuz/sem4/cg/lab_01_1/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/include -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtCore -isystem /home/zero/Qt/6.5.3/gcc_64/include -isystem /home/zero/Qt/6.5.3/gcc_64/mkspecs/linux-g++ -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtWidgets -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtGui -g -fPIC -std=gnu++17 -o CMakeFiles/lab_01.dir/main.cpp.o -c /home/zero/vuz/sem4/cg/lab_01_1/main.cpp",
+  "file": "/home/zero/vuz/sem4/cg/lab_01_1/main.cpp"
+},
+{
+  "directory": "/home/zero/vuz/sem4/cg/lab_01_1/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/include -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtCore -isystem /home/zero/Qt/6.5.3/gcc_64/include -isystem /home/zero/Qt/6.5.3/gcc_64/mkspecs/linux-g++ -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtWidgets -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtGui -g -fPIC -std=gnu++17 -o CMakeFiles/lab_01.dir/mainwindow.cpp.o -c /home/zero/vuz/sem4/cg/lab_01_1/mainwindow.cpp",
+  "file": "/home/zero/vuz/sem4/cg/lab_01_1/mainwindow.cpp"
+},
+{
+  "directory": "/home/zero/vuz/sem4/cg/lab_01_1/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -I/home/zero/vuz/sem4/cg/lab_01_1/build/lab_01_autogen/include -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtCore -isystem /home/zero/Qt/6.5.3/gcc_64/include -isystem /home/zero/Qt/6.5.3/gcc_64/mkspecs/linux-g++ -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtWidgets -isystem /home/zero/Qt/6.5.3/gcc_64/include/QtGui -g -fPIC -std=gnu++17 -o CMakeFiles/lab_01.dir/plane.cpp.o -c /home/zero/vuz/sem4/cg/lab_01_1/plane.cpp",
+  "file": "/home/zero/vuz/sem4/cg/lab_01_1/plane.cpp"
+}
+]

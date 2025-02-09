@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "qmainwindow": "cpp",
+        "qgraphicsview": "cpp",
+        "qgraphicsellipseitem": "cpp",
+        "qgraphicsscene": "cpp",
+        "qmouseevent": "cpp",
+        "qmenubar": "cpp",
+        "new": "cpp"
+    }
+}
