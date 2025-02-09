@@ -8,17 +8,19 @@
 #include <QVector>
 #include <QPen>
 
-class Plane : public QGraphicsView {
+class Plane : public QGraphicsView
+{
     Q_OBJECT
 
 public:
     int pointsCount;
-    
+
     explicit Plane(QWidget *parent = nullptr);
     QVector<std::pair<int, QPointF>> points;
     QPointF screenCoordToRealCoord(QPointF point);
     QPointF realCoordToScreenCoord(QPointF point);
     void addTriangle(std::array<QPointF, 3> trianglePoints);
+    void scale();
 
 signals:
     void clicked(QPointF event);
@@ -31,6 +33,12 @@ private:
     void drawTriangle(QPainter &painter);
 
     std::array<QPointF, 3> triangle;
+    bool triangleInitialized;
+    double scaleFactor;
+
+    double minRatioNoScale = 0.05;
+    double maxRatioNoScale = 1;
+    double scaleAmount = 0.2;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

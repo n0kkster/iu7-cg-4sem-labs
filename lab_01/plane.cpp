@@ -1,8 +1,10 @@
 #include "plane.h"
 
-Plane::Plane(QWidget *parent) : QGraphicsView(parent) 
+Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
     pointsCount = 0;
+    triangleInitialized = false;
+    scaleFactor = 1;
 }
 
 void Plane::paintEvent(QPaintEvent *event)
@@ -10,6 +12,10 @@ void Plane::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
     QPen dots_pen(Qt::yellow, 2);
+
+    scale();
+
+    qDebug() << "scale factor: " << scaleFactor;
 
     drawGrid(painter, 50);
     drawAxis(painter);
@@ -21,17 +27,43 @@ void Plane::paintEvent(QPaintEvent *event)
     drawTriangle(painter);
 }
 
+void Plane::scale()
+{
+    if (!triangleInitialized)
+        return;
+
+    const double minX = std::min({triangle[0].x(), triangle[1].x(), triangle[2].x()});
+    const double maxX = std::max({triangle[0].x(), triangle[1].x(), triangle[2].x()});
+
+    const double minY = std::min({triangle[0].y(), triangle[1].y(), triangle[2].y()});
+    const double maxY = std::max({triangle[0].y(), triangle[1].y(), triangle[2].y()});
+
+    const double deltaX = maxX - minX;
+    const double deltaY = maxY - minY;
+
+    const int w = this->viewport()->width();
+    const int h = this->viewport()->height();
+    
+    if (deltaX / w < minRatioNoScale || deltaY / h < minRatioNoScale)
+        scaleFactor = std::min(w * scaleAmount / deltaX, h * scaleAmount * deltaY);
+    else if (deltaX / w > maxRatioNoScale || deltaY / h > maxRatioNoScale)
+        scaleFactor = std::min(w * (1 - scaleAmount) / deltaX, h * (1 - scaleAmount) * deltaY);
+    else
+        scaleFactor = 1;
+}
+
 void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)
 {
     triangle = trianglePoints;
-    update();
+    triangleInitialized = true;
+    this->viewport()->update();
 }
 
 void Plane::drawTriangle(QPainter &painter)
 {
     QPen triangle_pen(Qt::green, 2);
-    
-    if (triangle.empty())
+
+    if (!triangleInitialized)
         return;
 
     painter.setPen(triangle_pen);
@@ -44,7 +76,7 @@ void Plane::drawTriangle(QPainter &painter)
     painter.drawLine(realCoordToScreenCoord(triangle[2]), realCoordToScreenCoord(triangle[0]));
 }
 
-void Plane::mousePressEvent(QMouseEvent *event) 
+void Plane::mousePressEvent(QMouseEvent *event)
 {
     QPointF point = screenCoordToRealCoord(mapToScene(event->pos()));
     points.append(std::pair<int, QPointF>{++pointsCount, point});
@@ -82,20 +114,21 @@ void Plane::drawAxis(QPainter &painter)
     QPen line_pen(Qt::gray, 3);
     painter.setPen(line_pen);
 
-    const int line_width = 400;
+    const int axis_length = 400;
     int center_x = this->viewport()->size().width() / 2;
     int center_y = this->viewport()->size().height() / 2;
 
-    painter.drawLine(center_x - line_width / 2, center_y, center_x + line_width / 2, center_y);
-    painter.drawLine(center_x, center_y - line_width / 2, center_x, center_y + line_width / 2);
+    painter.drawLine(center_x - axis_length / 2, center_y, center_x + axis_length / 2, center_y);
+    painter.drawLine(center_x, center_y - axis_length / 2, center_x, center_y + axis_length / 2);
 }
 
 QPointF Plane::screenCoordToRealCoord(QPointF point)
 {
-    return QPointF{point.rx(), -point.ry()};
+    return QPointF{point.rx() / scaleFactor, -point.ry() / scaleFactor};
 }
 
 QPointF Plane::realCoordToScreenCoord(QPointF point)
 {
-    return QPointF{point.rx() + this->viewport()->size().width() / 2, -point.ry() + this->viewport()->size().height() / 2};
+    return QPointF{point.rx() * scaleFactor + this->viewport()->size().width() / 2,
+                    -point.ry() * scaleFactor + this->viewport()->size().height() / 2};
 }

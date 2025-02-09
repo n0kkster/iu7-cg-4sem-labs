@@ -48,8 +48,6 @@ void MainWindow::onAddBtnClicked()
     int points_count;
     QTableWidgetItem *item;
 
-    qDebug() << "X: " << ui->xInput->text() << " Y: " << ui->yInput->text();
-
     x = ui->xInput->text().toDouble(&ok);
     if (!ok)
     {
