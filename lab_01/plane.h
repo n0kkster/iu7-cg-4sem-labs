@@ -18,6 +18,7 @@ public:
     QVector<std::pair<int, QPointF>> points;
     QPointF screenCoordToRealCoord(QPointF point);
     QPointF realCoordToScreenCoord(QPointF point);
+    void addTriangle(std::array<QPointF, 3> trianglePoints);
 
 signals:
     void clicked(QPointF event);
@@ -27,6 +28,9 @@ private:
     void drawGrid(QPainter &painter, int span);
     void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
     void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
+    void drawTriangle(QPainter &painter);
+
+    std::array<QPointF, 3> triangle;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

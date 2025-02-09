@@ -9,7 +9,7 @@ void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
-    QPen dots_pen(Qt::yellow, 5);
+    QPen dots_pen(Qt::yellow, 2);
 
     drawGrid(painter, 50);
     drawAxis(painter);
@@ -17,6 +17,31 @@ void Plane::paintEvent(QPaintEvent *event)
     painter.setPen(dots_pen);
     for (const auto &point : points)
         painter.drawPoint(realCoordToScreenCoord(point.second));
+
+    drawTriangle(painter);
+}
+
+void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)
+{
+    triangle = trianglePoints;
+    update();
+}
+
+void Plane::drawTriangle(QPainter &painter)
+{
+    QPen triangle_pen(Qt::green, 2);
+    
+    if (triangle.empty())
+        return;
+
+    painter.setPen(triangle_pen);
+
+    for (const auto &point : triangle)
+        painter.drawPoint(realCoordToScreenCoord(point));
+
+    painter.drawLine(realCoordToScreenCoord(triangle[0]), realCoordToScreenCoord(triangle[1]));
+    painter.drawLine(realCoordToScreenCoord(triangle[1]), realCoordToScreenCoord(triangle[2]));
+    painter.drawLine(realCoordToScreenCoord(triangle[2]), realCoordToScreenCoord(triangle[0]));
 }
 
 void Plane::mousePressEvent(QMouseEvent *event) 

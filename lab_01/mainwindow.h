@@ -20,12 +20,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
+private slots:
     void onAddBtnClicked();
     void onCellChanged(int row, int column);
     void onRemoveBtnClicked();
     void onRemoveAllBtnClicked();
     void onPlaneClicked(QPointF point);
+    void onAddTriangleBtnClicked();
 
 private:
     Ui::MainWindow *ui;

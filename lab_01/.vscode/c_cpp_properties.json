@@ -6,13 +6,14 @@
                 "${workspaceFolder}/**",
                 "/usr/include/x86_64-linux-gnu/qt6/QtWidgets",
                 "/usr/include/x86_64-linux-gnu/qt6",
-                "/usr/include/x86_64-linux-gnu/qt6/QtGui",
-                "/usr/include/x86_64-linux-gnu/qt6/QtCore"
+                "/usr/include/x86_64-linux-gnu/qt6/QtCore",
+                "/usr/include/x86_64-linux-gnu/qt6/QtGui"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
-            "cppStandard": "c++14",
-            "intelliSenseMode": "linux-clang-x64"
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-clang-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

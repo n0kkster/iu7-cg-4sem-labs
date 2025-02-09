@@ -6,6 +6,8 @@
         "qgraphicsscene": "cpp",
         "qmouseevent": "cpp",
         "qmenubar": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "qapplication": "cpp",
+        "array": "cpp"
     }
 }

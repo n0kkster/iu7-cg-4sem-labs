@@ -19,6 +19,9 @@ set(PROJECT_SOURCES
         mainwindow.ui
         plane.h
         plane.cpp
+        inputdialog.cpp
+        inputdialog.h
+        inputdialog.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
