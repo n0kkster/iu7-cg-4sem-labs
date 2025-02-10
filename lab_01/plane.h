@@ -18,13 +18,12 @@ public:
     
     QVector<std::pair<int, QPointF>> points;
     QVector<std::pair<QPointF, double>> circles; 
-    // std::pair<QPointF, double> answerCircle;
     std::pair<std::pair<QPointF, double>, QPointF> answer;
 
     QPointF screenCoordToRealCoord(QPointF point);
     QPointF realCoordToScreenCoord(QPointF point);
 
-    int pointsCount;
+    int pointsCount, id;
 
     void addTriangle(std::array<QPointF, 3> trianglePoints);
     void scale();
@@ -44,6 +43,7 @@ private:
     void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
     void drawTriangle(QPainter &painter);
 
+    void scaleByPoints();
     bool arePointsOnSameLine(QPointF p1, QPointF p2, QPointF p3);
     QPointF calcCircleCenter(QPointF p1, QPointF p2, QPointF p3);
     double calcDistance(QPointF p1, QPointF p2);
@@ -63,9 +63,11 @@ private:
     const double defaultScale = 1;
 
     double scaleFactor;
-    double minRatioNoScale = 0.05;
-    double maxRatioNoScale = 1;
-    double scaleAmount = 0.2;
+    const double minRatioNoScale = 0.05;
+    const double maxRatioNoScale = 1;
+    const double scaleAmount = 0.2;
+
+    const int gridSpan = 50;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

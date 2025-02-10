@@ -24,7 +24,7 @@ void MainWindow::onPlaneClicked(QPointF point)
 
     ui->pointsTable->setRowCount(ui->planeWidget->pointsCount);
 
-    item = new QTableWidgetItem(QString(std::to_string(ui->planeWidget->pointsCount).c_str()));
+    item = new QTableWidgetItem(QString(std::to_string(ui->planeWidget->id).c_str()));
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 0, item);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 1, new QTableWidgetItem(QString(std::to_string(point.rx()).c_str())));
@@ -65,7 +65,7 @@ void MainWindow::onAddBtnClicked()
 
     ui->pointsTable->setRowCount(++ui->planeWidget->pointsCount);
 
-    item = new QTableWidgetItem(QString(std::to_string(ui->planeWidget->pointsCount).c_str()));
+    item = new QTableWidgetItem(QString(std::to_string(++ui->planeWidget->id).c_str()));
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 0, item);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 1, new QTableWidgetItem(ui->xInput->text()));
@@ -74,11 +74,10 @@ void MainWindow::onAddBtnClicked()
     ui->xInput->setText("");
     ui->yInput->setText("");
 
-    ui->planeWidget->points.append(std::pair<int, QPointF>{ui->planeWidget->pointsCount, QPointF{x, y}});
+    ui->planeWidget->points.append(std::pair<int, QPointF>{ui->planeWidget->id, QPointF{x, y}});
     ui->planeWidget->viewport()->update();
 }
 
-// TODO: пофиксить нумерацию новых кнопок после удаления
 void MainWindow::onRemoveBtnClicked()
 {
     QTableWidgetItem *curr = ui->pointsTable->currentItem();
@@ -88,6 +87,8 @@ void MainWindow::onRemoveBtnClicked()
         return;
 
     id = ui->pointsTable->item(curr->row(), 0)->text().toInt();
+    
+
     for (auto it = ui->planeWidget->points.begin(); it != ui->planeWidget->points.end();)
     {
         if (it->first == id)
@@ -110,7 +111,7 @@ void MainWindow::onRemoveAllBtnClicked()
         ui->pointsTable->removeRow(ui->planeWidget->pointsCount--);
 
     ui->pointsTable->setRowCount(ui->planeWidget->pointsCount);
-    
+
     ui->planeWidget->resetAnswerState();
     ui->planeWidget->points.clear();
     ui->planeWidget->circles.clear();

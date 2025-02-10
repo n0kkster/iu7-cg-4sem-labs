@@ -3,6 +3,7 @@
 Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
     pointsCount = 0;
+    id = 0;
     triangleInitialized = false;
     scaleFactor = defaultScale;
     answerFound = false;
@@ -15,8 +16,9 @@ void Plane::paintEvent(QPaintEvent *event)
     QPen dots_pen(Qt::yellow, 4);
 
     scale();
+    scaleByPoints();
 
-    drawGrid(painter, 50);
+    drawGrid(painter, gridSpan);
     drawAxis(painter);
 
     painter.setPen(dots_pen);
@@ -91,7 +93,6 @@ void Plane::onSolveBtnClicked()
 
         angle = calcAngle(QPointF{0, 0}, QPointF{0, 1}, p1, p2); 
 
-
         if (angle <= minAngle)
         {
             minAngle = angle;
@@ -105,6 +106,8 @@ void Plane::onSolveBtnClicked()
 
     if (!answerFound)
         QMessageBox::information(this, "Ответ", "Подходящие окружности не найдены.");
+    else
+        QMessageBox::information(this, "Ответ", "Окружность найдена!");
 }
 
 void Plane::drawAnswer(QPainter &painter)
@@ -183,11 +186,11 @@ void Plane::scale()
     if (!triangleInitialized)
         return;
 
-    const double minX = std::min({triangle[0].x(), triangle[1].x(), triangle[2].x()});
-    const double maxX = std::max({triangle[0].x(), triangle[1].x(), triangle[2].x()});
+    double minX = std::min({triangle[0].x(), triangle[1].x(), triangle[2].x()});
+    double maxX = std::max({triangle[0].x(), triangle[1].x(), triangle[2].x()});
 
-    const double minY = std::min({triangle[0].y(), triangle[1].y(), triangle[2].y()});
-    const double maxY = std::max({triangle[0].y(), triangle[1].y(), triangle[2].y()});
+    double minY = std::min({triangle[0].y(), triangle[1].y(), triangle[2].y()});
+    double maxY = std::max({triangle[0].y(), triangle[1].y(), triangle[2].y()});
 
     const double deltaX = maxX - minX;
     const double deltaY = maxY - minY;
@@ -201,6 +204,43 @@ void Plane::scale()
         scaleFactor = std::min(w * (1 - scaleAmount) / deltaX, h * (1 - scaleAmount) * deltaY);
     else
         scaleFactor = defaultScale;
+}
+
+void Plane::scaleByPoints()
+{
+    const int w = this->viewport()->width() / scaleFactor;
+    const int h = this->viewport()->height() / scaleFactor;
+
+    const int cx = w / 2, cy = h / 2;
+
+    if (points.empty())
+    {
+        if (!triangleInitialized)
+            scaleFactor = defaultScale;
+        return;
+    }
+
+    double minX = points.at(0).second.x(), maxX = points.at(0).second.x();
+    double minY = points.at(0).second.y(), maxY = points.at(0).second.y();
+
+    for (const auto &point : points)
+    {
+        minX = std::min(minX, point.second.x());
+        maxX = std::max(maxX, point.second.x());
+
+        minY = std::min(minY, point.second.y());
+        maxY = std::max(maxY, point.second.y());
+    }
+
+    // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
+    
+    double deltaX = std::max(maxX - cx, minX - cx);
+    double deltaY = std::max(maxY - cy, minY - cy);
+
+    // qDebug() << "deltaX: " << deltaX << " deltaY: " << deltaY;
+
+    scaleFactor = std::min(cx / (cx + deltaX), cy / (cy + deltaY)) * scaleFactor / 1.1;
+    // qDebug() << "scale: " << scaleFactor;
 }
 
 void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)
@@ -230,7 +270,8 @@ void Plane::drawTriangle(QPainter &painter)
 void Plane::mousePressEvent(QMouseEvent *event)
 {
     QPointF point = screenCoordToRealCoord(mapToScene(event->pos()));
-    points.append(std::pair<int, QPointF>{++pointsCount, point});
+    points.append(std::pair<int, QPointF>{++id, point});
+    ++pointsCount;
 
     emit clicked(point);
 
@@ -330,12 +371,44 @@ void Plane::drawAxis(QPainter &painter)
     QPen line_pen(Qt::gray, 3);
     painter.setPen(line_pen);
 
-    const int axis_length = 400;
-    int center_x = this->viewport()->size().width() / 2;
-    int center_y = this->viewport()->size().height() / 2;
+    const int w = this->viewport()->size().width(), h = this->viewport()->size().height();
 
-    painter.drawLine(center_x - axis_length / 2, center_y, center_x + axis_length / 2, center_y);
-    painter.drawLine(center_x, center_y - axis_length / 2, center_x, center_y + axis_length / 2);
+    const int x_axis_length = w;
+    const int y_axis_length = h;
+    
+    int center_x = w / 2;
+    int center_y = h / 2;
+
+    painter.drawLine(center_x - x_axis_length / 2, center_y, center_x + x_axis_length / 2, center_y);
+    painter.drawLine(center_x, center_y - y_axis_length / 2, center_x, center_y + y_axis_length / 2);
+
+    painter.setPen(QPen{Qt::white, 3});
+
+    for (int x = center_x + gridSpan; x < w; x += gridSpan)
+    {
+        painter.drawLine(x, center_y - 5, x, center_y + 5);
+        painter.drawText(x + 5, center_y + 20, QString(std::to_string((int)((x - center_x) / scaleFactor)).c_str()));
+    }
+    
+    for (int x = center_x - gridSpan; x > 0; x -= gridSpan)
+    {
+        painter.drawLine(x, center_y - 5, x, center_y + 5);
+        painter.drawText(x - 25, center_y + 20, QString(std::to_string((int)((x - center_x) / scaleFactor)).c_str()));
+
+    }
+
+    for (int y = center_y + gridSpan; y < h; y += gridSpan)
+    {
+        painter.drawLine(center_x - 5, y, center_x + 5, y);
+        painter.drawText(center_x + 5, y + 20, QString(std::to_string((int)((center_y - y) / scaleFactor)).c_str()));
+    }
+    
+    for (int y = center_y - gridSpan; y > 0; y -= gridSpan)
+    {
+        painter.drawLine(center_x - 5, y, center_x + 5, y);
+        painter.drawText(center_x + 5, y + 20, QString(std::to_string((int)((center_y - y) / scaleFactor)).c_str()));
+    }
+
 }
 
 QPointF Plane::screenCoordToRealCoord(QPointF point)
