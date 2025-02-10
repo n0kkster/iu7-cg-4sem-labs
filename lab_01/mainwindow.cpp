@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->removeSelPoint, &QPushButton::clicked, this, &MainWindow::onRemoveBtnClicked);
     connect(ui->removePointsBtn, &QPushButton::clicked, this, &MainWindow::onRemoveAllBtnClicked);
     connect(ui->addTriangleBtn, &QPushButton::clicked, this, &MainWindow::onAddTriangleBtnClicked);
+    connect(ui->solveBtn, &QPushButton::clicked, ui->planeWidget, &Plane::onSolveBtnClicked);
 
     connect(ui->pointsTable, &QTableWidget::cellChanged, this, &MainWindow::onCellChanged);
 
@@ -77,6 +78,7 @@ void MainWindow::onAddBtnClicked()
     ui->planeWidget->viewport()->update();
 }
 
+// TODO: пофиксить нумерацию новых кнопок после удаления
 void MainWindow::onRemoveBtnClicked()
 {
     QTableWidgetItem *curr = ui->pointsTable->currentItem();
@@ -93,6 +95,8 @@ void MainWindow::onRemoveBtnClicked()
         else
             ++it;
     }
+
+    ui->planeWidget->circles.clear();
     ui->planeWidget->viewport()->update();
 
     ui->pointsTable->removeRow(curr->row());
@@ -106,6 +110,8 @@ void MainWindow::onRemoveAllBtnClicked()
 
     ui->pointsTable->setRowCount(ui->planeWidget->pointsCount);
     ui->planeWidget->points.clear();
+    ui->planeWidget->circles.clear();
+
     ui->planeWidget->viewport()->update();
 }
 

@@ -11,18 +11,105 @@ void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
-    QPen dots_pen(Qt::yellow, 2);
+    QPen dots_pen(Qt::yellow, 4);
+    QPen circles_pen(Qt::red, 2);
 
     scale();
 
     drawGrid(painter, 50);
     drawAxis(painter);
 
+    painter.setPen(circles_pen);
+    for (const auto &circle : circles)
+    {
+        painter.drawEllipse(realCoordToScreenCoord(circle.first), circle.second, circle.second);
+        painter.drawPoint(realCoordToScreenCoord(circle.first));
+        qDebug() << "center: " << circle.first;
+    }
+
     painter.setPen(dots_pen);
     for (const auto &point : points)
         painter.drawPoint(realCoordToScreenCoord(point.second));
 
     drawTriangle(painter);
+}
+
+void Plane::onSolveBtnClicked()
+{
+    QPointF p1, p2, p3, center;
+    double radius;
+
+    if (!triangleInitialized)
+    {
+        QMessageBox::critical(this, "Ошибка", "Сначала необходимо построить треугольник!");
+        return;
+    }
+
+    for (auto &pair1 : points)
+    {
+        for (auto &pair2 : points)
+        {
+            for (auto &pair3 : points)
+            {
+                p1 = pair1.second;
+                p2 = pair2.second;
+                p3 = pair3.second;
+
+                if (p1 == p2 || p2 == p3 || p1 == p3 || arePointsOnSameLine(p1, p2, p3))
+                    continue;
+
+                center = calcCircleCenter(p1, p2, p3);
+                radius = calcDistance(center, p1);
+
+                if (circleInVector(center))
+                    continue;
+
+                if (!(arePointsOnSameLine(triangle[0], triangle[1], center) ||
+                    arePointsOnSameLine(triangle[1], triangle[2], center) ||
+                    arePointsOnSameLine(triangle[0], triangle[2], center)))
+                    continue;
+
+                circles.append(std::pair<QPointF, double>{center, radius});
+            }
+        }
+    }
+
+    this->viewport()->update();
+}
+
+QPointF Plane::calcCircleCenter(QPointF A, QPointF B, QPointF C)
+{
+    const double ax = A.x(), ay = A.y();
+    const double bx = B.x(), by = B.y();
+    const double cx = C.x(), cy = C.y();
+
+    const double D = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by));
+    const double Ux = ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / D;
+    const double Uy = ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / D;
+
+    return QPointF{Ux, Uy};
+}
+
+double Plane::calcDistance(QPointF p1, QPointF p2)
+{
+    const double dx = p1.x() - p2.x();
+    const double dy = p1.y() - p2.y();
+
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+bool Plane::arePointsOnSameLine(QPointF p1, QPointF p2, QPointF p3)
+{
+    return (p2.x() - p1.x()) * (p3.y() - p1.y()) == (p3.x() - p1.x()) * (p2.y() - p1.y());
+}
+
+bool Plane::circleInVector(QPointF center)
+{
+    for (const auto &circle : circles)
+        if (circle.first == center) 
+            return true;
+
+    return false;
 }
 
 void Plane::scale()
