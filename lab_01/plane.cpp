@@ -4,7 +4,8 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
     pointsCount = 0;
     triangleInitialized = false;
-    scaleFactor = 1;
+    scaleFactor = defaultScale;
+    answerFound = false;
 }
 
 void Plane::paintEvent(QPaintEvent *event)
@@ -12,32 +13,26 @@ void Plane::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
     QPen dots_pen(Qt::yellow, 4);
-    QPen circles_pen(Qt::red, 2);
 
     scale();
 
     drawGrid(painter, 50);
     drawAxis(painter);
 
-    painter.setPen(circles_pen);
-    for (const auto &circle : circles)
-    {
-        painter.drawEllipse(realCoordToScreenCoord(circle.first), circle.second, circle.second);
-        painter.drawPoint(realCoordToScreenCoord(circle.first));
-        qDebug() << "center: " << circle.first;
-    }
-
     painter.setPen(dots_pen);
     for (const auto &point : points)
         painter.drawPoint(realCoordToScreenCoord(point.second));
 
     drawTriangle(painter);
+
+    if (answerFound)
+        drawAnswer(painter);
 }
 
 void Plane::onSolveBtnClicked()
 {
     QPointF p1, p2, p3, center;
-    double radius;
+    double radius, minAngle = 90, angle;
 
     if (!triangleInitialized)
     {
@@ -63,7 +58,7 @@ void Plane::onSolveBtnClicked()
 
                 if (circleInVector(center))
                     continue;
-
+                
                 if (!(arePointsOnSameLine(triangle[0], triangle[1], center) ||
                     arePointsOnSameLine(triangle[1], triangle[2], center) ||
                     arePointsOnSameLine(triangle[0], triangle[2], center)))
@@ -74,7 +69,78 @@ void Plane::onSolveBtnClicked()
         }
     }
 
+    for (const auto &circle : circles)
+    {
+        if (arePointsOnSameLine(triangle[0], triangle[1], circle.first))
+        {
+            p1 = triangle[0];
+            p2 = triangle[1];
+        }
+        else if (arePointsOnSameLine(triangle[1], triangle[2], circle.first))
+        {
+            p1 = triangle[1];
+            p2 = triangle[2];
+        }
+        else if (arePointsOnSameLine(triangle[0], triangle[2], circle.first))
+        {
+            p1 = triangle[0];
+            p2 = triangle[2];
+        }
+        else
+            continue;
+
+        angle = calcAngle(QPointF{0, 0}, QPointF{0, 1}, p1, p2); 
+
+
+        if (angle <= minAngle)
+        {
+            minAngle = angle;
+            answer.first = circle;
+            answer.second = p1;
+            answerFound = true;
+        }
+    }
+
     this->viewport()->update();
+
+    if (!answerFound)
+        QMessageBox::information(this, "Ответ", "Подходящие окружности не найдены.");
+}
+
+void Plane::drawAnswer(QPainter &painter)
+{
+    QPen circles_pen(Qt::red, 2);
+
+    const double x1 = answer.first.first.x(), y1 = answer.first.first.y(), x2 = answer.second.x(), y2 = answer.second.y();
+    const double x = 0;
+    double y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
+
+    painter.setPen(circles_pen);
+    painter.drawEllipse(realCoordToScreenCoord(answer.first.first), answer.first.second, answer.first.second);
+    painter.drawPoint(realCoordToScreenCoord(answer.first.first));
+    painter.drawLine(realCoordToScreenCoord(answer.first.first), realCoordToScreenCoord(QPointF{x, y}));
+}
+
+double Plane::calcAngle(QPointF p1, QPointF p2, QPointF p3, QPointF p4)
+{
+    QPointF v1{p2.x() - p1.x(), p2.y() - p1.y()}, v2{p4.x() - p3.x(), p4.y() - p3.y()};
+
+    double cosine = std::abs(v1.x() * v2.x() + v1.y() * v2.y());
+
+    if (cosine != 0)
+        cosine /= (std::sqrt(v1.x() * v1.x() + v1.y() * v1.y()) * std::sqrt(v2.x() * v2.x() + v2.y() * v2.y()));
+
+    return radToDeg(acos(cosine));
+}
+
+double Plane::radToDeg(double radians)
+{
+    return radians * 180 / M_PI;
+}
+
+double Plane::degToRad(double angle)
+{
+    return angle * M_PI / 180;
 }
 
 QPointF Plane::calcCircleCenter(QPointF A, QPointF B, QPointF C)
@@ -100,7 +166,7 @@ double Plane::calcDistance(QPointF p1, QPointF p2)
 
 bool Plane::arePointsOnSameLine(QPointF p1, QPointF p2, QPointF p3)
 {
-    return (p2.x() - p1.x()) * (p3.y() - p1.y()) == (p3.x() - p1.x()) * (p2.y() - p1.y());
+    return std::abs((p2.x() - p1.x()) * (p3.y() - p1.y()) - (p3.x() - p1.x()) * (p2.y() - p1.y())) < 1e-9;
 }
 
 bool Plane::circleInVector(QPointF center)
@@ -134,7 +200,7 @@ void Plane::scale()
     else if (deltaX / w > maxRatioNoScale || deltaY / h > maxRatioNoScale)
         scaleFactor = std::min(w * (1 - scaleAmount) / deltaX, h * (1 - scaleAmount) * deltaY);
     else
-        scaleFactor = 1;
+        scaleFactor = defaultScale;
 }
 
 void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)

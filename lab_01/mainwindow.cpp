@@ -96,6 +96,7 @@ void MainWindow::onRemoveBtnClicked()
             ++it;
     }
 
+    ui->planeWidget->resetAnswerState();
     ui->planeWidget->circles.clear();
     ui->planeWidget->viewport()->update();
 
@@ -109,6 +110,8 @@ void MainWindow::onRemoveAllBtnClicked()
         ui->pointsTable->removeRow(ui->planeWidget->pointsCount--);
 
     ui->pointsTable->setRowCount(ui->planeWidget->pointsCount);
+    
+    ui->planeWidget->resetAnswerState();
     ui->planeWidget->points.clear();
     ui->planeWidget->circles.clear();
 

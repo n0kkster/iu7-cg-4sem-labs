@@ -8,6 +8,8 @@
         "qmenubar": "cpp",
         "new": "cpp",
         "qapplication": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "cmath": "cpp",
+        "span": "cpp"
     }
 }

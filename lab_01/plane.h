@@ -18,6 +18,8 @@ public:
     
     QVector<std::pair<int, QPointF>> points;
     QVector<std::pair<QPointF, double>> circles; 
+    // std::pair<QPointF, double> answerCircle;
+    std::pair<std::pair<QPointF, double>, QPointF> answer;
 
     QPointF screenCoordToRealCoord(QPointF point);
     QPointF realCoordToScreenCoord(QPointF point);
@@ -27,6 +29,7 @@ public:
     void addTriangle(std::array<QPointF, 3> trianglePoints);
     void scale();
     bool circleInVector(QPointF center);
+    void resetAnswerState() { answerFound = false; }
 
 public slots:
     void onSolveBtnClicked();
@@ -44,14 +47,22 @@ private:
     bool arePointsOnSameLine(QPointF p1, QPointF p2, QPointF p3);
     QPointF calcCircleCenter(QPointF p1, QPointF p2, QPointF p3);
     double calcDistance(QPointF p1, QPointF p2);
+    double calcAngle(QPointF p1, QPointF p2, QPointF p3, QPointF p4);
+    double radToDeg(double radians);
+    double degToRad(double angle);
+    void drawAnswer(QPainter &painter);
 
     // void drawLine(QPainter &painter, double x1, double y1, double x2, double y2);
     // void drawLine(QPainter &painter, const QPointF p1, const QPointF p2);
 
     std::array<QPointF, 3> triangle;
-    bool triangleInitialized;
-    double scaleFactor;
 
+    bool triangleInitialized;
+    bool answerFound;
+
+    const double defaultScale = 1;
+
+    double scaleFactor;
     double minRatioNoScale = 0.05;
     double maxRatioNoScale = 1;
     double scaleAmount = 0.2;
