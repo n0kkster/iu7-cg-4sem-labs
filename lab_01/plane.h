@@ -19,8 +19,8 @@ public:
     explicit Plane(QWidget *parent = nullptr);
     
     QVector<std::pair<int, QPointF>> points;
-    QVector<std::pair<QPointF, double>> circles; 
     std::pair<std::pair<QPointF, double>, QPointF> answer;
+    std::array<QPointF, 3> circlePoints;
 
     QPointF screenCoordToRealCoord(QPointF point);
     QPointF realCoordToScreenCoord(QPointF point);
@@ -29,7 +29,6 @@ public:
 
     void addTriangle(std::array<QPointF, 3> trianglePoints);
     void scale();
-    bool circleInVector(QPointF center);
     void resetAnswerState() { answerFound = false; }
 
 public slots:
@@ -53,6 +52,7 @@ private:
     double radToDeg(double radians);
     double degToRad(double angle);
     void drawAnswer(QPainter &painter);
+    double checkCircle(std::pair<QPointF, double> circle, double minAngle);
 
     // void drawLine(QPainter &painter, double x1, double y1, double x2, double y2);
     // void drawLine(QPainter &painter, const QPointF p1, const QPointF p2);
@@ -63,11 +63,13 @@ private:
     bool answerFound;
 
     const double defaultScale = 1;
+    const double minScale = 1e-6, maxScale = 1e6;
 
     double scaleFactor;
     const double minRatioNoScale = 0.05;
     const double maxRatioNoScale = 1;
     const double scaleAmount = 0.2;
+    const double eps = 1e-9;
 
     const int gridSpan = 50;
 

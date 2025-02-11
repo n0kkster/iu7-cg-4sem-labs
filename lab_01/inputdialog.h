@@ -16,7 +16,7 @@ public:
     explicit InputDialog(QWidget *parent = nullptr);
     ~InputDialog();
 
-    std::array<QPointF, 3> getTrianglePoints() const;
+    std::array<QPointF, 3> getTrianglePoints() const { return trianglePoints; };
 
 private slots:
     void onAddBtnClicked();

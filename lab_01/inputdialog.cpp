@@ -24,11 +24,6 @@ void InputDialog::onAddBtnClicked()
     accept();
 }
 
-std::array<QPointF, 3> InputDialog::getTrianglePoints() const
-{
-    return trianglePoints;
-}
-
 InputDialog::~InputDialog()
 {
     delete ui;

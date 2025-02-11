@@ -63,6 +63,8 @@ void MainWindow::onAddBtnClicked()
         return;
     }
 
+    ui->planeWidget->resetAnswerState();
+
     ui->pointsTable->setRowCount(++ui->planeWidget->pointsCount);
 
     item = new QTableWidgetItem(QString(std::to_string(++ui->planeWidget->id).c_str()));
@@ -70,9 +72,6 @@ void MainWindow::onAddBtnClicked()
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 0, item);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 1, new QTableWidgetItem(ui->xInput->text()));
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 2, new QTableWidgetItem(ui->yInput->text()));
-
-    ui->xInput->setText("");
-    ui->yInput->setText("");
 
     ui->planeWidget->points.append(std::pair<int, QPointF>{ui->planeWidget->id, QPointF{x, y}});
     ui->planeWidget->viewport()->update();
@@ -98,7 +97,6 @@ void MainWindow::onRemoveBtnClicked()
     }
 
     ui->planeWidget->resetAnswerState();
-    ui->planeWidget->circles.clear();
     ui->planeWidget->viewport()->update();
 
     ui->pointsTable->removeRow(curr->row());
@@ -114,7 +112,6 @@ void MainWindow::onRemoveAllBtnClicked()
 
     ui->planeWidget->resetAnswerState();
     ui->planeWidget->points.clear();
-    ui->planeWidget->circles.clear();
 
     ui->planeWidget->viewport()->update();
 }
