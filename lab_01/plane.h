@@ -1,6 +1,8 @@
 #ifndef PLANE_H
 #define PLANE_H
 
+#include <sstream>
+
 #include <QGraphicsView>
 #include <QPainter>
 #include <QPaintEvent>

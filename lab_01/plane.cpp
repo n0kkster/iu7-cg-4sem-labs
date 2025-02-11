@@ -104,10 +104,19 @@ void Plane::onSolveBtnClicked()
 
     this->viewport()->update();
 
+    std::stringstream info_answer;
+
     if (!answerFound)
-        QMessageBox::information(this, "Ответ", "Подходящие окружности не найдены.");
+        info_answer << "Подходящие окружности не найдены.";
     else
-        QMessageBox::information(this, "Ответ", "Окружность найдена!");
+    {
+        info_answer << "Окружность найдена! Центр окружности: (" << answer.first.first.x() << ", " << answer.first.first.y() << ")\n";
+        info_answer << "Радиус: " << answer.first.second << std::endl;
+        info_answer << "Прямая, проходящая через точки: (" << answer.first.first.x() << ", " << answer.first.first.y() << ")";
+        info_answer << " и (" << answer.second.x() << ", " << answer.second.y() << "),\nсодержит сторону треугольника и образует угол " << minAngle << " градусов с осью ординат.";
+    }
+
+    QMessageBox::information(this, "Ответ", QString(info_answer.str().c_str()));
 }
 
 void Plane::drawAnswer(QPainter &painter)
@@ -234,6 +243,9 @@ void Plane::scaleByPoints()
 
     // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
     
+    if (std::min(std::abs(minX), std::abs(minY)) > 10 && std::abs(maxX) < cx - 10 && std::abs(maxY) < cy - 10)
+        return;
+
     double deltaX = std::max(maxX - cx, minX - cx);
     double deltaY = std::max(maxY - cy, minY - cy);
 
