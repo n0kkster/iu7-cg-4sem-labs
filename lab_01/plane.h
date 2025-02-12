@@ -53,6 +53,7 @@ private:
     double degToRad(double angle);
     void drawAnswer(QPainter &painter);
     double checkCircle(std::pair<QPointF, double> circle, double minAngle);
+    void scaleByAnswer();
 
     // void drawLine(QPainter &painter, double x1, double y1, double x2, double y2);
     // void drawLine(QPainter &painter, const QPointF p1, const QPointF p2);
