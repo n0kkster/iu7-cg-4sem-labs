@@ -19,7 +19,7 @@ public:
     explicit Plane(QWidget *parent = nullptr);
     
     QVector<std::pair<int, QPointF>> points;
-    std::pair<std::pair<QPointF, double>, QPointF> answer;
+    std::tuple<QPointF, double, QPointF> answer;
     std::array<QPointF, 3> circlePoints;
 
     QPointF screenCoordToRealCoord(QPointF point);
@@ -71,6 +71,7 @@ private:
     const double maxRatioNoScale = 1;
     const double scaleAmount = 0.2;
     const double eps = 1e-9;
+    QPointF offset;
 
     const int gridSpan = 50;
 

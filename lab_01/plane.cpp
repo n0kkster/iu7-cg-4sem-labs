@@ -7,6 +7,8 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     triangleInitialized = false;
     scaleFactor = defaultScale;
     answerFound = false;
+    offset = {100, 50};
+    // offset = {0, 0};
 }
 
 void Plane::paintEvent(QPaintEvent *event)
@@ -73,7 +75,7 @@ void Plane::onSolveBtnClicked()
                     arePointsOnSameLine(triangle[0], triangle[2], center)))
                     continue;
 
-                temp = checkCircle(std::pair<QPointF, double>{center, radius}, minAngle);
+                temp = checkCircle({center, radius}, minAngle);
                 if (temp < minAngle)
                 {
                     minAngle = temp;
@@ -88,15 +90,17 @@ void Plane::onSolveBtnClicked()
     this->viewport()->update();
 
     std::stringstream info_answer;
+    auto [ansCenter, ansRadius, trianglePoint] = answer;
+    double cx = ansCenter.x(), cy = ansCenter.y();
 
     if (!answerFound)
         info_answer << "Подходящие окружности не найдены.";
     else
     {
-        info_answer << "Окружность найдена! Центр окружности: (" << answer.first.first.x() << ", " << answer.first.first.y() << ")\n";
-        info_answer << "Радиус: " << answer.first.second << std::endl;
-        info_answer << "Прямая, проходящая через точки: (" << answer.first.first.x() << ", " << answer.first.first.y() << ")";
-        info_answer << " и (" << answer.second.x() << ", " << answer.second.y() << "),\nсодержит сторону треугольника и образует угол " << minAngle << " градусов с осью ординат.";
+        info_answer << "Окружность найдена! Центр окружности: (" << cx << ", " << cy << ")\n";
+        info_answer << "Радиус: " << ansRadius << std::endl;
+        info_answer << "Прямая, проходящая через точки: (" << cx << ", " << cy << ")";
+        info_answer << " и (" << trianglePoint.x() << ", " << trianglePoint.y() << "),\nсодержит сторону треугольника и образует угол " << minAngle << " градусов с осью ординат.";
     }
 
     QMessageBox::information(this, "Ответ", QString(info_answer.str().c_str()));
@@ -125,13 +129,12 @@ double Plane::checkCircle(std::pair<QPointF, double> circle, double minAngle)
     else
         return 90;
 
-    angle = calcAngle(QPointF{0, 0}, QPointF{0, 1}, p1, p2); 
+    angle = calcAngle({0, 0}, {0, 1}, p1, p2); 
 
     if (angle <= minAngle)
     {
         minAngle = angle;
-        answer.first = circle;
-        answer.second = p1;
+        answer = {circle.first, circle.second, p1};
         answerFound = true;
     }
 
@@ -141,15 +144,18 @@ double Plane::checkCircle(std::pair<QPointF, double> circle, double minAngle)
 void Plane::drawAnswer(QPainter &painter)
 {
     QPen circles_pen(Qt::red, 2);
+    auto [center, radius, trianglePoint] = answer;
+    double cx = center.x(), cy = center.y();
 
-    const double x1 = answer.first.first.x(), y1 = answer.first.first.y(), x2 = answer.second.x(), y2 = answer.second.y();
+    const double x1 = cx, y1 = cy, x2 = trianglePoint.x(), y2 = trianglePoint.y();
     const double x = 0;
     double y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
 
     painter.setPen(circles_pen);
-    painter.drawEllipse(realCoordToScreenCoord(answer.first.first), answer.first.second, answer.first.second);
-    painter.drawPoint(realCoordToScreenCoord(answer.first.first));
-    painter.drawLine(realCoordToScreenCoord(answer.first.first), realCoordToScreenCoord(QPointF{x, y}));
+    painter.drawEllipse(realCoordToScreenCoord(center), radius, radius);
+    painter.drawPoint(realCoordToScreenCoord(center));
+    painter.drawLine(realCoordToScreenCoord(center), realCoordToScreenCoord({x, y}));
+    painter.drawLine(realCoordToScreenCoord(trianglePoint), realCoordToScreenCoord({x, y}));
 }
 
 double Plane::calcAngle(QPointF p1, QPointF p2, QPointF p3, QPointF p4)
@@ -231,7 +237,7 @@ void Plane::scaleByPoints()
     const int w = this->viewport()->width() / scaleFactor;
     const int h = this->viewport()->height() / scaleFactor;
 
-    const int cx = w / 2, cy = h / 2;
+    const int cx = w / 2 + offset.x(), cy = h / 2 - offset.y();
 
     if (points.empty())
     {
@@ -252,9 +258,15 @@ void Plane::scaleByPoints()
         maxY = std::max(maxY, point.second.y());
     }
 
+    minX = std::abs(minX);
+    maxX = std::abs(maxX);
+
+    minY = std::abs(minY);
+    maxY = std::abs(maxY);
+
     // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
     
-    if (std::min(std::abs(minX), std::abs(minY)) > 10 && std::abs(maxX) < cx - 10 && std::abs(maxY) < cy - 10)
+    if (std::min(minX, minY) > 10 && maxX < cx - 10 && maxY < cy - 10)
         return;
 
     double deltaX = std::max(maxX - cx, minX - cx);
@@ -274,12 +286,14 @@ void Plane::scaleByPoints()
 void Plane::scaleByAnswer()
 {
     double circleMaxX, circleMinX, circleMaxY, circleMinY;
+    auto [center, radius, trianglePoint] = answer;
+    double cx = center.x(), cy = center.y();
 
-    circleMaxX = answer.first.first.x() + answer.first.second;
-    circleMinX = answer.first.first.x() - answer.first.second;
+    circleMaxX = cx + radius;
+    circleMinX = cx - radius;
 
-    circleMaxY = answer.first.first.y() + answer.first.second;
-    circleMinY = answer.first.first.y() - answer.first.second;
+    circleMaxY = cy + radius;
+    circleMinY = cy - radius;
 
     double minX = std::min({triangle[0].x(), triangle[1].x(), triangle[2].x(), circleMinX});
     double maxX = std::max({triangle[0].x(), triangle[1].x(), triangle[2].x(), circleMaxX});
@@ -287,18 +301,25 @@ void Plane::scaleByAnswer()
     double minY = std::min({triangle[0].y(), triangle[1].y(), triangle[2].y(), circleMinY});
     double maxY = std::max({triangle[0].y(), triangle[1].y(), triangle[2].y(), circleMaxY});
 
+    qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
+
     const double deltaX = maxX - minX;
     const double deltaY = maxY - minY;
+
+    qDebug() << "deltaX: " << deltaX << " deltaY: " << deltaY;
 
     const int w = this->viewport()->width();
     const int h = this->viewport()->height();
     
-    if (deltaX / w < minRatioNoScale || deltaY / h < minRatioNoScale)
-        scaleFactor = std::min(w * scaleAmount / deltaX, h * scaleAmount * deltaY);
+    if (deltaX / w < 0.9 || deltaY / h < 0.9)
+        scaleFactor = std::min(w * 0.9 / deltaX, h * 0.9 * deltaY);
     else if (deltaX / w > maxRatioNoScale || deltaY / h > maxRatioNoScale)
         scaleFactor = std::min(w * (1 - scaleAmount) / deltaX, h * (1 - scaleAmount) * deltaY);
     else
         scaleFactor = defaultScale;
+    
+    qDebug() << "scale: " << scaleFactor;
+
 }
 
 void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)
@@ -327,7 +348,8 @@ void Plane::drawTriangle(QPainter &painter)
 
 void Plane::mousePressEvent(QMouseEvent *event)
 {
-    QPointF point = screenCoordToRealCoord(mapToScene(event->pos()));
+    QPointF point = screenCoordToRealCoord(event->pos());
+    // qDebug() << "after StoR:" << point;
     points.append(std::pair<int, QPointF>{++id, point});
     ++pointsCount;
 
@@ -433,50 +455,54 @@ void Plane::drawAxis(QPainter &painter)
 
     const int w = this->viewport()->size().width(), h = this->viewport()->size().height();
 
-    const int x_axis_length = w;
-    const int y_axis_length = h;
+    const double xOffsetScaled = offset.x();
+    const double yOffsetScaled = offset.y();
     
     int center_x = w / 2;
     int center_y = h / 2;
 
-    painter.drawLine(center_x - x_axis_length / 2, center_y, center_x + x_axis_length / 2, center_y);
-    painter.drawLine(center_x, center_y - y_axis_length / 2, center_x, center_y + y_axis_length / 2);
+    painter.drawLine(0, center_y - offset.y(), w, center_y - offset.y());
+    painter.drawLine(center_x + offset.x(), 0, center_x + offset.x(), h);
 
     painter.setPen(QPen{Qt::white, 3});
 
-    for (int x = center_x + gridSpan; x < w; x += gridSpan)
+    for (int x = center_x + offset.x() + gridSpan; x < w; x += gridSpan)
     {
-        painter.drawLine(x, center_y - 5, x, center_y + 5);
-        painter.drawText(x + 5, center_y + 20, QString::number((x - center_x) / scaleFactor, 'f', 2));
-    }
-    
-    for (int x = center_x - gridSpan; x > 0; x -= gridSpan)
-    {
-        painter.drawLine(x, center_y - 5, x, center_y + 5);
-        painter.drawText(x + 5, center_y + 20, QString::number((x - center_x) / scaleFactor, 'f', 2));
+        painter.drawLine(x, center_y - 5 - offset.y(), x, center_y + 5 - offset.y());
+        painter.drawText(x + 5, center_y + 20 - offset.y(), QString::number((x - center_x - offset.x()) / scaleFactor, 'f', 2));
     }
 
-    for (int y = center_y + gridSpan; y < h; y += gridSpan)
+    for (int x = center_x + offset.x() - gridSpan; x > 0; x -= gridSpan)
     {
-        painter.drawLine(center_x - 5, y, center_x + 5, y);
-        painter.drawText(center_x + 5, y + 20, QString::number((center_y - y) / scaleFactor, 'f', 2));
-    }
-    
-    for (int y = center_y - gridSpan; y > 0; y -= gridSpan)
-    {
-        painter.drawLine(center_x - 5, y, center_x + 5, y);
-        painter.drawText(center_x + 5, y + 20, QString::number((center_y - y) / scaleFactor, 'f', 2));
+        painter.drawLine(x, center_y - 5 - offset.y(), x, center_y + 5 - offset.y());
+        painter.drawText(x + 5, center_y + 20 - offset.y(), QString::number((x - center_x - offset.x()) / scaleFactor, 'f', 2));
     }
 
+    for (int y = center_y - offset.y() + gridSpan; y < h; y += gridSpan)
+    {
+        painter.drawLine(center_x - 5 + offset.x(), y, center_x + 5 + offset.x(), y);
+        painter.drawText(center_x + 5 + offset.x(), y + 20, QString::number((center_y - y - offset.y()) / scaleFactor, 'f', 2));
+    }
+    
+    for (int y = center_y - offset.y() - gridSpan; y > 0; y -= gridSpan)
+    {
+        painter.drawLine(center_x - 5 + offset.x(), y, center_x + 5 + offset.x(), y);
+        painter.drawText(center_x + 5 + offset.x(), y + 20, QString::number((center_y - y - offset.y()) / scaleFactor, 'f', 2));
+    }
 }
 
 QPointF Plane::screenCoordToRealCoord(QPointF point)
 {
-    return QPointF{point.rx() / scaleFactor, -point.ry() / scaleFactor};
+    // qDebug() << "before StoR:" << point;
+    return QPointF{(point.rx() - offset.x() - this->viewport()->size().width() / 2) / scaleFactor, 
+        (-point.ry() - offset.y() + this->viewport()->size().height() / 2) / scaleFactor};
 }
 
 QPointF Plane::realCoordToScreenCoord(QPointF point)
 {
-    return QPointF{point.rx() * scaleFactor + this->viewport()->size().width() / 2,
-                    -point.ry() * scaleFactor + this->viewport()->size().height() / 2};
+    // qDebug() << "before RtoS:" << point;
+    auto x = QPointF{(point.rx() * scaleFactor) + offset.x() + this->viewport()->size().width() / 2,
+                    (-point.ry() * scaleFactor) - offset.y() + this->viewport()->size().height() / 2};
+    // qDebug() << "after RtoS:" << x;
+    return x; 
 }
