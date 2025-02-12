@@ -29,7 +29,7 @@ public:
 
     void addTriangle(std::array<QPointF, 3> trianglePoints);
     void scale();
-    void resetAnswerState() { answerFound = false; }
+    void resetAnswerState() { answerFound = false; offset = {0, 0}; }
 
 public slots:
     void onSolveBtnClicked();

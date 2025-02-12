@@ -7,8 +7,8 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     triangleInitialized = false;
     scaleFactor = defaultScale;
     answerFound = false;
-    offset = {100, 50};
-    // offset = {0, 0};
+    // offset = {100, 50};
+    offset = {0, 0};
 }
 
 void Plane::paintEvent(QPaintEvent *event)
@@ -19,6 +19,9 @@ void Plane::paintEvent(QPaintEvent *event)
 
     scale();
     scaleByPoints();
+
+    if (answerFound)
+        scaleByAnswer();
 
     drawGrid(painter, gridSpan);
     drawAxis(painter);
@@ -31,9 +34,12 @@ void Plane::paintEvent(QPaintEvent *event)
     }
     else
     {
-        scaleByAnswer();
+        // scaleByAnswer();
         for (const auto &point : circlePoints)
+        {
+            qDebug() << point;
             painter.drawPoint(realCoordToScreenCoord(point));
+        }
     }
     
 
@@ -152,7 +158,7 @@ void Plane::drawAnswer(QPainter &painter)
     double y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
 
     painter.setPen(circles_pen);
-    painter.drawEllipse(realCoordToScreenCoord(center), radius, radius);
+    painter.drawEllipse(realCoordToScreenCoord(center), radius * scaleFactor, radius * scaleFactor);
     painter.drawPoint(realCoordToScreenCoord(center));
     painter.drawLine(realCoordToScreenCoord(center), realCoordToScreenCoord({x, y}));
     painter.drawLine(realCoordToScreenCoord(trianglePoint), realCoordToScreenCoord({x, y}));
@@ -237,7 +243,9 @@ void Plane::scaleByPoints()
     const int w = this->viewport()->width() / scaleFactor;
     const int h = this->viewport()->height() / scaleFactor;
 
-    const int cx = w / 2 + offset.x(), cy = h / 2 - offset.y();
+    const int cx = w / 2 - offset.x(), cy = h / 2 + offset.y();
+
+    // qDebug() << "cx:" << cx << "cy:" << cy;
 
     if (points.empty())
     {
@@ -258,23 +266,26 @@ void Plane::scaleByPoints()
         maxY = std::max(maxY, point.second.y());
     }
 
+    // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
+    
+    if (std::min(minX, minY) > 10 && std::abs(maxX) < std::abs(cx) - 50 && std::abs(maxY) < std::abs(cx) - 50)
+        return;
+
     minX = std::abs(minX);
     maxX = std::abs(maxX);
 
     minY = std::abs(minY);
     maxY = std::abs(maxY);
 
-    // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
-    
-    if (std::min(minX, minY) > 10 && maxX < cx - 10 && maxY < cy - 10)
-        return;
-
-    double deltaX = std::max(maxX - cx, minX - cx);
-    double deltaY = std::max(maxY - cy, minY - cy);
+    double deltaX = std::max(maxX, minX);
+    double deltaY = std::max(maxY, minY);
 
     // qDebug() << "deltaX: " << deltaX << " deltaY: " << deltaY;
 
-    temp = std::min(cx / (cx + deltaX), cy / (cy + deltaY)) * scaleFactor / 1.1;
+    if (deltaX < cx - 50 && deltaY < cy - 50 && std::min(deltaX, deltaY) > 10)
+        return;
+
+    temp = std::min(cx / deltaX, cy / deltaY) * scaleFactor / 1.1;
 
     if (temp > maxScale || temp < minScale)
         return;
@@ -287,6 +298,16 @@ void Plane::scaleByAnswer()
 {
     double circleMaxX, circleMinX, circleMaxY, circleMinY;
     auto [center, radius, trianglePoint] = answer;
+
+    QPointF line = {std::abs(trianglePoint.x() - center.x()), std::abs(trianglePoint.y() - center.y())};
+
+    const double xOffset = std::min(trianglePoint.x(), center.x()) + line.x() / 2;
+    const double yOffset = std::min(trianglePoint.y(), center.y()) + line.y() / 2;
+
+    qDebug() << "xOffset:" << xOffset << "yOffset:" << yOffset;
+
+    offset = {-xOffset, -yOffset};
+
     double cx = center.x(), cy = center.y();
 
     circleMaxX = cx + radius;
@@ -295,21 +316,21 @@ void Plane::scaleByAnswer()
     circleMaxY = cy + radius;
     circleMinY = cy - radius;
 
-    double minX = std::min({triangle[0].x(), triangle[1].x(), triangle[2].x(), circleMinX});
-    double maxX = std::max({triangle[0].x(), triangle[1].x(), triangle[2].x(), circleMaxX});
+    const double minX = std::min({triangle[0].x(), triangle[1].x(), triangle[2].x(), circleMinX});
+    const double maxX = std::max({triangle[0].x(), triangle[1].x(), triangle[2].x(), circleMaxX});
 
     double minY = std::min({triangle[0].y(), triangle[1].y(), triangle[2].y(), circleMinY});
     double maxY = std::max({triangle[0].y(), triangle[1].y(), triangle[2].y(), circleMaxY});
 
     qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
-
+    
     const double deltaX = maxX - minX;
     const double deltaY = maxY - minY;
 
     qDebug() << "deltaX: " << deltaX << " deltaY: " << deltaY;
 
-    const int w = this->viewport()->width();
-    const int h = this->viewport()->height();
+    const int w = this->viewport()->width() / 2 - offset.x();
+    const int h = this->viewport()->height() / 2 + offset.y();
     
     if (deltaX / w < 0.9 || deltaY / h < 0.9)
         scaleFactor = std::min(w * 0.9 / deltaX, h * 0.9 * deltaY);
@@ -317,9 +338,10 @@ void Plane::scaleByAnswer()
         scaleFactor = std::min(w * (1 - scaleAmount) / deltaX, h * (1 - scaleAmount) * deltaY);
     else
         scaleFactor = defaultScale;
+
+    scaleFactor /= 4;
     
     qDebug() << "scale: " << scaleFactor;
-
 }
 
 void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)
