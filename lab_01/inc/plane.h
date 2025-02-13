@@ -28,8 +28,7 @@ public:
     int pointsCount, id;
 
     void addTriangle(std::array<QPointF, 3> trianglePoints);
-    void scale();
-    void resetAnswerState() { qDebug() << "ans reset called"; answerFound = false; offset = {0, 0}; }
+    void resetAnswerState() { answerFound = false; offset = {0, 0}; }
     bool getAnswerFound() { return answerFound; }
 
 public slots:
@@ -44,20 +43,21 @@ private:
     void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
     void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
     void drawTriangle(QPainter &painter);
+    void drawAnswer(QPainter &painter);
 
+    void scale();
+    void scaleByAnswer();
     void scaleByPoints();
+    void calcScaleFactorByDelta(double deltaX, double deltaY, double threshold, double amount);
+
+
     bool arePointsOnSameLine(QPointF p1, QPointF p2, QPointF p3);
     QPointF calcCircleCenter(QPointF p1, QPointF p2, QPointF p3);
     double calcDistance(QPointF p1, QPointF p2);
     double calcAngle(QPointF p1, QPointF p2, QPointF p3, QPointF p4);
     double radToDeg(double radians);
     double degToRad(double angle);
-    void drawAnswer(QPainter &painter);
     double checkCircle(std::pair<QPointF, double> circle, double minAngle);
-    void scaleByAnswer();
-
-    // void drawLine(QPainter &painter, double x1, double y1, double x2, double y2);
-    // void drawLine(QPainter &painter, const QPointF p1, const QPointF p2);
 
     std::array<QPointF, 3> triangle;
 
@@ -79,6 +79,9 @@ private:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 };
 
 #endif // PLANE_H

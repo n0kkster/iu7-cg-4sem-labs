@@ -31,5 +31,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    void restorePointValue(int row);
 };
 #endif /* MAINWINDOW_H */

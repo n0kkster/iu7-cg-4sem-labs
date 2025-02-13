@@ -46,7 +46,6 @@ void MainWindow::onAddBtnClicked()
 {
     double x, y;
     bool ok;
-    // int points_count;
     QTableWidgetItem *item;
 
     x = ui->xInput->text().toDouble(&ok);
@@ -68,7 +67,7 @@ void MainWindow::onAddBtnClicked()
 
     ui->pointsTable->setRowCount(++ui->planeWidget->pointsCount);
 
-    item = new QTableWidgetItem(QString(std::to_string(++ui->planeWidget->id).c_str()));
+    item = new QTableWidgetItem(QString().number(++ui->planeWidget->id));
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 0, item);
     ui->pointsTable->setItem(ui->planeWidget->pointsCount - 1, 1, new QTableWidgetItem(ui->xInput->text()));
@@ -115,7 +114,7 @@ void MainWindow::onRemoveAllBtnClicked()
 
     if (ui->planeWidget->getAnswerFound())
         ui->planeWidget->resetAnswerState();
-        
+
     ui->planeWidget->points.clear();
 
     ui->planeWidget->viewport()->update();
@@ -125,6 +124,7 @@ void MainWindow::onCellChanged(int row, int column)
 {
     double x, y;
     int id;
+    bool ok;
 
     Q_UNUSED(column);
 
@@ -134,16 +134,49 @@ void MainWindow::onCellChanged(int row, int column)
         return;
 
     id = ui->pointsTable->item(row, 0)->text().toInt();
-    x = ui->pointsTable->item(row, 1)->text().toDouble();
-    y = ui->pointsTable->item(row, 2)->text().toDouble();
-
-    for (auto &p : ui->planeWidget->points)
+    x = ui->pointsTable->item(row, 1)->text().toDouble(&ok);
+    if (!ok)
     {
-        if (p.first == id)
+        restorePointValue(row);
+        return;
+    }
+
+    y = ui->pointsTable->item(row, 2)->text().toDouble(&ok);
+    if (!ok)
+    {
+        restorePointValue(row);
+        return;
+    }
+
+    for (auto &[pId, point] : ui->planeWidget->points)
+    {
+        if (pId == id)
         {
-            p.second.setX(x);
-            p.second.setY(y);
+            point.setX(x);
+            point.setY(y);
             ui->planeWidget->viewport()->update();
+            break;
+        }
+    }
+}
+
+void MainWindow::restorePointValue(int row)
+{
+    int id;
+
+    if (!(ui->pointsTable->item(row, 0) &&
+        ui->pointsTable->item(row, 1) &&
+        ui->pointsTable->item(row, 2)))
+    return;
+
+    id = ui->pointsTable->item(row, 0)->text().toInt();
+
+    for (auto &[pId, point] : ui->planeWidget->points)
+    {
+        if (pId == id)
+        {
+            ui->pointsTable->item(row, 1)->setText(QString::number(point.x()));
+            ui->pointsTable->item(row, 2)->setText(QString::number(point.y()));
             break;
         }
     }
