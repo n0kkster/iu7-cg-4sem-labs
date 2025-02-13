@@ -46,7 +46,7 @@ void MainWindow::onAddBtnClicked()
 {
     double x, y;
     bool ok;
-    int points_count;
+    // int points_count;
     QTableWidgetItem *item;
 
     x = ui->xInput->text().toDouble(&ok);
@@ -120,6 +120,8 @@ void MainWindow::onCellChanged(int row, int column)
 {
     double x, y;
     int id;
+
+    Q_UNUSED(column);
 
     if (!(ui->pointsTable->item(row, 0) &&
           ui->pointsTable->item(row, 1) &&
