@@ -40,7 +40,7 @@ signals:
 
 private:
     void drawAxis(QPainter &painter);
-    void drawGrid(QPainter &painter, int span);
+    void drawGrid(QPainter &painter);
     void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
     void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
     void drawTriangle(QPainter &painter);

@@ -7,8 +7,7 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     triangleInitialized = false;
     scaleFactor = defaultScale;
     answerFound = false;
-    offset = {25, 25};
-    // offset = {0, 0};
+    this->viewport()->setFixedSize(800, 700);
 }
 
 void Plane::paintEvent(QPaintEvent *event)
@@ -23,7 +22,9 @@ void Plane::paintEvent(QPaintEvent *event)
     if (answerFound)
         scaleByAnswer();
 
-    drawGrid(painter, gridSpan);
+    qDebug() << "offset:" << offset;
+
+    drawGrid(painter);
     drawAxis(painter);
 
     painter.setPen(dots_pen);
@@ -34,7 +35,6 @@ void Plane::paintEvent(QPaintEvent *event)
     }
     else
     {
-        // scaleByAnswer();
         for (const auto &point : circlePoints)
         {
             qDebug() << point;
@@ -243,12 +243,8 @@ void Plane::scaleByPoints()
     const int w = this->viewport()->width();
     const int h = this->viewport()->height();
 
-    const int cx = (w / 2 - offset.x()) / scaleFactor;
-    const int cy = (h / 2 + offset.y()) / scaleFactor;
-
-    // qDebug() << "============================";
-
-    // qDebug() << "cx:" << cx << "cy:" << cy;
+    const double cx = (w / 2 + offset.x()) / scaleFactor;
+    const double cy = (h / 2 - offset.y()) / scaleFactor;
 
     if (points.empty())
     {
@@ -268,8 +264,6 @@ void Plane::scaleByPoints()
         minY = std::min(minY, point.second.y());
         maxY = std::max(maxY, point.second.y());
     }
-
-    // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
     
     if (std::max(std::abs(minX), std::abs(minY)) > 20 / scaleFactor && std::abs(maxX) < std::abs(cx) && std::abs(maxY) < std::abs(cx))
         return;
@@ -283,8 +277,6 @@ void Plane::scaleByPoints()
     double deltaX = std::max(maxX, minX);
     double deltaY = std::max(maxY, minY);
 
-    // qDebug() << "deltaX: " << deltaX << " deltaY: " << deltaY;
-
     if (deltaX < cx && deltaY < cy && std::min(deltaX, deltaY) > 20 / scaleFactor)
         return;
 
@@ -294,8 +286,6 @@ void Plane::scaleByPoints()
         return;
 
     scaleFactor = temp / 1.1;
-
-    // qDebug() << "scale: " << scaleFactor;
 }
 
 void Plane::scaleByAnswer()
@@ -318,18 +308,12 @@ void Plane::scaleByAnswer()
 
     double minY = std::min({triangle[0].y(), triangle[1].y(), triangle[2].y(), circleMinY});
     double maxY = std::max({triangle[0].y(), triangle[1].y(), triangle[2].y(), circleMaxY});
-
-    // qDebug() << "minX: " << minX << " maxX: " << maxX << " minY: " << minY << " maxY: " << maxY;
     
     const double deltaX = maxX - minX;
     const double deltaY = maxY - minY;
 
-    // qDebug() << "deltaX: " << deltaX << " deltaY: " << deltaY;
-
     const int w = this->viewport()->width();
     const int h = this->viewport()->height();
-
-    // qDebug() << "w:" << w << "h:" << h;
     
     if (deltaX / w < 0.9 || deltaY / h < 0.9)
         scaleFactor = std::min(w * 0.9 / deltaX, h * 0.9 / deltaY);
@@ -343,11 +327,7 @@ void Plane::scaleByAnswer()
     const double xOffset = std::min(trianglePoint.x(), center.x()) + line.x() / 2;
     const double yOffset = std::min(trianglePoint.y(), center.y()) + line.y() / 2;
 
-    // qDebug() << "xOffset:" << xOffset << "yOffset:" << yOffset;
-
-    offset = {-xOffset * scaleFactor, -yOffset * scaleFactor};
-    
-    // qDebug() << "scale: " << scaleFactor;
+    offset = {-xOffset * scaleFactor, -yOffset * scaleFactor};   
 }
 
 void Plane::addTriangle(std::array<QPointF, 3> trianglePoints)
@@ -388,80 +368,23 @@ void Plane::mousePressEvent(QMouseEvent *event)
     this->viewport()->repaint();
 }
 
-// void Plane::painter.drawLine(QPainter &painter, const QPointF p1, const QPointF p2)
-// {
-//     painter.drawLine(painter, p1.x(), p1.y(), p2.x(), p2.y());
-// }
-
-// void Plane::painter.drawLine(QPainter &painter, double _x0, double _y0, double _x1, double _y1)
-// {
-//     int x0, x1, y0, y1;
-
-//     x0 = lround(_x0);
-//     x1 = lround(_x1);
-//     y0 = lround(_y0);
-//     y1 = lround(_y1);
-
-//     if (x0 > x1 && y0 > y1)
-//     {
-//         x0 = lround(_x1);
-//         x1 = lround(_x0);
-//         y0 = lround(_y1);
-//         y1 = lround(_y0);
-//     }
-    
-//     int deltaX = std::abs(x1 - x0);
-//     int deltaY = std::abs(y1 - y0);
-//     int theta = deltaX != 0 ? deltaY / deltaX : 1;
-//     int err = 0, deltaErr, p, dir;
-
-//     qDebug() << "Theta: " << theta;
-
-//     if (theta < 1)
-//     {
-//         deltaErr = deltaY + 1;
-//         p = y0;
-//         dir = y1 - y0 > 0 ? 1 : -1;
-//         for (int x = x0; x <= x1; x++)
-//         {
-//             qDebug() << "X: " << x << " Y: " << p;
-//             painter.drawPoint(x, p);
-//             err += deltaErr;
-//             if (err >= deltaX + 1)
-//             {
-//                 p += dir;
-//                 err -= (deltaX + 1);
-//             }
-//         }
-//     }
-//     else
-//     {
-//         deltaErr = deltaX + 1;
-//         p = x0;
-//         dir = x1 - x0 > 0 ? 1 : -1;
-//         for (int y = y0; y <= y1; y++)
-//         {
-//             qDebug() << "X: " << p << " Y: " << y;
-//             painter.drawPoint(p, y);
-//             err += deltaErr;
-//             if (err >= deltaY + 1)
-//             {
-//                 p += dir;
-//                 err -= (deltaY + 1);
-//             }
-//         }
-//     }
-// }
-
-void Plane::drawGrid(QPainter &painter, int span)
+void Plane::drawGrid(QPainter &painter)
 {
     QPen line_pen(Qt::gray, 1);
     painter.setPen(line_pen);
+    const int w = this->viewport()->size().width(), h = this->viewport()->size().height();
 
-    for (int x = -1; x < this->viewport()->size().width(); x += span)
-        drawDashedVLine(painter, x + offset.x() , 0, this->viewport()->size().height(), 5, 10);
-    for (int y = -1; y < this->viewport()->size().height(); y += span)
-        drawDashedHLine(painter, y + offset.y(), 0, this->viewport()->size().width(), 5, 10);
+    for (int x = w / 2 + gridSpan + offset.x(); x < w; x += gridSpan)
+        drawDashedVLine(painter, x, 0, h, 5, 10);
+
+    for (int x = w / 2 - gridSpan + offset.x(); x > 0; x -= gridSpan)
+        drawDashedVLine(painter, x, 0, h, 5, 10);
+
+    for (int y = h / 2 + gridSpan - offset.x(); y < h; y += gridSpan)
+        drawDashedHLine(painter, y, 0, w, 5, 10);
+
+    for (int y = h / 2 - gridSpan - offset.x(); y > 0; y -= gridSpan)
+        drawDashedHLine(painter, y, 0, w, 5, 10);
 }
 
 void Plane::drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len)
@@ -482,7 +405,7 @@ void Plane::drawAxis(QPainter &painter)
     painter.setPen(line_pen);
 
     const int w = this->viewport()->size().width(), h = this->viewport()->size().height();
-    
+
     int center_x = w / 2;
     int center_y = h / 2;
 
