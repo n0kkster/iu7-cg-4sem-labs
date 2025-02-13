@@ -63,7 +63,8 @@ void MainWindow::onAddBtnClicked()
         return;
     }
 
-    ui->planeWidget->resetAnswerState();
+    if (ui->planeWidget->getAnswerFound())
+        ui->planeWidget->resetAnswerState();
 
     ui->pointsTable->setRowCount(++ui->planeWidget->pointsCount);
 
@@ -96,7 +97,9 @@ void MainWindow::onRemoveBtnClicked()
             ++it;
     }
 
-    ui->planeWidget->resetAnswerState();
+    if (ui->planeWidget->getAnswerFound())
+        ui->planeWidget->resetAnswerState();
+
     ui->planeWidget->viewport()->update();
 
     ui->pointsTable->removeRow(curr->row());
@@ -110,7 +113,9 @@ void MainWindow::onRemoveAllBtnClicked()
 
     ui->pointsTable->setRowCount(ui->planeWidget->pointsCount);
 
-    ui->planeWidget->resetAnswerState();
+    if (ui->planeWidget->getAnswerFound())
+        ui->planeWidget->resetAnswerState();
+        
     ui->planeWidget->points.clear();
 
     ui->planeWidget->viewport()->update();

@@ -29,7 +29,8 @@ public:
 
     void addTriangle(std::array<QPointF, 3> trianglePoints);
     void scale();
-    void resetAnswerState() { answerFound = false; offset = {0, 0}; }
+    void resetAnswerState() { qDebug() << "ans reset called"; answerFound = false; offset = {0, 0}; }
+    bool getAnswerFound() { return answerFound; }
 
 public slots:
     void onSolveBtnClicked();
