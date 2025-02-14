@@ -4,12 +4,14 @@
 // ==================================================
 Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
+    this->viewport()->setFixedSize(800, 700);
+
     pointsCount = 0;
     id = 0;
     triangleInitialized = false;
     scaleFactor = defaultScale;
     answerFound = false;
-    this->viewport()->setFixedSize(800, 700);
+    mouseMoved = false;
 }
 // ==================================================
 
@@ -39,10 +41,7 @@ void Plane::paintEvent(QPaintEvent *event)
     else
     {
         for (const auto &point : circlePoints)
-        {
-            qDebug() << point;
             painter.drawPoint(realCoordToScreenCoord(point));
-        }
     }
     
 
@@ -52,37 +51,41 @@ void Plane::paintEvent(QPaintEvent *event)
         drawAnswer(painter);
 }
 
-void Plane::mousePressEvent(QMouseEvent *event)
-{
-    qDebug() << "pressed key:" << event->button();
-
-    QPointF point = screenCoordToRealCoord(event->pos());
-    points.append(std::pair<int, QPointF>{++id, point});
-    ++pointsCount;
-
-    if (answerFound)
-        resetAnswerState();
-
-    emit clicked(point);
-
-    this->viewport()->repaint();
-}
-
 void Plane::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << "released key:" << event->button();
+    if (!mouseMoved)
+    {
+        QPointF point = screenCoordToRealCoord(event->pos());
+        points.append(std::pair<int, QPointF>{++id, point});
+        ++pointsCount;
+
+        if (answerFound)
+            resetAnswerState();
+
+        emit clicked(point);
+
+        this->viewport()->repaint();
+        return;
+    }
+
+    mouseMoved = false;
 }
 
 void Plane::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug() << "mouse moved, key:" << event->button();
-}
+    QPointF p = event->pos();
+    p.setX(p.x() - this->viewport()->size().width() / 2);
+    p.setY(-p.y() + this->viewport()->size().height() / 2);
 
-void Plane::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    qDebug() << "double clicked:" << event->button();
-}
+    if (!mouseMoved)
+    {
+        mouseMoved = true;
+        movementStart = p - offset;        
+    }
 
+    offset = {p.x() - movementStart.x(), p.y() - movementStart.y()};
+    this->viewport()->update();
+}
 // ==================================================
 
 // Рисовальщики
@@ -136,10 +139,10 @@ void Plane::drawGrid(QPainter &painter)
     for (int x = w / 2 - gridSpan + offset.x(); x > 0; x -= gridSpan)
         drawDashedVLine(painter, x, 0, h, 5, 10);
 
-    for (int y = h / 2 + gridSpan - offset.x(); y < h; y += gridSpan)
+    for (int y = h / 2 + gridSpan - offset.y(); y < h; y += gridSpan)
         drawDashedHLine(painter, y, 0, w, 5, 10);
 
-    for (int y = h / 2 - gridSpan - offset.x(); y > 0; y -= gridSpan)
+    for (int y = h / 2 - gridSpan - offset.y(); y > 0; y -= gridSpan)
         drawDashedHLine(painter, y, 0, w, 5, 10);
 }
 
@@ -193,6 +196,9 @@ void Plane::drawAxis(QPainter &painter)
         painter.drawLine(center_x - 5 + offset.x(), y, center_x + 5 + offset.x(), y);
         painter.drawText(center_x + 5 + offset.x(), y + 20, QString::number((center_y - y - offset.y()) / scaleFactor, 'f', 2));
     }
+
+    painter.drawText(w - 10, center_y - 5, "X");
+    painter.drawText(center_x + 10, 12, "Y");
 }
 // ==================================================
 

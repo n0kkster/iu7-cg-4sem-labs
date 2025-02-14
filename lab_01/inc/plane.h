@@ -59,10 +59,14 @@ private:
     double degToRad(double angle);
     double checkCircle(std::pair<QPointF, double> circle, double minAngle);
 
+    QPointF offset;
     std::array<QPointF, 3> triangle;
 
     bool triangleInitialized;
     bool answerFound;
+    
+    bool mouseMoved;
+    QPointF movementStart;
 
     const double defaultScale = 1;
     const double minScale = 1e-6, maxScale = 1e6;
@@ -72,16 +76,13 @@ private:
     const double maxRatioNoScale = 1;
     const double scaleAmount = 0.2;
     const double eps = 1e-9;
-    QPointF offset;
 
     const int gridSpan = 50;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
 };
 
 #endif // PLANE_H
