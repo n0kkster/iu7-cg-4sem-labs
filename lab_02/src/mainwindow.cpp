@@ -5,13 +5,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->applyAllBtn, &QPushButton::clicked, this, &MainWindow::onApplyTransformBtnClicked);
+    connect(ui->applyOffsetBtn, &QPushButton::clicked, this, &MainWindow::onApplyOffsetBtnClicked);
+    connect(ui->applyScaleBtn, &QPushButton::clicked, this, &MainWindow::onApplyScaleBtnClicked);
+    connect(ui->applyRotationBtn, &QPushButton::clicked, this, &MainWindow::onApplyRotationBtnClicked);
     connect(ui->recoilTransformBtn, &QPushButton::clicked, ui->planeWidget, &Plane::rollbackTransformation);
 }
 
-void MainWindow::onApplyTransformBtnClicked()
+void MainWindow::onApplyOffsetBtnClicked()
 {
-    double dx, dy, cxS, cyS, kx, ky, angle, cxR, cyR;
+    double dx, dy;
     bool ok;
 
     dx = ui->dxOffsetInput->text().toDouble(&ok);
@@ -28,14 +30,23 @@ void MainWindow::onApplyTransformBtnClicked()
         return;
     }
 
-    cxS = ui->centerXScale->text().toDouble(&ok);
+    ui->planeWidget->addOffset({dx, dy});
+    ui->planeWidget->viewport()->update();
+}
+
+void MainWindow::onApplyScaleBtnClicked()
+{
+    double cx, cy, kx, ky;
+    bool ok;
+
+    cx = ui->centerXScale->text().toDouble(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Координата X центра масштабирования должна быть вещественным числом.");
         return;
     }
 
-    cyS = ui->centerYScale->text().toDouble(&ok);
+    cy = ui->centerYScale->text().toDouble(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Координата Y центра масштабирования должна быть вещественным числом.");
@@ -56,14 +67,23 @@ void MainWindow::onApplyTransformBtnClicked()
         return;
     }
 
-    cxR = ui->centerXRotate->text().toDouble(&ok);
+    ui->planeWidget->addScale({cx, cy, kx, ky});
+    ui->planeWidget->viewport()->update();
+}
+
+void MainWindow::onApplyRotationBtnClicked()
+{
+    double cx, cy, angle;
+    bool ok;
+
+    cx = ui->centerXRotate->text().toDouble(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Координата X центра вращения должна быть вещественным числом.");
         return;
     }
 
-    cyR = ui->centerYRotate->text().toDouble(&ok);
+    cy = ui->centerYRotate->text().toDouble(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Координата Y центра вращения должна быть вещественным числом.");
@@ -77,16 +97,9 @@ void MainWindow::onApplyTransformBtnClicked()
         return;
     }
 
-    ui->planeWidget->addTransformation({dx, dy}, {cxR, cyR, angle}, {cxS, cyS, kx, ky});
-
+    ui->planeWidget->addRotation({cx, cy, qDegreesToRadians(angle)});
     ui->planeWidget->viewport()->update();
 }
-
-void MainWindow::uiSetOffset()
-{
-
-}
-
 
 MainWindow::~MainWindow()
 {

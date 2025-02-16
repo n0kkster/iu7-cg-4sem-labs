@@ -2,11 +2,13 @@
 
 // Конструктор
 // ==================================================
-Plane::Plane(QWidget *parent) : QGraphicsView(parent) {}
+Plane::Plane(QWidget *parent) : QGraphicsView(parent) 
+{
+    initTMatrix(curr_transformation);
+}
 // ==================================================
 
 
-// ==================================================
 void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
@@ -20,9 +22,10 @@ void Plane::paintEvent(QPaintEvent *event)
 
     painter.setPen({Qt::yellow, 1});
     drawShape(painter);
-
 }
 
+// Рисовальщики
+// ==================================================
 void Plane::drawShape(QPainter &painter)
 {
     ellipse_t e1, e2, e3;
@@ -100,26 +103,26 @@ void Plane::drawEllipse(QPainter &painter, const ellipse_t &ellipse, const limit
 
         curr_point = {x, y};
 
-        start = rRotatePoint(prev_point, rot);
-        end = rRotatePoint(curr_point, rot);
+        start = rotatePoint(prev_point, rot);
+        end = rotatePoint(curr_point, rot);
 
         if (inRange(start, limit) && inRange(end, limit))
             painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
 
-        start = rRotatePoint(mirrorPointByX(prev_point, cx), rot);
-        end = rRotatePoint(mirrorPointByX(curr_point, cx), rot);
+        start = rotatePoint(mirrorPointByX(prev_point, cx), rot);
+        end = rotatePoint(mirrorPointByX(curr_point, cx), rot);
 
         if (inRange(start, limit) && inRange(end, limit))
             painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
 
-        start = rRotatePoint(mirrorPointByY(prev_point, cy), rot);
-        end = rRotatePoint(mirrorPointByY(curr_point, cy), rot);
+        start = rotatePoint(mirrorPointByY(prev_point, cy), rot);
+        end = rotatePoint(mirrorPointByY(curr_point, cy), rot);
 
         if (inRange(start, limit) && inRange(end, limit))
             painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
 
-        start = rRotatePoint(mirrorPointByX(mirrorPointByY(prev_point, cy), cx), rot);
-        end = rRotatePoint(mirrorPointByX(mirrorPointByY(curr_point, cy), cx), rot);
+        start = rotatePoint(mirrorPointByX(mirrorPointByY(prev_point, cy), cx), rot);
+        end = rotatePoint(mirrorPointByX(mirrorPointByY(curr_point, cy), cx), rot);
 
         if (inRange(start, limit) && inRange(end, limit))
             painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
@@ -231,33 +234,13 @@ void Plane::drawAxis(QPainter &painter)
 }
 // ==================================================
 
-void Plane::addTransformation(offset_t offset, rotation_t rotation, scale_t scale)
-{
-    rotation.angle = degToRad(rotation.angle);
-    transform_t t = {offset, scale, rotation};
-    transformations.push_back(t);
-}
-
 void Plane::rollbackTransformation()
 {   
-        if (transformations.size() > 0)
-        transformations.pop_back();
+    curr_transformation = prev_transformation;
     this->viewport()->update();
 }
 
-void Plane::applyTransform(QPointF &point, const transform_t &transform)
-{
-    offsetPoint(point, transform.offset);
-    rotatePoint(point, transform.rotation);
-    scalePoint(point, transform.scale);
-}
-
-void Plane::offsetPoint(QPointF &point, const offset_t &offset)
-{
-    point = {point.x() + offset.x, point.y() + offset.y};
-}
-
-QPointF Plane::rRotatePoint(const QPointF &point, const rotation_t &rotation)
+QPointF Plane::rotatePoint(const QPointF &point, const rotation_t &rotation)
 {
     double x = point.x(), y = point.y();
     double cx = rotation.cx, cy = rotation.cy;
@@ -270,49 +253,11 @@ QPointF Plane::rRotatePoint(const QPointF &point, const rotation_t &rotation)
     return newPoint;
 }
 
-void Plane::rotatePoint(QPointF &point, const rotation_t &rotation)
-{
-    double x = point.x(), y = point.y();
-    double cx = rotation.cx, cy = rotation.cy;
-    double radians = rotation.angle;
-
-    QPointF newPoint = {
-        cx + (x - cx) * cos(radians) + (y - cy) * sin(radians),
-        cy + (y - cy) * cos(radians) - (x - cx) * sin(radians)
-    };
-    point = newPoint;
-}
-
-void Plane::scalePoint(QPointF &point, const scale_t &scale)
-{
-    double x = point.x(), y = point.y();
-    double cx = scale.cx, cy = scale.cy;
-    double kx = scale.kx, ky = scale.ky;
-
-    QPointF newPoint = {
-        x * kx + (1 - kx) * cx,
-        y * ky + (1 - ky) * cy
-    };
-
-    point = newPoint;
-}
-
 bool Plane::inRange(const QPointF &p, const limit_t &limit)
 {
     return limit.xmin <= p.x() && p.x() <= limit.xmax &&
             limit.ymin <= p.y() && p.y() <= limit.ymax; 
 }
-
-double Plane::radToDeg(double radians)
-{
-    return radians * 180 / M_PI;
-}
-
-double Plane::degToRad(double angle)
-{
-    return angle * M_PI / 180;
-}
-
 
 QPointF Plane::mirrorPointByX(QPointF p, double cx)
 {
@@ -326,8 +271,104 @@ QPointF Plane::mirrorPointByY(QPointF p, double cy)
 
 QPointF Plane::realCoordToScreenCoord(QPointF point)
 {
-    for (const auto &t : transformations)
-        applyTransform(point, t);    
-    return {point.rx() + W / 2, -point.ry() + H / 2};
+    matrix_t p;
+
+    p.push_back({point.x()});
+    p.push_back({point.y()});
+    p.push_back({1});
+    p = multiplyMatrices(curr_transformation, p);
+
+    return {p[0][0] + W / 2, -p[1][0] + H / 2};
 }
 
+matrix_t Plane::multiplyMatrices(const matrix_t &matrix1, const matrix_t &matrix2) 
+{
+    matrix_t res;
+    res.push_back({0, 0, 0});
+    res.push_back({0, 0, 0});
+    res.push_back({0, 0, 0});
+
+    if (matrix1[0].size() != matrix2.size())
+    {
+        qDebug() << "matrix invalid dimensions:" << matrix1[0].size() << "; " << matrix2.size();
+        abort();
+    }
+
+    for (size_t i = 0; i < matrix1.size(); ++i)
+        for (size_t j = 0; j < matrix2[0].size(); ++j)
+            for (size_t k = 0; k < matrix1[0].size(); ++k)
+                res[i][j] += matrix1[i][k] * matrix2[k][j];
+
+    return res;
+}
+
+void Plane::initTMatrix(matrix_t &m)
+{
+    m.clear();
+    m.push_back({1, 0, 0});
+    m.push_back({0, 1, 0});
+    m.push_back({0, 0, 1});
+}
+
+void Plane::addOffset(offset_t offset)
+{
+    matrix_t offsetM;
+    prev_transformation = curr_transformation;
+
+    initTMatrix(offsetM);
+    offsetM[0][2] = offset.x;
+    offsetM[1][2] = offset.y;
+    
+    curr_transformation = multiplyMatrices(offsetM, curr_transformation);
+}
+
+void Plane::addScale(scale_t scale)
+{
+    matrix_t scaleM, offsetM;
+    prev_transformation = curr_transformation;
+
+    initTMatrix(scaleM);
+    initTMatrix(offsetM);
+
+    offsetM[0][2] = -scale.cx;
+    offsetM[1][2] = -scale.cy;
+
+    curr_transformation = multiplyMatrices(offsetM, curr_transformation);
+    
+    scaleM[0][0] = scale.kx;
+    scaleM[1][1] = scale.ky;
+
+    curr_transformation = multiplyMatrices(scaleM, curr_transformation);
+
+    offsetM[0][2] = scale.cx;
+    offsetM[1][2] = scale.cy;
+
+    curr_transformation = multiplyMatrices(offsetM, curr_transformation);
+}
+
+void Plane::addRotation(rotation_t rotation)
+{
+    matrix_t rotationM, offsetM;
+    double c = cos(rotation.angle), s = sin(rotation.angle);
+    prev_transformation = curr_transformation;
+
+    initTMatrix(rotationM);
+    initTMatrix(offsetM);
+
+    offsetM[0][2] = -rotation.cx;
+    offsetM[1][2] = -rotation.cy;
+
+    curr_transformation = multiplyMatrices(offsetM, curr_transformation);
+    
+    rotationM[0][0] = c;
+    rotationM[0][1] = -s;
+    rotationM[1][0] = s;
+    rotationM[1][1] = c;
+
+    curr_transformation = multiplyMatrices(rotationM, curr_transformation);
+
+    offsetM[0][2] = rotation.cx;
+    offsetM[1][2] = rotation.cy;
+
+    curr_transformation = multiplyMatrices(offsetM, curr_transformation);
+}

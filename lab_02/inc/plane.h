@@ -30,13 +30,6 @@ typedef struct
     double angle;
 } rotation_t;
 
-typedef struct
-{
-    offset_t offset;
-    scale_t scale;
-    rotation_t rotation;
-} transform_t;
-
 typedef struct 
 {
     QPointF center;
@@ -48,14 +41,18 @@ typedef struct
     double xmin, xmax, ymin, ymax;
 } limit_t;
 
+typedef std::vector<std::vector<double>> matrix_t;
+
 class Plane : public QGraphicsView
 {
     Q_OBJECT
 
 public:
     explicit Plane(QWidget *parent = nullptr);
-    void addTransformation(offset_t offset, rotation_t rotation, scale_t scale);
     void rollbackTransformation();
+    void addOffset(offset_t offset);
+    void addScale(scale_t scale);
+    void addRotation(rotation_t rotation);
 
 private:
 
@@ -74,19 +71,15 @@ private:
 
     QPointF mirrorPointByX(QPointF p, double cx);
     QPointF mirrorPointByY(QPointF p, double cy);
-    double radToDeg(double radians);
-    double degToRad(double angle);
     bool inRange(const QPointF &p, const limit_t &limit);
 
+    QPointF rotatePoint(const QPointF &point, const rotation_t &rotation);
 
-    void applyTransform(QPointF &point, const transform_t &transform);
-    void offsetPoint(QPointF &point, const offset_t &offset);
-    void rotatePoint(QPointF &point, const rotation_t &rotation);
-    void scalePoint(QPointF &point, const scale_t &scale);
-    QPointF rRotatePoint(const QPointF &point, const rotation_t &rotation);
+    matrix_t multiplyMatrices(const matrix_t &matrix1, const matrix_t &matrix2);
+    void initTMatrix(matrix_t &m);
 
-
-    std::vector<transform_t> transformations;
+    matrix_t curr_transformation;
+    matrix_t prev_transformation;
 
     const int gridSpan = 50;
     int W;
@@ -104,15 +97,13 @@ private:
     const double e1_b = 80.773867;
     const double angle = -atan(0.619018);
 
-    const QPointF e2_center = {50, 0};
+    const QPointF e2_center = {-50, 0};
     const double e2_a = e1_a;
     const double e2_b = e1_b;
 
     const QPointF e3_center = {0, -55};
     const double e3_a = 53.033009;
     const double e3_b = 15;
-
-    const QPointF e2_center = {-50, 0};
 
 
 protected:

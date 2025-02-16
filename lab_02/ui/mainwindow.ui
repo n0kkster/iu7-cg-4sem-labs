@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>870</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -456,7 +456,7 @@
       <x>10</x>
       <y>10</y>
       <width>770</width>
-      <height>840</height>
+      <height>870</height>
      </rect>
     </property>
    </widget>
@@ -466,7 +466,7 @@
       <x>790</x>
       <y>10</y>
       <width>200</width>
-      <height>161</height>
+      <height>201</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -571,14 +571,38 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="applyOffsetBtn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>180</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Применить</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_3">
     <property name="geometry">
      <rect>
       <x>790</x>
-      <y>190</y>
+      <y>220</y>
       <width>200</width>
-      <height>281</height>
+      <height>321</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -739,14 +763,38 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="applyScaleBtn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>280</y>
+       <width>180</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Применить</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="frame_4">
     <property name="geometry">
      <rect>
       <x>790</x>
-      <y>490</y>
+      <y>550</y>
       <width>200</width>
-      <height>221</height>
+      <height>261</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -875,36 +923,36 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="applyAllBtn">
-    <property name="geometry">
-     <rect>
-      <x>790</x>
-      <y>720</y>
-      <width>200</width>
-      <height>60</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="text">
-     <string>Применить изменения </string>
-    </property>
-    <property name="flat">
-     <bool>true</bool>
-    </property>
+    <widget class="QPushButton" name="applyRotationBtn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>180</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Применить</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="recoilTransformBtn">
     <property name="geometry">
      <rect>
       <x>790</x>
-      <y>790</y>
+      <y>820</y>
       <width>200</width>
       <height>60</height>
      </rect>
@@ -928,7 +976,6 @@
    <zorder>planeWidget</zorder>
    <zorder>frame_3</zorder>
    <zorder>frame_4</zorder>
-   <zorder>applyAllBtn</zorder>
    <zorder>recoilTransformBtn</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">

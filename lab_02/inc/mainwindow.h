@@ -21,12 +21,11 @@ public:
     ~MainWindow();
 
 private slots:
-    void onApplyTransformBtnClicked();
+    void onApplyOffsetBtnClicked();
+    void onApplyScaleBtnClicked();
+    void onApplyRotationBtnClicked();
 
 private:
     Ui::MainWindow *ui;
-    void uiSetScale();
-    void uiSetOffset();
-    void uiSetRotation();
 };
 #endif /* MAINWINDOW_H */
