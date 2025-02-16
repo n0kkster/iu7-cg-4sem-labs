@@ -8,7 +8,6 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 }
 // ==================================================
 
-
 void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
@@ -22,6 +21,7 @@ void Plane::paintEvent(QPaintEvent *event)
 
     painter.setPen({Qt::yellow, 1});
     drawShape(painter);
+    drawCenterCoords(painter);
 }
 
 // Рисовальщики
@@ -59,6 +59,12 @@ void Plane::drawShape(QPainter &painter)
     drawEllipse(painter, e3, limit);
 }
 
+void Plane::drawCenterCoords(QPainter &painter)
+{
+    QPointF center = realCoordToScreenCoord({0, 0});
+    painter.drawText(QPointF(10, H - 10), QString("(%1;%2)").arg(myRound(center.x() - W / 2)).arg(myRound(H / 2 - center.y())));
+}
+
 void Plane::drawTriangle(QPainter &painter, QPointF p1, QPointF p2, QPointF p3)
 {
     painter.drawLine(realCoordToScreenCoord(p1), realCoordToScreenCoord(p2));
@@ -81,17 +87,10 @@ void Plane::drawEllipse(QPainter &painter, const ellipse_t &ellipse, const limit
     double a = ellipse.a, b = ellipse.b;
     double angle = ellipse.angle;
 
-    double x = -a + cx, y;
-    double t = 1 - std::pow((x - cx) / a, 2);
+    double x = -a + cx, y = b * std::sqrt(myRound(1 - std::pow((x - cx) / a, 2))) + cy;;
     QPointF curr_point, prev_point;
     QPointF start, end;
     rotation_t rot = {cx, cy, angle};
-
-    if (std::abs(t) < 1e-9)
-        y = cy;
-    else
-        y = b * std::sqrt(1 - std::pow((x - cx) / a, 2)) + cy;
-
     
     curr_point = {x, y};
     while (x <= cx)
@@ -99,7 +98,7 @@ void Plane::drawEllipse(QPainter &painter, const ellipse_t &ellipse, const limit
         prev_point = curr_point;
         
         x++;
-        y = b * std::sqrt(1 - std::pow((x - cx) / a, 2)) + cy;
+        y = b * std::sqrt(myRound(1 - std::pow((x - cx) / a, 2))) + cy;
 
         curr_point = {x, y};
 
@@ -257,6 +256,13 @@ bool Plane::inRange(const QPointF &p, const limit_t &limit)
 {
     return limit.xmin <= p.x() && p.x() <= limit.xmax &&
             limit.ymin <= p.y() && p.y() <= limit.ymax; 
+}
+
+double Plane::myRound(double val)
+{
+    if (std::abs(val) < eps)
+        return 0.0;
+    return val;
 }
 
 QPointF Plane::mirrorPointByX(QPointF p, double cx)

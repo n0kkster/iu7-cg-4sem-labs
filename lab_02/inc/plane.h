@@ -63,6 +63,7 @@ private:
     void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
     void drawGrid(QPainter &painter);
 
+    void drawCenterCoords(QPainter &painter);
     void drawShape(QPainter &painter);
     void drawTriangle(QPainter &painter, QPointF p1, QPointF p2, QPointF p3);
     void drawRect(QPainter &painter, QPointF p1, QPointF p2);
@@ -72,6 +73,7 @@ private:
     QPointF mirrorPointByX(QPointF p, double cx);
     QPointF mirrorPointByY(QPointF p, double cy);
     bool inRange(const QPointF &p, const limit_t &limit);
+    double myRound(double val);
 
     QPointF rotatePoint(const QPointF &point, const rotation_t &rotation);
 
@@ -82,6 +84,7 @@ private:
     matrix_t prev_transformation;
 
     const int gridSpan = 50;
+    const double eps = 1e-9;
     int W;
     int H;
 
