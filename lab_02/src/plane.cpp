@@ -19,8 +19,42 @@ void Plane::paintEvent(QPaintEvent *event)
     drawAxis(painter);
 
     painter.setPen({Qt::yellow, 1});
+    drawShape(painter);
+
 }
 
+void Plane::drawShape(QPainter &painter)
+{
+    ellipse_t e1, e2, e3;
+    limit_t limit;
+
+    drawRect(painter, rectP1, rectP2);
+    drawTriangle(painter, triangleP1, triangleP2, triangleP3);
+
+    limit.xmin = rectP1.x();
+    limit.xmax = rectP2.x();
+    limit.ymin = rectP2.y();
+    limit.ymax = rectP1.y();
+
+    e1.center = e1_center;
+    e1.a = e1_a;
+    e1.b = e1_b;
+    e1.angle = angle;
+
+    e2.center = e2_center;
+    e2.a = e2_a;
+    e2.b = e2_b;
+    e2.angle = -angle;
+
+    e3.center = e3_center;
+    e3.a = e3_a;
+    e3.b = e3_b;
+    e3.angle = 0;
+
+    drawEllipse(painter, e1, limit);
+    drawEllipse(painter, e2, limit);
+    drawEllipse(painter, e3, limit);
+}
 
 void Plane::drawTriangle(QPainter &painter, QPointF p1, QPointF p2, QPointF p3)
 {
@@ -38,32 +72,57 @@ void Plane::drawRect(QPainter &painter, QPointF p1, QPointF p2)
     painter.drawLine(realCoordToScreenCoord({x2, y1}), realCoordToScreenCoord({x2, y2}));
 }
 
-void Plane::drawEllipse(QPainter &painter, QPointF center, double a, double b)
+void Plane::drawEllipse(QPainter &painter, const ellipse_t &ellipse, const limit_t &limit)
 {
-    double x = -a + center.x(), y = b * std::sqrt(1 - std::pow((x - center.x()) / a, 2)) + center.y();
-    QPointF curr_point, prev_point;
+    double cx = ellipse.center.x(), cy = ellipse.center.y();
+    double a = ellipse.a, b = ellipse.b;
+    double angle = ellipse.angle;
 
+    double x = -a + cx, y;
+    double t = 1 - std::pow((x - cx) / a, 2);
+    QPointF curr_point, prev_point;
+    QPointF start, end;
+    rotation_t rot = {cx, cy, angle};
+
+    if (std::abs(t) < 1e-9)
+        y = cy;
+    else
+        y = b * std::sqrt(1 - std::pow((x - cx) / a, 2)) + cy;
+
+    
     curr_point = {x, y};
-    while (x < center.x())
+    while (x <= cx)
     {
         prev_point = curr_point;
         
         x++;
-        y = b * std::sqrt(1 - std::pow((x - center.x()) / a, 2)) + center.y();
+        y = b * std::sqrt(1 - std::pow((x - cx) / a, 2)) + cy;
 
         curr_point = {x, y};
 
-        painter.drawLine(realCoordToScreenCoord(prev_point), 
-            realCoordToScreenCoord(curr_point));
+        start = rRotatePoint(prev_point, rot);
+        end = rRotatePoint(curr_point, rot);
 
-        painter.drawLine(realCoordToScreenCoord(mirrorPointByX(prev_point, center.x())), 
-            realCoordToScreenCoord(mirrorPointByX(curr_point, center.x())));
+        if (inRange(start, limit) && inRange(end, limit))
+            painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
 
-        painter.drawLine(realCoordToScreenCoord(mirrorPointByY(prev_point, center.y())), 
-            realCoordToScreenCoord(mirrorPointByY(curr_point, center.y())));
+        start = rRotatePoint(mirrorPointByX(prev_point, cx), rot);
+        end = rRotatePoint(mirrorPointByX(curr_point, cx), rot);
 
-        painter.drawLine(realCoordToScreenCoord(mirrorPointByX(mirrorPointByY(prev_point, center.y()), center.x())), 
-            realCoordToScreenCoord(mirrorPointByX(mirrorPointByY(curr_point, center.y()), center.x())));
+        if (inRange(start, limit) && inRange(end, limit))
+            painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
+
+        start = rRotatePoint(mirrorPointByY(prev_point, cy), rot);
+        end = rRotatePoint(mirrorPointByY(curr_point, cy), rot);
+
+        if (inRange(start, limit) && inRange(end, limit))
+            painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
+
+        start = rRotatePoint(mirrorPointByX(mirrorPointByY(prev_point, cy), cx), rot);
+        end = rRotatePoint(mirrorPointByX(mirrorPointByY(curr_point, cy), cx), rot);
+
+        if (inRange(start, limit) && inRange(end, limit))
+            painter.drawLine(realCoordToScreenCoord(start), realCoordToScreenCoord(end));
     }
 }
 
@@ -174,6 +233,7 @@ void Plane::drawAxis(QPainter &painter)
 
 void Plane::addTransformation(offset_t offset, rotation_t rotation, scale_t scale)
 {
+    rotation.angle = degToRad(rotation.angle);
     transform_t t = {offset, scale, rotation};
     transformations.push_back(t);
 }
@@ -184,7 +244,6 @@ void Plane::rollbackTransformation()
         transformations.pop_back();
     this->viewport()->update();
 }
-
 
 void Plane::applyTransform(QPointF &point, const transform_t &transform)
 {
@@ -198,11 +257,24 @@ void Plane::offsetPoint(QPointF &point, const offset_t &offset)
     point = {point.x() + offset.x, point.y() + offset.y};
 }
 
+QPointF Plane::rRotatePoint(const QPointF &point, const rotation_t &rotation)
+{
+    double x = point.x(), y = point.y();
+    double cx = rotation.cx, cy = rotation.cy;
+    double radians = rotation.angle;
+
+    QPointF newPoint = {
+        cx + (x - cx) * cos(radians) + (y - cy) * sin(radians),
+        cy + (y - cy) * cos(radians) - (x - cx) * sin(radians)
+    };
+    return newPoint;
+}
+
 void Plane::rotatePoint(QPointF &point, const rotation_t &rotation)
 {
     double x = point.x(), y = point.y();
     double cx = rotation.cx, cy = rotation.cy;
-    double radians = rotation.angle * M_PI / 180;
+    double radians = rotation.angle;
 
     QPointF newPoint = {
         cx + (x - cx) * cos(radians) + (y - cy) * sin(radians),
@@ -224,6 +296,23 @@ void Plane::scalePoint(QPointF &point, const scale_t &scale)
 
     point = newPoint;
 }
+
+bool Plane::inRange(const QPointF &p, const limit_t &limit)
+{
+    return limit.xmin <= p.x() && p.x() <= limit.xmax &&
+            limit.ymin <= p.y() && p.y() <= limit.ymax; 
+}
+
+double Plane::radToDeg(double radians)
+{
+    return radians * 180 / M_PI;
+}
+
+double Plane::degToRad(double angle)
+{
+    return angle * M_PI / 180;
+}
+
 
 QPointF Plane::mirrorPointByX(QPointF p, double cx)
 {
