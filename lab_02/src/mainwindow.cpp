@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->applyAllBtn, &QPushButton::clicked, this, &MainWindow::onApplyTransformBtnClicked);
+    connect(ui->recoilTransformBtn, &QPushButton::clicked, ui->planeWidget, &Plane::rollbackTransformation);
 }
 
 void MainWindow::onApplyTransformBtnClicked()
@@ -76,9 +77,8 @@ void MainWindow::onApplyTransformBtnClicked()
         return;
     }
 
-    ui->planeWidget->addOffset(dx, dy);
-    ui->planeWidget->addScale(cxS, cyS, kx, ky);
-    ui->planeWidget->addRotation(cxR, cyR, angle);
+    ui->planeWidget->addTransformation({dx, dy}, {cxR, cyR, angle}, {cxS, cyS, kx, ky});
+
     ui->planeWidget->viewport()->update();
 }
 

@@ -30,16 +30,21 @@ typedef struct
     double angle;
 } rotation_t;
 
+typedef struct
+{
+    offset_t offset;
+    scale_t scale;
+    rotation_t rotation;
+} transform_t;
+
 class Plane : public QGraphicsView
 {
     Q_OBJECT
 
 public:
     explicit Plane(QWidget *parent = nullptr);
-
-    void addScale(double cx, double cy, double kx, double ky);
-    void addOffset(double dx, double dy);
-    void addRotation(double cx, double cy, double angle);
+    void addTransformation(offset_t offset, rotation_t rotation, scale_t scale);
+    void rollbackTransformation();
 
 private:
 
@@ -49,19 +54,12 @@ private:
     QPointF mirrorPointByY(QPointF p);
     QPointF mirrorPointByX(QPointF p);
 
-    void transformPoint(QPointF &point);
-    void offsetPoint(QPointF &point);
-    void rotatePoint(QPointF &point);
-    void scalePoint(QPointF &point);
+    void applyTransform(QPointF &point, const transform_t &transform);
+    void offsetPoint(QPointF &point, const offset_t &offset);
+    void rotatePoint(QPointF &point, const rotation_t &rotation);
+    void scalePoint(QPointF &point, const scale_t &scale);
 
-    void initOffset();
-    void initScale();
-    void initRotation();
-
-    offset_t offset;
-    scale_t scale;
-    rotation_t rotation;
-
+    std::vector<transform_t> transformations;
 
 
 protected:

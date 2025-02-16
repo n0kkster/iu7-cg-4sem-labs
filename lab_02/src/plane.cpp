@@ -4,53 +4,9 @@
 // ==================================================
 Plane::Plane(QWidget *parent) : QGraphicsView(parent) 
 {
-    initOffset();
-    initScale();
-    initRotation();
+
 }
 // ==================================================
-
-void Plane::initOffset()
-{
-    offset.x = 0;
-    offset.y = 0;
-}
-
-void Plane::initScale()
-{
-    scale.cx = 0;
-    scale.cy = 0;
-    scale.kx = 1;
-    scale.ky = 1;
-}
-
-void Plane::initRotation()
-{
-    rotation.angle = 0;
-    rotation.cx = 0;
-    rotation.cy = 0;
-}
-
-void Plane::addScale(double cx, double cy, double kx, double ky)
-{
-    scale.cx = cx;
-    scale.cy = cy;
-    scale.kx = kx;
-    scale.ky = ky;
-}
-
-void Plane::addOffset(double dx, double dy)
-{
-    offset.x += dx;
-    offset.y += dy;
-}
-
-void Plane::addRotation(double cx, double cy, double angle)
-{
-    rotation.cx = cx;
-    rotation.cy = cy;
-    rotation.angle += angle;
-}
 
 
 // ==================================================
@@ -100,19 +56,33 @@ void Plane::drawEllipse(QPainter &painter)
     painter.drawPoint(realCoordToScreenCoord(mirrorPointByX(mirrorPointByY(next_point))));
 }
 
-void Plane::transformPoint(QPointF &point)
+void Plane::addTransformation(offset_t offset, rotation_t rotation, scale_t scale)
 {
-    offsetPoint(point);
-    rotatePoint(point);
-    scalePoint(point);
+    transform_t t = {offset, scale, rotation};
+    transformations.push_back(t);
 }
 
-void Plane::offsetPoint(QPointF &point)
+void Plane::rollbackTransformation()
+{   
+        if (transformations.size() > 0)
+        transformations.pop_back();
+    this->viewport()->update();
+}
+
+
+void Plane::applyTransform(QPointF &point, const transform_t &transform)
+{
+    offsetPoint(point, transform.offset);
+    rotatePoint(point, transform.rotation);
+    scalePoint(point, transform.scale);
+}
+
+void Plane::offsetPoint(QPointF &point, const offset_t &offset)
 {
     point = {point.x() + offset.x, point.y() + offset.y};
 }
 
-void Plane::rotatePoint(QPointF &point)
+void Plane::rotatePoint(QPointF &point, const rotation_t &rotation)
 {
     double x = point.x(), y = point.y();
     double cx = rotation.cx, cy = rotation.cy;
@@ -125,7 +95,7 @@ void Plane::rotatePoint(QPointF &point)
     point = newPoint;
 }
 
-void Plane::scalePoint(QPointF &point)
+void Plane::scalePoint(QPointF &point, const scale_t &scale)
 {
     double x = point.x(), y = point.y();
     double cx = scale.cx, cy = scale.cy;
@@ -151,7 +121,9 @@ QPointF Plane::mirrorPointByX(QPointF p)
 
 QPointF Plane::realCoordToScreenCoord(QPointF point)
 {
-    transformPoint(point);
+    // transformPoint(point);
+    for (const auto &t : transformations)
+        applyTransform(point, t);    
     return {point.rx() + W / 2, -point.ry() + H / 2};
 }
 

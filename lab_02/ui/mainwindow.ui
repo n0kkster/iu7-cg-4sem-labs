@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>800</height>
+    <height>870</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -447,7 +447,7 @@
    <enum>Qt::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>ЛР1 ООП. Диваев ИУ7-42</string>
+   <string>ЛР2 КГ. Диваев ИУ7-42</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="Plane" name="planeWidget">
@@ -456,7 +456,7 @@
       <x>10</x>
       <y>10</y>
       <width>770</width>
-      <height>770</height>
+      <height>840</height>
      </rect>
     </property>
    </widget>
@@ -900,11 +900,36 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QPushButton" name="recoilTransformBtn">
+    <property name="geometry">
+     <rect>
+      <x>790</x>
+      <y>790</y>
+      <width>200</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>Отменить изменения </string>
+    </property>
+    <property name="flat">
+     <bool>true</bool>
+    </property>
+   </widget>
    <zorder>frame</zorder>
    <zorder>planeWidget</zorder>
    <zorder>frame_3</zorder>
    <zorder>frame_4</zorder>
    <zorder>applyAllBtn</zorder>
+   <zorder>recoilTransformBtn</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
