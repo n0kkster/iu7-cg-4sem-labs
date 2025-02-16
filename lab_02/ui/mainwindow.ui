@@ -450,7 +450,7 @@
    <string>ЛР1 ООП. Диваев ИУ7-42</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGraphicsView" name="graphicsView">
+   <widget class="Plane" name="planeWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -491,6 +491,9 @@
       <font>
        <pointsize>9</pointsize>
       </font>
+     </property>
+     <property name="text">
+      <string/>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -624,22 +627,6 @@
       <string>X центра</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="kXScale">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>180</y>
-       <width>180</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="placeholderText">
-      <string>kX</string>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="centerYScale">
      <property name="geometry">
       <rect>
@@ -654,6 +641,22 @@
      </property>
      <property name="placeholderText">
       <string>Y центра</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="kXScale">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>180</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>kX</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="kYScale">
@@ -873,7 +876,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QPushButton" name="applyRotateBtn">
+   <widget class="QPushButton" name="applyAllBtn">
     <property name="geometry">
      <rect>
       <x>790</x>
@@ -898,10 +901,10 @@
     </property>
    </widget>
    <zorder>frame</zorder>
-   <zorder>graphicsView</zorder>
+   <zorder>planeWidget</zorder>
    <zorder>frame_3</zorder>
    <zorder>frame_4</zorder>
-   <zorder>applyRotateBtn</zorder>
+   <zorder>applyAllBtn</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -915,6 +918,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Plane</class>
+   <extends>QGraphicsView</extends>
+   <header>plane.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
