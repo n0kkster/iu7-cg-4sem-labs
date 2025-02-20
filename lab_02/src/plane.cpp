@@ -19,6 +19,8 @@ void Plane::paintEvent(QPaintEvent *event)
     drawGrid(painter);
     drawAxis(painter);
 
+    painter.setFont(QFont("Sans Serif", 14));
+
     painter.setPen({Qt::yellow, 1});
     drawShape(painter);
     drawCenterCoords(painter);

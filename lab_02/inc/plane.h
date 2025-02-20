@@ -96,9 +96,9 @@ private:
     const QPointF triangleP3 = {0, 50};
 
     const QPointF e1_center = {50, 0};
-    const double e1_a = 30.950799;
-    const double e1_b = 80.773867;
-    const double angle = -atan(0.619018);
+    const double e1_a = 80.773867;
+    const double e1_b = 30.950799;
+    const double angle = M_PI_2 - atan(0.619018);
 
     const QPointF e2_center = {-50, 0};
     const double e2_a = e1_a;
