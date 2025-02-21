@@ -31,6 +31,7 @@ void MainWindow::onApplyOffsetBtnClicked()
     }
 
     ui->planeWidget->addOffset({dx, dy});
+    usleep(DRAW_DELAY);
     ui->planeWidget->viewport()->update();
 }
 
@@ -68,6 +69,7 @@ void MainWindow::onApplyScaleBtnClicked()
     }
 
     ui->planeWidget->addScale({cx, cy, kx, ky});
+    usleep(DRAW_DELAY);
     ui->planeWidget->viewport()->update();
 }
 
@@ -98,6 +100,7 @@ void MainWindow::onApplyRotationBtnClicked()
     }
 
     ui->planeWidget->addRotation({cx, cy, qDegreesToRadians(angle)});
+    usleep(DRAW_DELAY);
     ui->planeWidget->viewport()->update();
 }
 

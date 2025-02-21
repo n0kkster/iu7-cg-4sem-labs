@@ -5,6 +5,8 @@
 #include <QMessageBox>
 #include "out/ui_mainwindow.h"
 
+#define DRAW_DELAY (50 * 1000)
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
