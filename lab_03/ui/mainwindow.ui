@@ -417,7 +417,7 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="Plane" name="graphicsView">
+   <widget class="Plane" name="planeWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -1364,7 +1364,7 @@ QComboBox QAbstractItemView {
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="drawLineBtn_2">
+    <widget class="QPushButton" name="compareTimeBtn">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1391,7 +1391,7 @@ QComboBox QAbstractItemView {
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="drawLineBtn_3">
+    <widget class="QPushButton" name="compareStepsBtn">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1418,7 +1418,7 @@ QComboBox QAbstractItemView {
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="drawLineBtn_4">
+    <widget class="QPushButton" name="clearScreenBtn">
      <property name="geometry">
       <rect>
        <x>10</x>

@@ -2,10 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QMessageBox>
-#include "out/ui_mainwindow.h"
-
-#define DRAW_DELAY (50 * 1000)
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -18,11 +14,17 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+private:
+    Ui::MainWindow *ui;
+    void setLineColorDisplayColor(const QColor &color);
+
+private slots:
+    void onDrawLineBtnClicked();
+    void onLineColorBtnClicked();
+    void onBgColorBtnClicked();
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();  
-
-private:
-    Ui::MainWindow *ui;
 };
 #endif /* MAINWINDOW_H */
