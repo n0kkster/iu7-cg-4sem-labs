@@ -17,14 +17,14 @@ void bres_real(QPainter &painter, const line_t &line)
     int sx, sy, dx, dy, x, y;
     bool fl = false;
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
-
-    if (std::abs(dx) < 1e-9 && std::abs(dy) < 1e-9)
+    if (line.start == line.end)
     {
         painter.drawPoint(line.start.x(), line.start.y());
         return;
     }
+
+    dx = line.end.x() - line.start.x();
+    dy = line.end.y() - line.start.y();
 
     sx = sign(dx);
     sy = sign(dy);
@@ -74,14 +74,14 @@ void bres_int(QPainter &painter, const line_t &line)
     int sx, sy, dx, dy, x, y, f;
     bool fl = false;
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
-
-    if (std::abs(dx) < 1e-9 && std::abs(dy) < 1e-9)
+    if (line.start == line.end)
     {
         painter.drawPoint(line.start.x(), line.start.y());
         return;
     }
+
+    dx = line.end.x() - line.start.x();
+    dy = line.end.y() - line.start.y();
 
     sx = sign(dx);
     sy = sign(dy);
@@ -125,17 +125,17 @@ void bres_int(QPainter &painter, const line_t &line)
 void bres_smooth(QPainter &painter, const line_t &line)
 {
     double m, f, w;
-    int sx, sy, dx, dy, x, y, I = 8;
+    int sx, sy, dx, dy, x, y, I = 100;
     bool fl = false;
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
-
-    if (std::abs(dx) < 1e-9 && std::abs(dy) < 1e-9)
+    if (line.start == line.end)
     {
         painter.drawPoint(line.start.x(), line.start.y());
         return;
     }
+
+    dx = line.end.x() - line.start.x();
+    dy = line.end.y() - line.start.y();
 
     sx = sign(dx);
     sy = sign(dy);
@@ -158,8 +158,6 @@ void bres_smooth(QPainter &painter, const line_t &line)
 
     x = line.start.x();
     y = line.start.y();
-
-    qDebug() << dx << dy << m << f << w << I << sx << sy;
 
     painter.setOpacity(f / I);
     painter.drawPoint(x, y);

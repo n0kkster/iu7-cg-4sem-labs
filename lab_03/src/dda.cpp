@@ -5,16 +5,16 @@ void dda(QPainter &painter, const line_t &line)
     double dx, dy, len;
     double x, y;
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
-
-    len = std::abs(dy) > std::abs(dx) ? std::abs(dy) : std::abs(dx);
-
-    if (std::abs(dx) < 1e-9 && std::abs(dy) < 1e-9)
+    if (line.start == line.end)
     {
         painter.drawPoint(line.start.x(), line.start.y());
         return;
     }
+
+    dx = line.end.x() - line.start.x();
+    dy = line.end.y() - line.start.y();
+
+    len = std::abs(dy) > std::abs(dx) ? std::abs(dy) : std::abs(dx);
 
     dx /= len;
     dy /= len;

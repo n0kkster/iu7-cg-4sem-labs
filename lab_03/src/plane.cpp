@@ -7,6 +7,7 @@
 
 #include "dda.h"
 #include "bresenham.h"
+#include "wu.h"
 
 // Конструктор
 // ==================================================
@@ -54,6 +55,7 @@ void Plane::myDrawLine(QPainter &painter, const line_t &line)
             break;
 
         case WU:
+            wu(painter, line);
             break;
         
         default:
@@ -115,7 +117,6 @@ void Plane::drawGrid(QPainter &painter)
     const int h = viewport()->height();
 
     const int span = 50;
-
 
     for (int x = span; x < w; x += span)
         drawDashedVLine(painter, x, 0, h, 5, 10);
