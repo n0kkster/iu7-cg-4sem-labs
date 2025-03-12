@@ -17,6 +17,7 @@ class MainWindow : public QMainWindow
 private:
     Ui::MainWindow *ui;
     void setLineColorDisplayColor(const QColor &color);
+    void onClearScreenBtnClicked();
 
 private slots:
     void onDrawLineBtnClicked();

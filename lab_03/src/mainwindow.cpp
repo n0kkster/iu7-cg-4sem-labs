@@ -14,38 +14,40 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->drawLineBtn, &QPushButton::clicked, this, &MainWindow::onDrawLineBtnClicked);
     connect(ui->lineColorBtn, &QPushButton::clicked, this, &MainWindow::onLineColorBtnClicked);
     connect(ui->bgColorBtn, &QPushButton::clicked, this, &MainWindow::onBgColorBtnClicked);
+    connect(ui->clearScreenBtn, &QPushButton::clicked, this, &MainWindow::onClearScreenBtnClicked);
 
     setLineColorDisplayColor("white");
 }
 
 void MainWindow::onDrawLineBtnClicked()
 {
-    double xs, ys, xe, ye, angle;
+    int xs, ys, xe, ye;
+    double angle;
     bool ok;
     method_e method;
 
-    xs = ui->xsInp->text().toDouble(&ok);
+    xs = ui->xsInp->text().toInt(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Начальная координата по оси X должна быть вещественным числом!");
         return;
     }
 
-    ys = ui->ysInp->text().toDouble(&ok);
+    ys = ui->ysInp->text().toInt(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Начальная координата по оси Y должна быть вещественным числом!");
         return;
     }
 
-    xe = ui->xeInp->text().toDouble(&ok);
+    xe = ui->xeInp->text().toInt(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Конечная координата по оси X должна быть вещественным числом!");
         return;
     }
 
-    ye = ui->yeInp->text().toDouble(&ok);
+    ye = ui->yeInp->text().toInt(&ok);
     if (!ok)
     {
         QMessageBox::critical(this, "Ошибка", "Конечная координата по оси Y должна быть вещественным числом!");
@@ -67,6 +69,11 @@ void MainWindow::onBgColorBtnClicked()
 {
     QColor bgColor = QColorDialog::getColor();
     ui->planeWidget->setBGColor(bgColor);
+}
+
+void MainWindow::onClearScreenBtnClicked()
+{
+    ui->planeWidget->clearPlane();
 }
 
 void MainWindow::setLineColorDisplayColor(const QColor &color)

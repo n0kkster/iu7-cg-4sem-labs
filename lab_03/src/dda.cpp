@@ -10,15 +10,21 @@ void dda(QPainter &painter, const line_t &line)
 
     len = std::abs(dy) > std::abs(dx) ? std::abs(dy) : std::abs(dx);
 
+    if (std::abs(dx) < 1e-9 && std::abs(dy) < 1e-9)
+    {
+        painter.drawPoint(line.start.x(), line.start.y());
+        return;
+    }
+
     dx /= len;
     dy /= len;
 
     x = line.start.x();
     y = line.start.y();
 
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i <= len; i++)
     {
-        painter.drawPoint(std::round(x), std::round(y));
+        painter.drawPoint(lrintf64(x), lrintf64(y));
         x += dx;
         y += dy;
     }

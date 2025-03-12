@@ -11,19 +11,17 @@ typedef enum
     DDA,
     BRES_REAL,
     BRES_INT,
-    BRES,
+    BRES_SMOOTH,
     WU,
     BUILTIN
 } method_e;
 
 typedef struct
 {
-    QPointF start, end;
+    QPoint start, end;
     method_e method;
     QColor color;
 } line_t;
-
-#include "dda.h"
 
 class Plane : public QGraphicsView
 {
@@ -38,6 +36,11 @@ private:
 
     // ======== FUNCS ========
     void myDrawLine(QPainter &painter, const line_t &line);
+
+    void drawAxis(QPainter &painter);
+    void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
+    void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
+    void drawGrid(QPainter &painter);
     // =======================
 
 protected:
@@ -48,6 +51,7 @@ public:
 
     void addLine(line_t line);
     void setBGColor(const QColor &color);
+    void clearPlane();
 };
 
 #endif // PLANE_H
