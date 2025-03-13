@@ -23,6 +23,7 @@ private slots:
     void onDrawLineBtnClicked();
     void onLineColorBtnClicked();
     void onBgColorBtnClicked();
+    void onDrawSpectreBtnClicked();
 
 public:
     MainWindow(QWidget *parent = nullptr);

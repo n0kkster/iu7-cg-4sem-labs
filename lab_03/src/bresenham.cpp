@@ -17,14 +17,22 @@ void bres_real(QPainter &painter, const line_t &line)
     int sx, sy, dx, dy, x, y;
     bool fl = false;
 
-    if (line.start == line.end)
+    int xs, ys, xe, ye;
+
+    xs = static_cast<int>(line.start.x());
+    ys = static_cast<int>(line.start.y());
+
+    xe = static_cast<int>(line.end.x());
+    ye = static_cast<int>(line.end.y());
+
+    if (xs == xe && ys == ye)
     {
-        painter.drawPoint(line.start.x(), line.start.y());
+        painter.drawPoint(xs, ys);
         return;
     }
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
+    dx = xe - xs;
+    dy = ye - ys;
 
     sx = sign(dx);
     sy = sign(dy);
@@ -43,8 +51,8 @@ void bres_real(QPainter &painter, const line_t &line)
 
 
     f = m - 0.5;
-    x = line.start.x();
-    y = line.start.y();
+    x = xs;
+    y = ys;
 
     for (int i = 0; i <= dx; i++)
     {
@@ -74,14 +82,22 @@ void bres_int(QPainter &painter, const line_t &line)
     int sx, sy, dx, dy, x, y, f;
     bool fl = false;
 
-    if (line.start == line.end)
+    int xs, ys, xe, ye;
+
+    xs = static_cast<int>(line.start.x());
+    ys = static_cast<int>(line.start.y());
+
+    xe = static_cast<int>(line.end.x());
+    ye = static_cast<int>(line.end.y());
+
+    if (xs == xe && ys == ye)
     {
-        painter.drawPoint(line.start.x(), line.start.y());
+        painter.drawPoint(xs, ys);
         return;
     }
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
+    dx = xe - xs;
+    dy = ye - ys;
 
     sx = sign(dx);
     sy = sign(dy);
@@ -96,8 +112,8 @@ void bres_int(QPainter &painter, const line_t &line)
     }
 
     f = 2 * dy - dx;
-    x = line.start.x();
-    y = line.start.y();
+    x = xs;
+    y = ys;
 
     for (int i = 0; i <= dx; i++)
     {
@@ -128,14 +144,22 @@ void bres_smooth(QPainter &painter, const line_t &line)
     int sx, sy, dx, dy, x, y, I = 100;
     bool fl = false;
 
-    if (line.start == line.end)
+    int xs, ys, xe, ye;
+
+    xs = static_cast<int>(line.start.x());
+    ys = static_cast<int>(line.start.y());
+
+    xe = static_cast<int>(line.end.x());
+    ye = static_cast<int>(line.end.y());
+
+    if (xs == xe && ys == ye)
     {
-        painter.drawPoint(line.start.x(), line.start.y());
+        painter.drawPoint(xs, ys);
         return;
     }
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
+    dx = xe - xs;
+    dy = ye - ys;
 
     sx = sign(dx);
     sy = sign(dy);
@@ -156,8 +180,8 @@ void bres_smooth(QPainter &painter, const line_t &line)
     f = I / 2.0;
     w = I - m;
 
-    x = line.start.x();
-    y = line.start.y();
+    x = xs;
+    y = ys;
 
     painter.setOpacity(f / I);
     painter.drawPoint(x, y);

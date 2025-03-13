@@ -68,6 +68,32 @@ void Plane::addLine(line_t line)
     lines.append(line);
 }
 
+void Plane::addSpectre(line_t line, double angle)
+{
+    int steps = static_cast<int>(360 / angle);
+    angle = qDegreesToRadians(angle);
+    for (int i = 0; i < steps; i++)
+    {
+        addLine(line);
+        rotatePoint(angle, line.end, line.start);
+    }
+}
+
+// накапливается ошибка, потому что координаты интовые и поэтому неправильный поворот. 
+// вероятно стоит все таки сделать хранение и ввод вещественными
+void Plane::rotatePoint(double angle, QPointF &point, const QPointF &origin)
+{
+    double nx, ny;
+    double cx = origin.x(), cy = origin.y();
+    double x = point.x(), y = point.y();
+
+    nx = cx + (x - cx) * cos(angle) + (y - cy) * sin(angle);
+    ny = cy - (x - cx) * sin(angle) + (y - cy) * cos(angle);
+    
+    point.setX(nx);
+    point.setY(ny);
+}
+
 void Plane::setBGColor(const QColor &color)
 {
     QPalette palette = this->palette();

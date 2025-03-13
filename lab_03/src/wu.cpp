@@ -7,28 +7,36 @@ void wu(QPainter &painter, const line_t &line)
     double m, ideal, frac;
     int x, y, step, steps, xi, yi;
 
-    if (line.start == line.end)
+    int xs, ys, xe, ye;
+
+    xs = static_cast<int>(line.start.x());
+    ys = static_cast<int>(line.start.y());
+
+    xe = static_cast<int>(line.end.x());
+    ye = static_cast<int>(line.end.y());
+
+    if (xs == xe && ys == ye)
     {
-        painter.drawPoint(line.start);
+        painter.drawPoint(xs, ys);
         return;
     }
 
-    dx = line.end.x() - line.start.x();
-    dy = line.end.y() - line.start.y();
+    dx = xe - xs;
+    dy = ye - ys;
 
     if (dx == 0)
     {
         start = std::min(line.start.y(), line.end.y());
         end = std::max(line.start.y(), line.end.y());
         for (int y = start; y <= end; y++)
-            painter.drawPoint(line.start.x(), y);
+            painter.drawPoint(xs, y);
     }
     else if (dy == 0)
     {
         start = std::min(line.start.x(), line.end.x());
         end = std::max(line.start.x(), line.end.x());
         for (int x = start; x <= end; x++)
-            painter.drawPoint(x, line.start.y());
+            painter.drawPoint(x, ys);
     }
     else
     {

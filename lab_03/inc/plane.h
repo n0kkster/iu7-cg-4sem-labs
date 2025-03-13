@@ -18,7 +18,7 @@ typedef enum
 
 typedef struct
 {
-    QPoint start, end;
+    QPointF start, end;
     method_e method;
     QColor color;
 } line_t;
@@ -41,6 +41,8 @@ private:
     void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
     void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
     void drawGrid(QPainter &painter);
+
+    void rotatePoint(double angle, QPointF &point, const QPointF &origin);
     // =======================
 
 protected:
@@ -49,7 +51,9 @@ protected:
 public:
     explicit Plane(QWidget *parent = nullptr);
 
+    void addSpectre(line_t line, double angle);
     void addLine(line_t line);
+
     void setBGColor(const QColor &color);
     void clearPlane();
 };
