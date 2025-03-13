@@ -11,7 +11,7 @@ int sign(double x)
     return 0;
 }
 
-void bres_real(QPainter &painter, const line_t &line)
+void bres_real(QPainter &painter, const line_t &line, bool measure_mode=false)
 {
     double m, f;
     int sx, sy, dx, dy, x, y;
@@ -19,15 +19,18 @@ void bres_real(QPainter &painter, const line_t &line)
 
     int xs, ys, xe, ye;
 
-    xs = static_cast<int>(line.start.x());
-    ys = static_cast<int>(line.start.y());
+    xs = (int)round(line.start.x());
+    ys = (int)round(line.start.y());
 
-    xe = static_cast<int>(line.end.x());
-    ye = static_cast<int>(line.end.y());
+    xe = (int)round(line.end.x());
+    ye = (int)round(line.end.y());
+
 
     if (xs == xe && ys == ye)
     {
-        painter.drawPoint(xs, ys);
+        if (!measure_mode)
+            painter.drawPoint(xs, ys);
+
         return;
     }
 
@@ -56,7 +59,9 @@ void bres_real(QPainter &painter, const line_t &line)
 
     for (int i = 0; i <= dx; i++)
     {
-        painter.drawPoint(x, y);
+        if (!measure_mode)
+            painter.drawPoint(x, y);
+
         if (f >= 0)
         {
             if (fl)
@@ -77,22 +82,25 @@ void bres_real(QPainter &painter, const line_t &line)
     }
 }
 
-void bres_int(QPainter &painter, const line_t &line)
+void bres_int(QPainter &painter, const line_t &line, bool measure_mode=false)
 {
     int sx, sy, dx, dy, x, y, f;
     bool fl = false;
 
     int xs, ys, xe, ye;
 
-    xs = static_cast<int>(line.start.x());
-    ys = static_cast<int>(line.start.y());
+    xs = (int)round(line.start.x());
+    ys = (int)round(line.start.y());
 
-    xe = static_cast<int>(line.end.x());
-    ye = static_cast<int>(line.end.y());
+    xe = (int)round(line.end.x());
+    ye = (int)round(line.end.y());
+
 
     if (xs == xe && ys == ye)
     {
-        painter.drawPoint(xs, ys);
+        if (!measure_mode)
+            painter.drawPoint(xs, ys);
+
         return;
     }
 
@@ -117,7 +125,9 @@ void bres_int(QPainter &painter, const line_t &line)
 
     for (int i = 0; i <= dx; i++)
     {
-        painter.drawPoint(x, y);
+        if (!measure_mode)
+            painter.drawPoint(x, y);
+
         if (f >= 0)
         {
             if (fl)
@@ -138,7 +148,7 @@ void bres_int(QPainter &painter, const line_t &line)
     }
 }
 
-void bres_smooth(QPainter &painter, const line_t &line)
+void bres_smooth(QPainter &painter, const line_t &line, bool measure_mode=false)
 {
     double m, f, w;
     int sx, sy, dx, dy, x, y, I = 100;
@@ -146,15 +156,17 @@ void bres_smooth(QPainter &painter, const line_t &line)
 
     int xs, ys, xe, ye;
 
-    xs = static_cast<int>(line.start.x());
-    ys = static_cast<int>(line.start.y());
+    xs = (int)round(line.start.x());
+    ys = (int)round(line.start.y());
 
-    xe = static_cast<int>(line.end.x());
-    ye = static_cast<int>(line.end.y());
+    xe = (int)round(line.end.x());
+    ye = (int)round(line.end.y());
 
     if (xs == xe && ys == ye)
     {
-        painter.drawPoint(xs, ys);
+        if (!measure_mode)
+            painter.drawPoint(xs, ys);
+
         return;
     }
 
@@ -183,8 +195,11 @@ void bres_smooth(QPainter &painter, const line_t &line)
     x = xs;
     y = ys;
 
-    painter.setOpacity(f / I);
-    painter.drawPoint(x, y);
+    if (!measure_mode)
+    {
+        painter.setOpacity(f / I);
+        painter.drawPoint(x, y);
+    }
 
     for (int i = 0; i <= dx; i++)
     {
@@ -204,8 +219,11 @@ void bres_smooth(QPainter &painter, const line_t &line)
             f -= w; 
         }
 
-        painter.setOpacity(f / I);
-        painter.drawPoint(x, y);
+        if (!measure_mode)
+        {
+            painter.setOpacity(f / I);
+            painter.drawPoint(x, y);
+        }
     }
 
     painter.setOpacity(1);

@@ -1,13 +1,14 @@
 #include "dda.h"
 
-void dda(QPainter &painter, const line_t &line)
+void dda(QPainter &painter, const line_t &line, bool measure_mode=false)
 {
     double dx, dy, len;
     double x, y;
 
     if (line.start == line.end)
     {
-        painter.drawPoint(line.start.x(), line.start.y());
+        if (!measure_mode)
+            painter.drawPoint(line.start.x(), line.start.y());
         return;
     }
 
@@ -24,7 +25,9 @@ void dda(QPainter &painter, const line_t &line)
 
     for (int i = 0; i <= len; i++)
     {
-        painter.drawPoint(lrintf64(x), lrintf64(y));
+        if (!measure_mode)
+            painter.drawPoint(lrintf64(x), lrintf64(y));
+
         x += dx;
         y += dy;
     }

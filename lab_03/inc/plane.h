@@ -51,7 +51,7 @@ protected:
 public:
     explicit Plane(QWidget *parent = nullptr);
 
-    void addSpectre(line_t line, double angle);
+    void addSpectre(double length, method_e method, double angle, const QColor &color);
     void addLine(line_t line);
 
     void setBGColor(const QColor &color);

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1300</width>
-    <height>690</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -423,7 +423,7 @@
       <x>10</x>
       <y>10</y>
       <width>900</width>
-      <height>670</height>
+      <height>780</height>
      </rect>
     </property>
    </widget>
@@ -834,7 +834,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>0</y>
        <width>340</width>
        <height>50</height>
       </rect>
@@ -949,7 +949,7 @@ QComboBox QAbstractItemView {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>0</y>
        <width>340</width>
        <height>50</height>
       </rect>
@@ -1058,7 +1058,7 @@ QComboBox QAbstractItemView {
       <x>920</x>
       <y>300</y>
       <width>370</width>
-      <height>190</height>
+      <height>170</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -1071,7 +1071,7 @@ QComboBox QAbstractItemView {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>0</y>
        <width>340</width>
        <height>50</height>
       </rect>
@@ -1093,7 +1093,7 @@ QComboBox QAbstractItemView {
       <rect>
        <x>10</x>
        <y>50</y>
-       <width>80</width>
+       <width>100</width>
        <height>20</height>
       </rect>
      </property>
@@ -1114,7 +1114,7 @@ QComboBox QAbstractItemView {
       <rect>
        <x>10</x>
        <y>70</y>
-       <width>80</width>
+       <width>100</width>
        <height>30</height>
       </rect>
      </property>
@@ -1128,9 +1128,9 @@ QComboBox QAbstractItemView {
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>120</x>
        <y>50</y>
-       <width>80</width>
+       <width>100</width>
        <height>20</height>
       </rect>
      </property>
@@ -1149,9 +1149,9 @@ QComboBox QAbstractItemView {
     <widget class="QLineEdit" name="ysInp">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>120</x>
        <y>70</y>
-       <width>80</width>
+       <width>100</width>
        <height>30</height>
       </rect>
      </property>
@@ -1165,9 +1165,9 @@ QComboBox QAbstractItemView {
     <widget class="QLineEdit" name="xeInp">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>70</y>
-       <width>80</width>
+       <x>10</x>
+       <y>130</y>
+       <width>100</width>
        <height>30</height>
       </rect>
      </property>
@@ -1181,9 +1181,9 @@ QComboBox QAbstractItemView {
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>190</x>
-       <y>50</y>
-       <width>80</width>
+       <x>10</x>
+       <y>110</y>
+       <width>100</width>
        <height>20</height>
       </rect>
      </property>
@@ -1202,9 +1202,9 @@ QComboBox QAbstractItemView {
     <widget class="QLabel" name="label_8">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>50</y>
-       <width>80</width>
+       <x>120</x>
+       <y>110</y>
+       <width>100</width>
        <height>20</height>
       </rect>
      </property>
@@ -1223,9 +1223,9 @@ QComboBox QAbstractItemView {
     <widget class="QLineEdit" name="yeInp">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>70</y>
-       <width>80</width>
+       <x>120</x>
+       <y>130</y>
+       <width>100</width>
        <height>30</height>
       </rect>
      </property>
@@ -1239,10 +1239,10 @@ QComboBox QAbstractItemView {
     <widget class="QPushButton" name="drawLineBtn">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>110</y>
-       <width>170</width>
-       <height>30</height>
+       <x>230</x>
+       <y>70</y>
+       <width>130</width>
+       <height>90</height>
       </rect>
      </property>
      <property name="font">
@@ -1263,77 +1263,13 @@ QComboBox QAbstractItemView {
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="drawSpectreBtn">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>150</y>
-       <width>170</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
-     <property name="text">
-      <string>Построить спектр</string>
-     </property>
-     <property name="autoDefault">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_9">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>110</y>
-       <width>170</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Угол в градусах</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="angleInp">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>150</y>
-       <width>170</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="placeholderText">
-      <string>Angle</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QFrame" name="frame_4">
     <property name="geometry">
      <rect>
       <x>920</x>
-      <y>500</y>
-      <width>360</width>
+      <y>610</y>
+      <width>370</width>
       <height>180</height>
      </rect>
     </property>
@@ -1443,6 +1379,144 @@ QComboBox QAbstractItemView {
      </property>
      <property name="flat">
       <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="frame_5">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>480</y>
+      <width>370</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="drawSpectreBtn">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>60</y>
+       <width>130</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Построить спектр</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="angleInp">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Angle</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Угол в градусах</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>340</width>
+       <height>50</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Построение спектра</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lengthInp">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>80</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="placeholderText">
+      <string>Length</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>50</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Длина</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </widget>

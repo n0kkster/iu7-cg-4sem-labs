@@ -62,36 +62,14 @@ void MainWindow::onDrawLineBtnClicked()
 
 void MainWindow::onDrawSpectreBtnClicked()
 {
-    double xs, ys, xe, ye;
-    double angle;
+    double length, angle;
     bool ok;
     method_e method;
 
-    xs = ui->xsInp->text().toDouble(&ok);
+    length = ui->lengthInp->text().toDouble(&ok);
     if (!ok)
     {
-        QMessageBox::critical(this, "Ошибка", "Начальная координата по оси X должна быть вещественным числом!");
-        return;
-    }
-
-    ys = ui->ysInp->text().toDouble(&ok);
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Ошибка", "Начальная координата по оси Y должна быть вещественным числом!");
-        return;
-    }
-
-    xe = ui->xeInp->text().toDouble(&ok);
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Ошибка", "Конечная координата по оси X должна быть вещественным числом!");
-        return;
-    }
-
-    ye = ui->yeInp->text().toDouble(&ok);
-    if (!ok)
-    {
-        QMessageBox::critical(this, "Ошибка", "Конечная координата по оси Y должна быть вещественным числом!");
+        QMessageBox::critical(this, "Ошибка", "Длина должна быть вещественным числом!");
         return;
     }
 
@@ -104,7 +82,7 @@ void MainWindow::onDrawSpectreBtnClicked()
 
 
     method = (method_e)ui->algoDropDown->currentIndex();
-    ui->planeWidget->addSpectre({{xs, ys}, {xe, ye}, method, ui->lineColorDisplay->palette().color(QPalette::Window)}, angle);
+    ui->planeWidget->addSpectre(length, method, angle, ui->lineColorDisplay->palette().color(QPalette::Window));
     ui->planeWidget->viewport()->update();
 }
 
