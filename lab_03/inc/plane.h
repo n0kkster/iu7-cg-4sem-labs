@@ -41,8 +41,6 @@ private:
     void drawDashedVLine(QPainter &painter, int x, int y1, int y2, int gap, int dash_len);
     void drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, int dash_len);
     void drawGrid(QPainter &painter);
-
-    void rotatePoint(double angle, QPointF &point, const QPointF &origin);
     // =======================
 
 protected:
@@ -56,6 +54,8 @@ public:
 
     void setBGColor(const QColor &color);
     void clearPlane();
+
+    void rotatePoint(double angle, QPointF &point, const QPointF &origin);
 };
 
 #endif // PLANE_H

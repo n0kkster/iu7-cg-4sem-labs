@@ -1,11 +1,16 @@
 #include <QMessageBox>
 #include <QColorDialog>
 
+#include <random>
+#include <sys/time.h>
+
 #include "mainwindow.h"
-#include "plane.h"
+
+#include "dda.h"
+#include "bresenham.h"
+#include "wu.h"
 
 #include "out/ui_mainwindow.h"
-
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -17,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->lineColorBtn, &QPushButton::clicked, this, &MainWindow::onLineColorBtnClicked);
     connect(ui->bgColorBtn, &QPushButton::clicked, this, &MainWindow::onBgColorBtnClicked);
     connect(ui->clearScreenBtn, &QPushButton::clicked, this, &MainWindow::onClearScreenBtnClicked);
+
+    connect(ui->compareTimeBtn, &QPushButton::clicked, this, &MainWindow::onCompareTimeBtnClicked);
 
     setLineColorDisplayColor("white");
 }
@@ -80,7 +87,6 @@ void MainWindow::onDrawSpectreBtnClicked()
         return;
     }
 
-
     method = (method_e)ui->algoDropDown->currentIndex();
     ui->planeWidget->addSpectre(length, method, angle, ui->lineColorDisplay->palette().color(QPalette::Window));
     ui->planeWidget->viewport()->update();
@@ -101,6 +107,87 @@ void MainWindow::onBgColorBtnClicked()
 void MainWindow::onClearScreenBtnClicked()
 {
     ui->planeWidget->clearPlane();
+}
+
+void MainWindow::genRandomLine(line_t &line, const int length)
+{
+    const int xs = 250, ys = 250;
+    double lb = 0, ub = 360, angle;
+
+    std::uniform_real_distribution<double> unif(lb, ub);
+    std::default_random_engine re;
+
+    angle = unif(re);
+
+    line.color = {0, 0, 0}; // FILLER
+    line.method = BUILTIN; // FILLER
+
+    line.start = {xs, ys};
+    line.end = {xs + length, ys};
+
+    ui->planeWidget->rotatePoint(angle, line.end, line.start);
+}
+
+unsigned long long micros(void)
+{
+    struct timeval value;
+    gettimeofday(&value, NULL);
+    return (unsigned long long)value.tv_sec * 1000ULL * 1000ULL + value.tv_usec;
+}
+
+void MainWindow::onCompareTimeBtnClicked()
+{
+    QPainter painter; // FILLER
+
+    const int length = 250;
+    const int measures = 1000;
+
+    double avg_time_dda = 0, avg_time_bres_real = 0, avg_time_bres_int = 0, avg_time_bres_smooth = 0, avg_time_wu = 0;
+
+    unsigned long start, end;
+
+    line_t line;
+
+    for (int i = 0; i < measures; i++)
+    {
+        genRandomLine(line, length);
+
+        start = micros();
+        dda(painter, line, true);
+        end = micros();
+        avg_time_dda += end - start;
+
+        start = micros();
+        bres_real(painter, line, true);
+        end = micros();
+        avg_time_bres_real += end - start;
+
+        start = micros();
+        bres_int(painter, line, true);
+        end = micros();
+        avg_time_bres_int += end - start;
+
+        start = micros();
+        bres_smooth(painter, line, true);
+        end = micros();
+        avg_time_bres_smooth += end - start;
+        
+        start = micros();
+        wu(painter, line, true);
+        end = micros();
+        avg_time_wu += end - start;
+    }
+
+    avg_time_dda /= (double)measures;
+    avg_time_bres_real /= (double)measures;
+    avg_time_bres_int /= (double)measures;
+    avg_time_bres_smooth /= (double)measures;
+    avg_time_wu /= (double)measures;
+}
+
+void MainWindow::onCompareStepsBtnClicked()
+{
+    
 }
 
 void MainWindow::setLineColorDisplayColor(const QColor &color)

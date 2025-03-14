@@ -1,6 +1,6 @@
 #include "wu.h"
 
-void wu(QPainter &painter, const line_t &line, bool measure_mode=false)
+void wu(QPainter &painter, const line_t &line, bool measure_mode)
 {
     int dx, dy;
     int start, end;
@@ -97,5 +97,6 @@ void wu(QPainter &painter, const line_t &line, bool measure_mode=false)
             }
         }
     }
-    painter.setOpacity(1);
+    if (!measure_mode)
+        painter.setOpacity(1);
 }

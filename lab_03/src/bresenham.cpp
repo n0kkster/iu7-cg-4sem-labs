@@ -11,7 +11,7 @@ int sign(double x)
     return 0;
 }
 
-void bres_real(QPainter &painter, const line_t &line, bool measure_mode=false)
+void bres_real(QPainter &painter, const line_t &line, bool measure_mode)
 {
     double m, f;
     int sx, sy, dx, dy, x, y;
@@ -82,7 +82,7 @@ void bres_real(QPainter &painter, const line_t &line, bool measure_mode=false)
     }
 }
 
-void bres_int(QPainter &painter, const line_t &line, bool measure_mode=false)
+void bres_int(QPainter &painter, const line_t &line, bool measure_mode)
 {
     int sx, sy, dx, dy, x, y, f;
     bool fl = false;
@@ -148,7 +148,7 @@ void bres_int(QPainter &painter, const line_t &line, bool measure_mode=false)
     }
 }
 
-void bres_smooth(QPainter &painter, const line_t &line, bool measure_mode=false)
+void bres_smooth(QPainter &painter, const line_t &line, bool measure_mode)
 {
     double m, f, w;
     int sx, sy, dx, dy, x, y, I = 100;
@@ -226,5 +226,6 @@ void bres_smooth(QPainter &painter, const line_t &line, bool measure_mode=false)
         }
     }
 
-    painter.setOpacity(1);
+    if (!measure_mode)
+        painter.setOpacity(1);
 }

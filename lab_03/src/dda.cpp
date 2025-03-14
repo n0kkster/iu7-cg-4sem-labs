@@ -1,6 +1,6 @@
 #include "dda.h"
 
-void dda(QPainter &painter, const line_t &line, bool measure_mode=false)
+void dda(QPainter &painter, const line_t &line, bool measure_mode)
 {
     double dx, dy, len;
     double x, y;
