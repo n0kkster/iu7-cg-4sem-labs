@@ -1,6 +1,6 @@
 #include "wu.h"
 
-void wu(QPainter &painter, const line_t &line, bool measure_mode)
+int wu(QPainter &painter, const line_t &line, bool measure_mode)
 {
     int dx, dy;
     int start, end;
@@ -8,6 +8,8 @@ void wu(QPainter &painter, const line_t &line, bool measure_mode)
     int x, y, step, steps, xi, yi;
 
     int xs, ys, xe, ye;
+
+    int steps_count;
 
     xs = (int)round(line.start.x());
     ys = (int)round(line.start.y());
@@ -20,11 +22,13 @@ void wu(QPainter &painter, const line_t &line, bool measure_mode)
         if (!measure_mode)
             painter.drawPoint(xs, ys);
 
-        return;
+        return 0;
     }
 
     dx = xe - xs;
     dy = ye - ys;
+
+    steps_count = (int)std::min(std::abs(dx), std::abs(dy));
 
     if (dx == 0)
     {
@@ -99,4 +103,6 @@ void wu(QPainter &painter, const line_t &line, bool measure_mode)
     }
     if (!measure_mode)
         painter.setOpacity(1);
+
+    return steps_count;
 }

@@ -13,7 +13,8 @@ typedef enum
     BRES_INT,
     BRES_SMOOTH,
     WU,
-    BUILTIN
+    BUILTIN,
+    METHOD_COUNT
 } method_e;
 
 typedef struct

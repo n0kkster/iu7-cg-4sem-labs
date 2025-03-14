@@ -1,19 +1,22 @@
 #include "dda.h"
 
-void dda(QPainter &painter, const line_t &line, bool measure_mode)
+int dda(QPainter &painter, const line_t &line, bool measure_mode)
 {
     double dx, dy, len;
     double x, y;
+    int steps;
 
     if (line.start == line.end)
     {
         if (!measure_mode)
             painter.drawPoint(line.start.x(), line.start.y());
-        return;
+        return 0;
     }
 
     dx = line.end.x() - line.start.x();
     dy = line.end.y() - line.start.y();
+
+    steps = (int)std::min(std::abs(dx), std::abs(dy));
 
     len = std::abs(dy) > std::abs(dx) ? std::abs(dy) : std::abs(dx);
 
@@ -31,4 +34,6 @@ void dda(QPainter &painter, const line_t &line, bool measure_mode)
         x += dx;
         y += dy;
     }
+
+    return steps;
 }
