@@ -94,14 +94,22 @@ void Plane::addEllipse(ellipse_t ellipse)
 
 void Plane::addSpectreCircle(circle_t circle, double step, int cnt)
 {
-
+    for (int i = 0; i < cnt; i++)
+    {
+        circles.append(circle);
+        circle.radius += step;
+    }
 }
 
 void Plane::addSpectreEllipse(ellipse_t ellipse, double step, int cnt)
 {
-
+    for (int i = 0; i < cnt; i++)
+    {
+        ellipses.append(ellipse);
+        ellipse.rx += step;
+        ellipse.ry += step;
+    }
 }
-
 
 void Plane::setBGColor(const QColor &color)
 {
