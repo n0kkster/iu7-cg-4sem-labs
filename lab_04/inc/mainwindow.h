@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "plane.h"
+#include "common.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
