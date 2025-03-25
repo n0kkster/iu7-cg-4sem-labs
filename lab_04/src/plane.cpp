@@ -5,6 +5,7 @@
 
 #include "plane.h"
 
+#include "canonical.h"
 #include "parametric.h"
 #include "bresenham.h"
 
@@ -41,6 +42,7 @@ void Plane::myDrawCircle(QPainter &painter, const circle_t &circle)
             break;
 
         case CANONICAL:
+            drawCicrleCanonical(painter, circle);
             break;
         
         case PARAMETRIC:
@@ -68,6 +70,7 @@ void Plane::myDrawEllipse(QPainter &painter, const ellipse_t &ellipse)
             break;
 
         case CANONICAL:
+            drawEllipseCanonical(painter, ellipse);
             break;
         
         case PARAMETRIC:
