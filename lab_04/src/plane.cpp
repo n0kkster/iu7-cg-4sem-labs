@@ -5,6 +5,7 @@
 
 #include "plane.h"
 
+#include "parametric.h"
 #include "bresenham.h"
 
 // Конструктор
@@ -43,6 +44,7 @@ void Plane::myDrawCircle(QPainter &painter, const circle_t &circle)
             break;
         
         case PARAMETRIC:
+            drawCicrleParametric(painter, circle);
             break;
         
         case BRES:
@@ -69,6 +71,7 @@ void Plane::myDrawEllipse(QPainter &painter, const ellipse_t &ellipse)
             break;
         
         case PARAMETRIC:
+            drawEllipseParametric(painter, ellipse);
             break;
         
         case BRES:
