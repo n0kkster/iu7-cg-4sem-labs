@@ -4,6 +4,8 @@
 #include <QPointF>
 #include <QColor>
 
+struct QPainter;
+
 typedef enum
 {
     CANONICAL,
