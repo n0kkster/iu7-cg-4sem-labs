@@ -7,6 +7,7 @@
 
 #include "canonical.h"
 #include "parametric.h"
+#include "midpoint.h"
 #include "bresenham.h"
 
 // Конструктор
@@ -23,7 +24,7 @@ void Plane::paintEvent(QPaintEvent *event)
     QPainter painter(viewport());
 
     drawAxis(painter);
-    drawGrid(painter);
+    // drawGrid(painter);
 
     for (const auto& circle : circles)
         myDrawCircle(painter, circle);
@@ -53,6 +54,7 @@ void Plane::myDrawCircle(QPainter &painter, const circle_t &circle)
             break;
         
         case MIDPOINT:
+            drawCicrleMidpoint(painter, circle);
             break;
         
         default:
@@ -81,6 +83,7 @@ void Plane::myDrawEllipse(QPainter &painter, const ellipse_t &ellipse)
             break;
         
         case MIDPOINT:
+            drawEllipseMidpoint(painter, ellipse);
             break;
         
         default:
