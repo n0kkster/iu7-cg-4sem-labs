@@ -1,5 +1,5 @@
 #include "parametric.h"
-#include "math.h"
+#include <math.h>
 
 #include <QPainter>
 
@@ -13,7 +13,7 @@ void drawCicrleParametric(QPainter &painter, const circle_t &circle, bool measur
 
     QPoint center = { lrintf64(xc), lrintf64(yc) };
 
-    for (double t = 0; t < M_PI / 4; t += step)
+    for (double t = 0; t <= M_PI / 4 + step; t += step)
     {
         x = lrintf64(xc + r * cos(t));
         y = lrintf64(yc + r * sin(t));
@@ -44,7 +44,7 @@ void drawEllipseParametric(QPainter &painter, const ellipse_t &ellipse, bool mea
 
     QPoint center = { lrintf64(xc), lrintf64(yc) };
 
-    for (double t = 0; t < M_PI / 2; t += step)
+    for (double t = 0; t <= M_PI / 2 + step; t += step)
     {
         x = lrintf64(xc + rx * cos(t));
         y = lrintf64(yc + ry * sin(t));

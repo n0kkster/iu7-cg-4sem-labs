@@ -1,5 +1,5 @@
 #include "canonical.h"
-#include "math.h"
+#include <math.h>
 
 #include <QPainter>
 
@@ -12,7 +12,7 @@ void drawCicrleCanonical(QPainter &painter, const circle_t &circle, bool measure
 
     QPoint center = { lrintf64(xc), lrintf64(yc) };
 
-    for (x = xc; x < lrintf64(xc + r / sqrt(2)); x++)
+    for (x = xc; x <= lrintf64(xc + r / sqrt(2)); x++)
     {
         y = lrintf64(yc + sqrt(r * r - (x - xc) * (x - xc)));
 
@@ -70,4 +70,3 @@ void drawEllipseCanonical(QPainter &painter, const ellipse_t &ellipse, bool meas
                 painter.drawPoint(curr_points[i]);
     }
 }
-
