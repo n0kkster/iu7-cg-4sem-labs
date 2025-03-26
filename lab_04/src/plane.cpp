@@ -51,6 +51,7 @@ void Plane::myDrawCircle(QPainter &painter, const circle_t &circle)
             break;
         
         case BRES:
+            drawBresCircle(painter, circle);
             break;
         
         case MIDPOINT:
@@ -80,6 +81,7 @@ void Plane::myDrawEllipse(QPainter &painter, const ellipse_t &ellipse)
             break;
         
         case BRES:
+            drawBresEllipse(painter, ellipse);
             break;
         
         case MIDPOINT:
