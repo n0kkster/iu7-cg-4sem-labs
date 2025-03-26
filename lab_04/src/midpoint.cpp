@@ -19,13 +19,13 @@ void drawCicrleMidpoint(QPainter &painter, const circle_t &circle, bool measure_
     while (x >= y)
     {
         curr_points[CURRENT] = {x + center.x(), y + center.y()};
-        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], lrintf64(xc));
-        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], lrintf64(yc));
+        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], center.x());
+        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], center.y());
         curr_points[M_XY] = mirrorPointByXY(curr_points[CURRENT], center);
 
         curr_points[M_OCTANT] = mirrorPointByOctant(curr_points[CURRENT], center);
-        curr_points[M_X_OCTANT] = mirrorPointByX(curr_points[M_OCTANT], lrintf64(xc));
-        curr_points[M_Y_OCTANT] = mirrorPointByY(curr_points[M_OCTANT], lrintf64(yc));
+        curr_points[M_X_OCTANT] = mirrorPointByX(curr_points[M_OCTANT], center.x());
+        curr_points[M_Y_OCTANT] = mirrorPointByY(curr_points[M_OCTANT], center.y());
         curr_points[M_XY_OCTANT] = mirrorPointByXY(curr_points[M_OCTANT], center);
 
         if (p < 0)
@@ -37,7 +37,7 @@ void drawCicrleMidpoint(QPainter &painter, const circle_t &circle, bool measure_
         {
             ++y;
             --x;
-            p += 2 * y + 1 - 2 * x;
+            p += 2 * (y - x) + 1;
         }
 
         if (!measure_mode)
@@ -66,20 +66,20 @@ void drawEllipseMidpoint(QPainter &painter, const ellipse_t &ellipse, bool measu
     while (x <= lrintf64(rx / sqrt(1 + ry_sq / rx_sq)))
     {
         curr_points[CURRENT] = { x + center.x(), y + center.y() };
-        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], lrintf64(xc));
-        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], lrintf64(yc));
+        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], center.x());
+        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], center.y());
         curr_points[M_XY] = mirrorPointByXY(curr_points[CURRENT], center);
 
         if (p < 0)
         {
             ++x;
-            p += ry_sq * 2 * x + ry_sq;
+            p += 2 * ry_sq * x + ry_sq;
         }
         else
         {
             ++x;
             --y;
-            p += ry_sq * 2 * x - rx_sq * 2 * y + ry_sq;
+            p += 2 * (ry_sq * x - rx_sq * y) + ry_sq;
         }
 
         if (!measure_mode)
@@ -95,20 +95,20 @@ void drawEllipseMidpoint(QPainter &painter, const ellipse_t &ellipse, bool measu
     while (y <= lrintf64(ry / sqrt(1 + rx_sq / ry_sq)))
     {
         curr_points[CURRENT] = { x + center.x(), y + center.y() };
-        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], lrintf64(xc));
-        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], lrintf64(yc));
+        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], center.x());
+        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], center.y());
         curr_points[M_XY] = mirrorPointByXY(curr_points[CURRENT], center);
 
         if (p < 0)
         {
             ++y;
-            p += rx_sq * 2 * y + rx_sq;
+            p += 2 * rx_sq * y + rx_sq;
         }
         else
         {
             --x;
             ++y;
-            p += rx_sq * 2 * y - ry_sq * 2 * x + rx_sq;
+            p += 2 * (rx_sq * y - ry_sq * x) + rx_sq;
         }
 
         if (!measure_mode)
