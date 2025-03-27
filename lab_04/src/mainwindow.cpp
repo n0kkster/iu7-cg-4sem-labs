@@ -275,7 +275,8 @@ void createTimesGraph(double times1[][5], double times2[][5], int radiuses_count
     }
     data2.close();
 
-    gp << "set terminal wxt 1 size 1000,800 title 'Замер времени просчета'\n";
+    gp << "set terminal pngcairo size 1200,800\n";
+    gp << "set output 'graph.png'\n";
     gp << "set multiplot layout 2,1\n";
 
     gp << "set key horizontal above center\n";
@@ -283,14 +284,14 @@ void createTimesGraph(double times1[][5], double times2[][5], int radiuses_count
     gp << "set key samplen 2 spacing 1.5\n";
 
     gp << "set title 'Окружность'\n";
-    gp << "set xlabel 'Радиус'\n";
-    gp << "set ylabel 'Время'\n";
+    gp << "set xlabel 'Радиус (пикс.)'\n";
+    gp << "set ylabel 'Время (мкс.)'\n";
     gp << "set grid\n";
-    gp << "plot '" << dataname1.str() << "' using 1:2 with lines lt rgb 'red' notitle, \
-             '" << dataname1.str() << "' using 1:3 with lines lt rgb 'blue' notitle, \
-             '" << dataname1.str() << "' using 1:4 with lines lt rgb 'green' notitle, \
-             '" << dataname1.str() << "' using 1:5 with lines lt rgb 'orange' notitle, \
-             '" << dataname1.str() << "' using 1:6 with lines lt rgb 'purple' notitle, \
+    gp << "plot 'graphs/times_data1.dаt' using 1:2 with lines lt rgb 'red' notitle, \
+             'graphs/times_data1.dаt' using 1:3 with lines lt rgb 'blue' notitle, \
+             'graphs/times_data1.dаt' using 1:4 with lines lt rgb 'green' notitle, \
+             'graphs/times_data1.dаt' using 1:5 with lines lt rgb 'orange' notitle, \
+             'graphs/times_data1.dаt' using 1:6 with lines lt rgb 'purple' notitle, \
              NaN with points pt 5 ps 1.5 lt rgb 'red' title 'Каноническое уравнение', \
              NaN with points pt 5 ps 1.5 lt rgb 'blue' title 'Параметрическое уравнение', \
              NaN with points pt 5 ps 1.5 lt rgb 'green' title 'Брезенхем', \
@@ -298,20 +299,20 @@ void createTimesGraph(double times1[][5], double times2[][5], int radiuses_count
              NaN with points pt 5 ps 1.5 lt rgb 'purple' title 'Встроенная функция'\n";
 
     gp << "set title 'Эллипс'\n";
-    gp << "set xlabel 'Радиус'\n";
-    gp << "set ylabel 'Время'\n";
+    gp << "set xlabel 'Радиус (пикс.)'\n";
+    gp << "set ylabel 'Время (мкс.)'\n";
     gp << "set grid\n";
-    gp << "plot '" << dataname2.str() << "' using 1:2 with lines lt rgb 'red' notitle, \
+    gp << "plot 'graphs/times_data2.dаt' using 1:2 with lines lt rgb 'red' notitle, \
              '' using 1:3 with lines lt rgb 'blue' notitle, \
              '' using 1:4 with lines lt rgb 'green' notitle, \
              '' using 1:5 with lines lt rgb 'orange' notitle, \
              '' using 1:6 with lines lt rgb 'purple' notitle\n";
     
     gp << "unset multiplot\n";
-    gp << "pause mouse close\n";
     gp.close();
 
     system(exec_cmd.str().c_str());
+    system("open graph.png");
 }
 
 void MainWindow::onCompareTimeBtnClicked()
@@ -321,7 +322,7 @@ void MainWindow::onCompareTimeBtnClicked()
     constexpr int measures = 100;
     constexpr int radius_start = 1000, radius_step = 500, radius_stop = 10000;
     constexpr int radiuses_count = (radius_stop - radius_start) / radius_step + 1;
-    constexpr int heatup = measures * 4;
+    constexpr int heatup = measures * 2;
     unsigned long start, end;
 
     size_t curr_radius = 0;
