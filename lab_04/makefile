@@ -14,7 +14,7 @@ DEPS += $(INCS:$(HEADERS_DIR)/%.h=$(OUT_DIR)/moc_%.d)
 OBJS := $(SRCS:$(SRC_DIR)/%.cpp=$(OUT_DIR)/%.o)
 OBJS += $(INCS:$(HEADERS_DIR)/%.h=$(OUT_DIR)/moc_%.o)
 
-CFLAGS := -std=c++20 -Wall -Wextra -Wpedantic -Wfloat-equal -I$(HEADERS_DIR) -I. $(shell pkgconf --cflags Qt6Widgets)
+CFLAGS := -std=c++20 -Wno-narrowing -Wall -Wextra -Wpedantic -Wfloat-equal -I$(HEADERS_DIR) -I. $(shell pkgconf --cflags Qt6Widgets)
 LFLAGS := $(shell pkgconf --libs Qt6Widgets)
 
 all : app.exe
