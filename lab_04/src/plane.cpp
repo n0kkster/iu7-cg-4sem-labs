@@ -9,6 +9,7 @@
 #include "parametric.h"
 #include "midpoint.h"
 #include "bresenham.h"
+#include "builtin.h"
 
 // Конструктор
 // ==================================================
@@ -39,7 +40,7 @@ void Plane::myDrawCircle(QPainter &painter, const circle_t &circle)
     switch (circle.method)
     {
         case BUILTIN:
-            painter.drawEllipse(circle.center, circle.radius, circle.radius);
+            drawCircleBuiltin(painter, circle);
             break;
 
         case CANONICAL:
@@ -51,7 +52,7 @@ void Plane::myDrawCircle(QPainter &painter, const circle_t &circle)
             break;
         
         case BRES:
-            drawBresCircle(painter, circle);
+            drawCircleBres(painter, circle);
             break;
         
         case MIDPOINT:
@@ -69,7 +70,7 @@ void Plane::myDrawEllipse(QPainter &painter, const ellipse_t &ellipse)
     switch (ellipse.method)
     {
         case BUILTIN:
-            painter.drawEllipse(ellipse.center, ellipse.rx, ellipse.ry);
+            drawEllipseBuiltin(painter, ellipse);
             break;
 
         case CANONICAL:
@@ -81,7 +82,7 @@ void Plane::myDrawEllipse(QPainter &painter, const ellipse_t &ellipse)
             break;
         
         case BRES:
-            drawBresEllipse(painter, ellipse);
+            drawEllipseBres(painter, ellipse);
             break;
         
         case MIDPOINT:
