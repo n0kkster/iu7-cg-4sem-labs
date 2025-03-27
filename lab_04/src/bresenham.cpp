@@ -2,11 +2,11 @@
 
 void drawCircleBres(QPainter &painter, const circle_t &circle, bool measure_mode)
 {
-    int x, y;
+    long x, y;
     std::array<QPoint, NUM_TYPES> curr_points;
 
-    double xc = circle.center.x(), yc = circle.center.y(), r = circle.radius;
-    int delta = 2 * (1 - r), d;
+    const long xc = circle.center.x(), yc = circle.center.y(), r = circle.radius;
+    long delta = 2 * (1 - r), d;
 
     x = 0;
     y = r;
@@ -48,12 +48,12 @@ void drawCircleBres(QPainter &painter, const circle_t &circle, bool measure_mode
 
 void drawEllipseBres(QPainter &painter, const ellipse_t &ellipse, bool measure_mode)
 {
-    int x, y;
+    long x, y;
     std::array<QPoint, M_OCTANT> curr_points;
 
-    double xc = ellipse.center.x(), yc = ellipse.center.y(), rx = ellipse.rx, ry = ellipse.ry;
-    double rx_sq = pow(rx, 2), ry_sq = pow(ry, 2);
-    int delta = ry_sq - rx_sq * (2 * ry - 1), d1, d2;
+    const long xc = ellipse.center.x(), yc = ellipse.center.y(), rx = ellipse.rx, ry = ellipse.ry;
+    const long rx_sq = rx * rx, ry_sq = ry * ry;
+    long delta = ry_sq - rx_sq * (2 * ry + 1), d1, d2;
 
     QPoint center = { lrintf64(xc), lrintf64(yc) };
 
@@ -72,7 +72,7 @@ void drawEllipseBres(QPainter &painter, const ellipse_t &ellipse, bool measure_m
 
         if (delta < 0)
         {
-            d1 = 2 * delta + rx_sq * (2 * y + 1);
+            d1 = 2 * delta + rx_sq * (2 * y + 2);
             ++x;
 
             if (d1 < 0)
