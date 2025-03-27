@@ -236,112 +236,139 @@ unsigned long long micros(void)
     return (unsigned long long)value.tv_sec * 1000ULL * 1000ULL + value.tv_usec;
 }
 
-void createTimesGraph(double times[][5], int radiuses_count, double radiuses_start, 
-    double radiuses_stop, const std::string &datatype = "circle")
+void createTimesGraph(double times1[][5], double times2[][5], int radiuses_count, 
+                     double radiuses_start, double step, 
+                     const std::string &datatype = "times")
 {
-
-    std::stringstream filename, dataname, exec_cmd;
-
+    std::stringstream filename, dataname1, dataname2, exec_cmd;
+    
     filename << "graphs/" << datatype << ".gp";
-    dataname << "graphs/" << datatype << "_data.dat";
+    dataname1 << "graphs/" << datatype << "_data1.dat";
+    dataname2 << "graphs/" << datatype << "_data2.dat";
     exec_cmd << "gnuplot " << filename.str();
 
-
-    // Открываем файл для записи команд gnuplot
     std::ofstream gp(filename.str());
 
-    // Вычисляем шаг между радиусами
-    double step = (radiuses_stop - radiuses_start) / radiuses_count;
-
-    // Создаем временный файл с данными
-    std::ofstream data(dataname.str());
+    std::ofstream data1(dataname1.str());
     for (int i = 0; i < radiuses_count; i++)
     {
         double radius = radiuses_start + i * step;
-        data << radius << " "
-             << times[i][0] << " "
-             << times[i][1] << " "
-             << times[i][2] << " "
-             << times[i][3] << " "
-             << times[i][4] << "\n";
+        data1 << radius << " "
+              << times1[i][0] << " "
+              << times1[i][1] << " "
+              << times1[i][2] << " "
+              << times1[i][3] << " "
+              << times1[i][4] << "\n";
     }
-    data.close();
+    data1.close();
 
-    // Записываем команды для gnuplot
-    gp << "set terminal wxt 1 title 'Зaмер времени просчета'\n";
-    gp << "set output 'graph.png'\n";
-    gp << "set title 'Зависимость времени от радиуса'\n";
+    std::ofstream data2(dataname2.str());
+    for (int i = 0; i < radiuses_count; i++)
+    {
+        double radius = radiuses_start + i * step;
+        data2 << radius << " "
+              << times2[i][0] << " "
+              << times2[i][1] << " "
+              << times2[i][2] << " "
+              << times2[i][3] << " "
+              << times2[i][4] << "\n";
+    }
+    data2.close();
+
+    gp << "set terminal wxt 1 size 1000,800 title 'Замер времени просчета'\n";
+    gp << "set multiplot layout 2,1\n";
+
+    gp << "set key horizontal above center\n";
+    gp << "set key box\n";
+    gp << "set key samplen 2 spacing 1.5\n";
+
+    gp << "set title 'Окружность'\n";
     gp << "set xlabel 'Радиус'\n";
     gp << "set ylabel 'Время'\n";
     gp << "set grid\n";
-    gp << "plot '" << dataname.str() << "' using 1:2 with lines title 'Каноническое уравнение', \
-             '' using 1:3 with lines title 'Параметрическое уравнение', \
-             '' using 1:4 with lines title 'Брезенхем', \
-             '' using 1:5 with lines title 'Алгоритм средней точки', \
-             '' using 1:6 with lines title 'Встроенная функция'\n";
+    gp << "plot '" << dataname1.str() << "' using 1:2 with lines lt rgb 'red' notitle, \
+             '" << dataname1.str() << "' using 1:3 with lines lt rgb 'blue' notitle, \
+             '" << dataname1.str() << "' using 1:4 with lines lt rgb 'green' notitle, \
+             '" << dataname1.str() << "' using 1:5 with lines lt rgb 'orange' notitle, \
+             '" << dataname1.str() << "' using 1:6 with lines lt rgb 'purple' notitle, \
+             NaN with points pt 5 ps 1.5 lt rgb 'red' title 'Каноническое уравнение', \
+             NaN with points pt 5 ps 1.5 lt rgb 'blue' title 'Параметрическое уравнение', \
+             NaN with points pt 5 ps 1.5 lt rgb 'green' title 'Брезенхем', \
+             NaN with points pt 5 ps 1.5 lt rgb 'orange' title 'Алгоритм средней точки', \
+             NaN with points pt 5 ps 1.5 lt rgb 'purple' title 'Встроенная функция'\n";
+
+    gp << "set title 'Эллипс'\n";
+    gp << "set xlabel 'Радиус'\n";
+    gp << "set ylabel 'Время'\n";
+    gp << "set grid\n";
+    gp << "plot '" << dataname2.str() << "' using 1:2 with lines lt rgb 'red' notitle, \
+             '' using 1:3 with lines lt rgb 'blue' notitle, \
+             '' using 1:4 with lines lt rgb 'green' notitle, \
+             '' using 1:5 with lines lt rgb 'orange' notitle, \
+             '' using 1:6 with lines lt rgb 'purple' notitle\n";
+    
+    gp << "unset multiplot\n";
     gp << "pause mouse close\n";
     gp.close();
 
-    // Выполняем gnuplot
     system(exec_cmd.str().c_str());
 }
 
 void MainWindow::onCompareTimeBtnClicked()
 {
-    QPainter painter; // FILLER
+    QPainter painter(this); // FILLER
 
     constexpr int measures = 100;
-    constexpr int radius_start = 1000, radius_step = 100, radius_stop = 10000;
-    constexpr int radiuses_count = (radius_stop - radius_start) / radius_step;
+    constexpr int radius_start = 1000, radius_step = 500, radius_stop = 10000;
+    constexpr int radiuses_count = (radius_stop - radius_start) / radius_step + 1;
+    constexpr int heatup = measures * 4;
     unsigned long start, end;
 
     size_t curr_radius = 0;
-    double times[radiuses_count][5] = {0};
+    double times_circle[radiuses_count][5] = {0};
+    double times_ellipse[radiuses_count][5] = {0};
 
-    std::vector<int> temp;
+    void (*draw_funcs_circle[5])(QPainter &, const circle_t &, bool) = {drawCicrleCanonical, drawCicrleParametric, drawCircleBres, drawCicrleMidpoint, drawCircleBuiltin};
+    void (*draw_funcs_ellipse[5])(QPainter &, const ellipse_t &, bool) = {drawEllipseCanonical, drawEllipseParametric, drawEllipseBres, drawEllipseMidpoint, drawEllipseBuiltin};
 
-    void (*draw_funcs[5])(QPainter &, const circle_t &, bool) = {drawCicrleCanonical, drawCicrleParametric, drawCircleBres, drawCicrleMidpoint, drawCircleBuiltin};
+    circle_t test_circle = {.center = {0, 0}, .radius = 0, .method = BUILTIN, .color = QColor::fromRgba(0)};
+    ellipse_t test_ellipse = {.center = {0, 0}, .rx = 0, .ry = 0, .method = BUILTIN, .color = QColor::fromRgba(0)};
 
-    circle_t test_circle = {.center = {0, 0}, .radius = 0, .method = BUILTIN, .color = QColor::fromRgb(0, 0, 0)};
-
-    for (int radius = radius_start; radius < radius_stop; radius += radius_step)
+    for (int radius = radius_start; radius <= radius_stop; radius += radius_step)
     {
         for (int method = 0; method < METHOD_COUNT; method++)
         {
             test_circle.method = (method_e)method;
             test_circle.radius = radius;
 
-            for (int i = 0; i < measures; i++)
+            test_ellipse.method = (method_e)method;
+            test_ellipse.rx = radius / 2;
+            test_ellipse.ry = radius * 2;
+
+            for (int i = 0; i < measures + heatup; i++)
             {
                 start = micros();
-                draw_funcs[method](painter, test_circle, true);
+                draw_funcs_circle[method](painter, test_circle, true);
                 end = micros();
-                // times[curr_radius][method] += end - start;
-                temp.push_back(end - start);
+
+                if (i >= heatup)
+                    times_circle[curr_radius][method] += end - start;
+
+                start = micros();
+                draw_funcs_ellipse[method](painter, test_ellipse, true);
+                end = micros();
+
+                if (i >= heatup)
+                    times_ellipse[curr_radius][method] += end - start;
             }
 
-            std::ranges::sort(temp);
-
-            if ((method_e)method == PARAMETRIC)
-                qDebug() << temp;
-
-            times[curr_radius][method] = temp[temp.size() / 2];
-
-            temp.clear();
+            times_circle[curr_radius][method] /= measures;
+            times_ellipse[curr_radius][method] /= measures;
         }
         curr_radius++;
     }
 
-    curr_radius = 0;
-
-    // for (int radius = radius_start; radius < radius_stop; radius += radius_step)
-    // {
-    //     for (int method = 0; method < METHOD_COUNT; method++)
-    //         qDebug() << curr_radius << method << times[curr_radius][method];
-    //     curr_radius++;
-    // }
-
-    createTimesGraph(times, radiuses_count, radius_start, radius_stop);
+    createTimesGraph(times_circle, times_ellipse, radiuses_count, radius_start, radius_step);
 }
 
 void MainWindow::setLineColorDisplayColor(const QColor &color)
