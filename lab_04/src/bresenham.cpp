@@ -1,6 +1,6 @@
 #include "bresenham.h"
 
-void drawBresCircle(QPainter &painter, const circle_t &circle, bool measure_mode)
+void drawCircleBres(QPainter &painter, const circle_t &circle, bool measure_mode)
 {
     int x, y;
     std::array<QPoint, NUM_TYPES> curr_points;
@@ -42,7 +42,7 @@ void drawBresCircle(QPainter &painter, const circle_t &circle, bool measure_mode
     }
 }
 
-void drawBresEllipse(QPainter &painter, const ellipse_t &ellipse, bool measure_mode)
+void drawEllipseBres(QPainter &painter, const ellipse_t &ellipse, bool measure_mode)
 {
     int x, y;
     std::array<QPoint, M_OCTANT> curr_points;
