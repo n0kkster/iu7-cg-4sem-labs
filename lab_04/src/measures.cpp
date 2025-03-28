@@ -72,10 +72,10 @@ void createTimesGraph(double times1[][5], double times2[][5], int radiuses_count
     gp << "set ylabel 'Время (мкс.)'\n";
     gp << "set grid\n";
     gp << "plot 'graphs/times_data1.dаt' using 1:2 with lines lt rgb 'red' notitle, \
-             'graphs/times_data1.dаt' using 1:3 with lines lt rgb 'blue' notitle, \
-             'graphs/times_data1.dаt' using 1:4 with lines lt rgb 'green' notitle, \
-             'graphs/times_data1.dаt' using 1:5 with lines lt rgb 'orange' notitle, \
-             'graphs/times_data1.dаt' using 1:6 with lines lt rgb 'purple' notitle, \
+             '' using 1:3 with lines lt rgb 'blue' notitle, \
+             '' using 1:4 with lines lt rgb 'green' notitle, \
+             '' using 1:5 with lines lt rgb 'orange' notitle, \
+             '' using 1:6 with lines lt rgb 'purple' notitle, \
              NaN with points pt 5 ps 1.5 lt rgb 'red' title 'Каноническое уравнение', \
              NaN with points pt 5 ps 1.5 lt rgb 'blue' title 'Параметрическое уравнение', \
              NaN with points pt 5 ps 1.5 lt rgb 'green' title 'Брезенхем', \
