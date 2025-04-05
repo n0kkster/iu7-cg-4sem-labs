@@ -2,9 +2,10 @@
 #define LINE_H
 
 #include "plane.h"
+#include "common.h"
 
 struct QPainter;
 
-int drawLine(QPainter &painter, const line_t &line, bool measure_mode=false);
+void drawLine(QPainter &painter, const edge_t &line);
 
 #endif /* LINE_H */
