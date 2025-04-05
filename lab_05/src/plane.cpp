@@ -4,28 +4,86 @@
 #include <QPalette>
 
 #include "plane.h"
-
 #include "line.h"
 
 // Конструктор
 // ==================================================
 Plane::Plane(QWidget *parent) : QGraphicsView(parent) 
 {
-    color.setRgb(39, 40, 41);
 }
 // ==================================================
 
+// ================= СОБЫТИЯ =================
 void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
+
+    for (const shape_t &shape : shapes)
+    {
+        for (const point_t &vertex : shape.vertices)
+            painter.drawPoint(vertex.x, vertex.y);
+
+        for (const edge_t &line : shape.edges)
+            drawLine(painter, line);
+    }
+}
+
+void Plane::mousePressEvent(QMouseEvent *event)
+{
+    switch (event->button())
+    {
+        case Qt::LeftButton:
+            addVertex(event->pos());
+            break;
+
+        case Qt::RightButton:
+            finishShapeEntering();
+            break;
+        
+        default:
+            break;
+    }
+
+    viewport()->update();
+}
+// ~================ СОБЫТИЯ ================~
+
+void Plane::addVertex(const QPoint &vertex)
+{
+    if (shapes.size() == 0)
+        shapes.append(shape_t{});
+
+    shape_t &shape = shapes.last();
+    appendToShape(shape.vertices, shape.edges, vertex);
+}
+
+void Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, const QPoint &vertex)
+{
+    point_t _vertex = {vertex.x(), vertex.y()};
+    if (vertices.size() > 0)
+        edges.append({vertices.last(), _vertex});
+    vertices.append(_vertex);
+}
+
+void Plane::finishShapeEntering()
+{
+    connectShape(shapes.last());
+    shapes.append(shape_t{});
+}
+
+void Plane::connectShape(shape_t &shape)
+{
+    shape.edges.append({shape.vertices.last(), shape.vertices.first()});
 }
 
 void Plane::clearPlane()
 {
+    shapes.clear();
     viewport()->update();
 }
 
+// ================= РИСОВАЛКИ =================
 void Plane::drawAxis(QPainter &painter)
 {
     const int w = viewport()->width();
@@ -79,3 +137,5 @@ void Plane::drawDashedHLine(QPainter &painter, int y, int x1, int x2, int gap, i
     for (; x1 < x2; x1 += dash_len + gap)
         painter.drawLine(x1, y, x1 + dash_len, y);
 }
+// ~================ РИСОВАЛКИ ================~
+

@@ -7,6 +7,8 @@
 #include <QColor>
 #include <QPoint>
 
+#include "common.h"
+
 class Plane : public QGraphicsView
 {
     Q_OBJECT
@@ -14,11 +16,15 @@ class Plane : public QGraphicsView
 private:
 
     // ======== DATA ========
-    QVector<QPoint> vertices;
-    QColor color;
+    QVector<shape_t> shapes;
+
+    QColor fillColor;
     // ======================
 
     // ======== FUNCS ========
+    void addVertex(const QPoint &vertex);
+    void appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex);
+    void connectShape(shape_t &shape);
 
     void drawAxis(QPainter &painter);
     void drawGrid(QPainter &painter);
@@ -28,10 +34,12 @@ private:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
+    void finishShapeEntering();
 };
 
 #endif // PLANE_H

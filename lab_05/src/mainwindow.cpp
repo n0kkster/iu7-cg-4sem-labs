@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->fillColorBtn, &QPushButton::clicked, this, &MainWindow::onFillColorBtnClicked);
     connect(ui->clearScreenBtn, &QPushButton::clicked, this, &MainWindow::onClearScreenBtnClicked);
+    connect(ui->connectShapeBtn, &QPushButton::clicked, this, &MainWindow::onConnectShapeBtnClicked);
 
 
     setFillColorDisplayColor("white");
@@ -32,6 +33,11 @@ void MainWindow::onFillColorBtnClicked()
 void MainWindow::onClearScreenBtnClicked()
 {
     ui->planeWidget->clearPlane();
+}
+
+void MainWindow::onConnectShapeBtnClicked()
+{
+    ui->planeWidget->finishShapeEntering();
 }
 
 unsigned long long micros(void)
