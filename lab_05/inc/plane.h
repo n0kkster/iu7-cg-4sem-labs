@@ -24,7 +24,7 @@ private:
     // ======== FUNCS ========
     void addVertex(const QPoint &vertex);
     void appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex);
-    void connectShape(shape_t &shape);
+    bool connectShape(shape_t &shape);
 
     void drawAxis(QPainter &painter);
     void drawGrid(QPainter &painter);

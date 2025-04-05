@@ -1,7 +1,7 @@
 #include <QPaintEvent>
 #include <QDebug>
 #include <QPen>
-#include <QPalette>
+#include <QMessageBox>
 
 #include "plane.h"
 #include "line.h"
@@ -68,13 +68,30 @@ void Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, co
 
 void Plane::finishShapeEntering()
 {
-    connectShape(shapes.last());
+    if (shapes.size() == 0)
+    {
+        QMessageBox::critical(this, "Ошибка", "Фигура не была добавлена. Замыкать нечего!");
+        return;
+    }
+
+    if (connectShape(shapes.last()) != true)
+        return;
+
     shapes.append(shape_t{});
+    
+    viewport()->update();
 }
 
-void Plane::connectShape(shape_t &shape)
+bool Plane::connectShape(shape_t &shape)
 {
+    if (shape.vertices.size() <= 2)
+    {
+        QMessageBox::critical(this, "Ошибка", "Невозможно замнкнуть фигуру. Фигура должна содержать не менее трех точек!");
+        return false;
+    }
+    
     shape.edges.append({shape.vertices.last(), shape.vertices.first()});
+    return true;
 }
 
 void Plane::clearPlane()
