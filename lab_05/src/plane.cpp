@@ -34,12 +34,13 @@ void Plane::mousePressEvent(QMouseEvent *event)
     switch (event->button())
     {
         case Qt::LeftButton:
-            addVertex(event->pos());
-            emit clicked(event->pos());
+            if (addVertex(event->pos()))
+                emit clicked(event->pos());
             break;
 
         case Qt::RightButton:
             finishShapeEntering();
+            emit shapeFinished();
             break;
         
         default:
@@ -50,21 +51,33 @@ void Plane::mousePressEvent(QMouseEvent *event)
 }
 // ~================ СОБЫТИЯ ================~
 
-void Plane::addVertex(const QPoint &vertex)
+bool Plane::addVertex(const QPoint &vertex)
 {
     if (shapes.size() == 0)
         shapes.append(shape_t{});
 
     shape_t &shape = shapes.last();
-    appendToShape(shape.vertices, shape.edges, vertex);
+    if (!appendToShape(shape.vertices, shape.edges, vertex))
+    {
+        QMessageBox::critical(this, "Ошибка", "Такая точка уже существует!");
+        return false;
+    }
+    return true;
 }
 
-void Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, const QPoint &vertex)
+bool Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, const QPoint &vertex)
 {
     point_t _vertex = {vertex.x(), vertex.y()};
+
+    for (const auto &v : vertices)
+        if (v.x == _vertex.x && v.y == _vertex.y)
+            return false;
+
     if (vertices.size() > 0)
         edges.append({vertices.last(), _vertex});
     vertices.append(_vertex);
+
+    return true;
 }
 
 void Plane::finishShapeEntering()

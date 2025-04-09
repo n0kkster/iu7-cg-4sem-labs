@@ -22,7 +22,7 @@ private:
     // ======================
 
     // ======== FUNCS ========
-    void appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex);
+    bool appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex);
     bool connectShape(shape_t &shape);
 
     void drawAxis(QPainter &painter);
@@ -37,12 +37,13 @@ protected:
 
 signals:
     void clicked(const QPoint &pos);
+    void shapeFinished();
 
 public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
     void finishShapeEntering();
-    void addVertex(const QPoint &vertex);
+    bool addVertex(const QPoint &vertex);
 
     int getTotalPointsCount() const;
 };

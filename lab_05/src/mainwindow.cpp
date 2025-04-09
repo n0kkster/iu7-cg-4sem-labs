@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->drawPointBtn, &QPushButton::clicked, this, &MainWindow::onDrawPointBtnClicked);
 
     connect(ui->planeWidget, &Plane::clicked, this, &MainWindow::onPlaneClicked);
+    connect(ui->planeWidget, &Plane::shapeFinished, this, &MainWindow::onPlaneShapeFinished);
 
     setFillColorDisplayColor("white");
 }
@@ -34,21 +35,40 @@ void MainWindow::onFillColorBtnClicked()
 
 void MainWindow::onClearScreenBtnClicked()
 {
+    ui->tableWidget->setRowCount(0);
     ui->planeWidget->clearPlane();
+}
+
+QTableWidgetItem *getCenteredItem(const QString &data)
+{
+    QTableWidgetItem *w = new QTableWidgetItem(data);
+    w->setTextAlignment(Qt::AlignHCenter);
+    return w;
+}
+
+#define SET_TABLE_LAST_ROW(table, c1, c2, c3) { \
+    table->insertRow(table->rowCount()); \
+    table->setItem(table->rowCount() - 1, 0, getCenteredItem(c1)); \
+    table->setItem(table->rowCount() - 1, 1, getCenteredItem(c2)); \
+    table->setItem(table->rowCount() - 1, 2, getCenteredItem(c3)); \
 }
 
 void MainWindow::onConnectShapeBtnClicked()
 {
+    SET_TABLE_LAST_ROW(ui->tableWidget, "=========", "=========", "=========");
     ui->planeWidget->finishShapeEntering();
+}
+
+void MainWindow::onPlaneShapeFinished()
+{
+    SET_TABLE_LAST_ROW(ui->tableWidget, "=========", "=========", "=========");
 }
 
 void MainWindow::onPlaneClicked(const QPoint &pos)
 {
     int number = ui->planeWidget->getTotalPointsCount();
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, new QTableWidgetItem(QString::number(number)));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, new QTableWidgetItem(QString::number(pos.x())));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(pos.y())));
+
+    SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(pos.x()), QString::number(pos.y()));
 }
 
 void MainWindow::onDrawPointBtnClicked()
@@ -71,15 +91,14 @@ void MainWindow::onDrawPointBtnClicked()
         return;
     }
 
-    ui->planeWidget->addVertex({x, y});
+    if (!ui->planeWidget->addVertex({x, y}))
+        return;
+
     ui->planeWidget->viewport()->update();
 
     number = ui->planeWidget->getTotalPointsCount();
 
-    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 0, new QTableWidgetItem(QString::number(number)));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 1, new QTableWidgetItem(QString::number(x)));
-    ui->tableWidget->setItem(ui->tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(y)));
+    SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(x), QString::number(y));
 }
 
 unsigned long long micros(void)
