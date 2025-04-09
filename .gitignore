@@ -7,3 +7,5 @@ graphs
 *.png
 *.gp
 *.dat
+winmf
+*.json
