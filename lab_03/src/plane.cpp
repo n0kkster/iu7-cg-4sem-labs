@@ -23,7 +23,7 @@ void Plane::paintEvent(QPaintEvent *event)
     QPainter painter(viewport());
 
     drawAxis(painter);
-    drawGrid(painter);
+    // drawGrid(painter);
 
     for (const auto& line : lines)
         myDrawLine(painter, line);
