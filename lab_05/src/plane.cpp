@@ -35,6 +35,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
     {
         case Qt::LeftButton:
             addVertex(event->pos());
+            emit clicked(event->pos());
             break;
 
         case Qt::RightButton:
@@ -86,7 +87,7 @@ bool Plane::connectShape(shape_t &shape)
 {
     if (shape.vertices.size() <= 2)
     {
-        QMessageBox::critical(this, "Ошибка", "Невозможно замнкнуть фигуру. Фигура должна содержать не менее трех точек!");
+        QMessageBox::critical(this, "Ошибка", "Невозможно замкнуть фигуру. Фигура должна содержать не менее трех точек!");
         return false;
     }
     
@@ -98,6 +99,14 @@ void Plane::clearPlane()
 {
     shapes.clear();
     viewport()->update();
+}
+
+int Plane::getTotalPointsCount() const
+{
+    int total = 0;
+    for (const auto &shape : shapes)
+        total += shape.vertices.size();
+    return total;
 }
 
 // ================= РИСОВАЛКИ =================

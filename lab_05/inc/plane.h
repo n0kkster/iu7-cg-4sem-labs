@@ -22,7 +22,6 @@ private:
     // ======================
 
     // ======== FUNCS ========
-    void addVertex(const QPoint &vertex);
     void appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex);
     bool connectShape(shape_t &shape);
 
@@ -36,10 +35,16 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
 
+signals:
+    void clicked(const QPoint &pos);
+
 public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
     void finishShapeEntering();
+    void addVertex(const QPoint &vertex);
+
+    int getTotalPointsCount() const;
 };
 
 #endif // PLANE_H

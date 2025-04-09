@@ -23,6 +23,8 @@ private slots:
     void onFillColorBtnClicked();
     void onClearScreenBtnClicked();
     void onConnectShapeBtnClicked();
+    void onDrawPointBtnClicked();
+    void onPlaneClicked(const QPoint &pos);
 
 public:
     MainWindow(QWidget *parent = nullptr);
