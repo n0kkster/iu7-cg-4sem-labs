@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QColor>
 #include <QPoint>
+#include <map>
 
 #include "common.h"
 
@@ -18,7 +19,7 @@ private:
     // ======== DATA ========
     QVector<shape_t> shapes;
     QColor fillColor;
-    QVector<point_t> outline_points;
+    std::map<int, std::vector<point_t>> outline_points;
 
     bool fillEnabled;
     // ======================
