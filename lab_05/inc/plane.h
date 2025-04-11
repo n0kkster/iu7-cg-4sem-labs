@@ -17,8 +17,10 @@ private:
 
     // ======== DATA ========
     QVector<shape_t> shapes;
-
     QColor fillColor;
+    QVector<point_t> outline_points;
+
+    bool fillEnabled;
     // ======================
 
     // ======== FUNCS ========
@@ -44,6 +46,7 @@ public:
     void clearPlane();
     void finishShapeEntering();
     bool addVertex(const QPoint &vertex);
+    void enableFill() { fillEnabled = true; }
 
     int getTotalPointsCount() const;
 };
