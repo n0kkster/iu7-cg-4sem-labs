@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QPaintEvent>
 #include <QPen>
+#include <QGuiApplication>
 
 // Конструктор
 // ==================================================
@@ -64,16 +65,23 @@ void Plane::paintEvent(QPaintEvent *event)
 
 void Plane::mousePressEvent(QMouseEvent *event)
 {
+    Qt::KeyboardModifiers m;
+    bool Z = false;
     switch (event->button())
     {
         case Qt::LeftButton:
-            if (addVertex(event->pos()))
+            m = QGuiApplication::keyboardModifiers();
+            if (m.testFlag(Qt::ControlModifier))
+                Z = true;
+
+            if (addVertex(event->pos(), Z))
                 emit clicked(event->pos());
+            
             break;
 
         case Qt::RightButton:
-            finishShapeEntering();
-            emit shapeFinished(); // todo check
+            if (finishShapeEntering())
+                emit shapeFinished();
             break;
 
         default:
@@ -85,13 +93,13 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
 // ~================ СОБЫТИЯ ================~
 
-bool Plane::addVertex(const QPoint &vertex)
+bool Plane::addVertex(const QPoint &vertex, bool Z)
 {
     if (shapes.size() == 0)
         shapes.append(shape_t{ .need_fill = false });
 
     shape_t &shape = shapes.last();
-    if (!appendToShape(shape.vertices, shape.edges, vertex))
+    if (!appendToShape(shape.vertices, shape.edges, vertex, Z))
     {
         QMessageBox::critical(this, "Ошибка", "Такая точка уже существует!");
         return false;
@@ -99,13 +107,27 @@ bool Plane::addVertex(const QPoint &vertex)
     return true;
 }
 
-bool Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, const QPoint &vertex)
+bool Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, const QPoint &vertex, bool Z)
 {
     point_t _vertex = { vertex.x(), vertex.y() };
 
     for (const auto &v : vertices)
         if (v.x == _vertex.x && v.y == _vertex.y)
             return false;
+
+    if (Z && !vertices.empty())
+    {
+        int dx, dy;
+        int lx = vertices.last().x, ly = vertices.last().y;
+
+        dx = std::abs(_vertex.x - lx);
+        dy = std::abs(_vertex.y - ly);
+
+        if (dx < dy)
+            _vertex.x = lx;
+        else
+            _vertex.y = ly;
+    }
 
     if (vertices.size() > 0)
         edges.append({ vertices.last(), _vertex });
@@ -114,20 +136,22 @@ bool Plane::appendToShape(QVector<point_t> &vertices, QVector<edge_t> &edges, co
     return true;
 }
 
-void Plane::finishShapeEntering()
+bool Plane::finishShapeEntering()
 {
     if (shapes.size() == 0)
     {
         QMessageBox::critical(this, "Ошибка", "Фигура не была добавлена. Замыкать нечего!");
-        return;
+        return false;
     }
 
     if (connectShape(shapes.last()) != true)
-        return;
+        return false;
 
     shapes.append(shape_t{ .need_fill = false });
 
     viewport()->update();
+
+    return true;
 }
 
 bool Plane::connectShape(shape_t &shape)

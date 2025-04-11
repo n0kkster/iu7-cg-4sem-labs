@@ -8,6 +8,9 @@ static bool checkEdge(int y, const edge_t &edge)
 {
     int start = edge.start.y, end = edge.end.y;
 
+    if (start == end)
+        return false;
+
     if (start < end)
         return start < y && y < end;
     else if (start > end)
@@ -85,6 +88,7 @@ void fill(QPainter &painter, const std::map<int, std::vector<point_t>> &outline_
         inside = false;
         for (int x = dim.xmin; x < dim.xmax; x++)
         {
+
             if (count(outline_points.at(y), x) % 2 != 0)
                 inside = !inside;
             if (inside)
