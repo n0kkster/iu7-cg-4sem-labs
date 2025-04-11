@@ -4,14 +4,6 @@
 
 #include <QDebug>
 
-static bool in(const QVector<point_t> &outline_points, const point_t &_point)
-{
-    for (const auto &point : outline_points)
-        if (point.x == _point.x && point.y == _point.y)
-            return true;
-    return false;
-}
-
 static bool checkEdge(int y, const edge_t &edge)
 {
     int start = edge.start.y, end = edge.end.y;
@@ -22,6 +14,15 @@ static bool checkEdge(int y, const edge_t &edge)
         return end < y && y < start;
     else
         return true;
+}
+
+static int count(const std::vector<point_t> &points, int x)
+{
+    int cnt = 0;
+    for (const auto &p : points)
+        if (p.x == x)
+            cnt++;
+    return cnt;
 }
 
 static int getIntersectionNearest(int y, const edge_t &edge)
@@ -42,8 +43,8 @@ void updateDimensions(dimensions_t &dim, const shape_t &shape)
     }
 }
 
-void outline(QPainter &painter, QVector<point_t> &outline_points, const shape_t &shape,
-                    const dimensions_t &dim)
+void outline(QPainter &painter, std::map<int, std::vector<point_t>> &outline_points, const shape_t &shape,
+             const dimensions_t &dim)
 {
     int x;
 
@@ -55,16 +56,26 @@ void outline(QPainter &painter, QVector<point_t> &outline_points, const shape_t 
                 continue;
             x = getIntersectionNearest(y, edge);
             painter.drawPoint(x, y);
-            outline_points.append({ x, y });
+            outline_points[y].push_back({ x, y });
         }
     }
 
     for (const auto &p : shape.vertices)
-        if (!in(outline_points, p))
-            outline_points.append(p);
+    {
+        auto it = outline_points.find(p.y);
+        if (it == outline_points.end())
+        {
+            outline_points[p.y].push_back(p);
+            outline_points[p.y].push_back(p);
+        }
+        else
+            if (it->second.size() % 2 == 1)
+                it->second.push_back(p);
+    }
 }
 
-void fill(QPainter &painter, const QVector<point_t> &outline_points, const QColor &color, const dimensions_t &dim)
+void fill(QPainter &painter, const std::map<int, std::vector<point_t>> &outline_points, const QColor &color,
+          const dimensions_t &dim)
 {
     painter.setPen({ color, 1 });
 
@@ -74,7 +85,7 @@ void fill(QPainter &painter, const QVector<point_t> &outline_points, const QColo
         inside = false;
         for (int x = dim.xmin; x < dim.xmax; x++)
         {
-            if (in(outline_points, {x, y}))
+            if (count(outline_points.at(y), x) % 2 != 0)
                 inside = !inside;
             if (inside)
                 painter.drawPoint(x, y);

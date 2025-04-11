@@ -12,8 +12,8 @@ typedef struct
     int ymin, ymax;
 } dimensions_t;
 
-void outline(QPainter &painter, QVector<point_t> &outline_points, const shape_t &shape, const dimensions_t &dim);
-void fill(QPainter &painter, const QVector<point_t> &outline_points, const QColor &color, const dimensions_t &dim);
+void outline(QPainter &painter, std::map<int, std::vector<point_t>> &outline_points, const shape_t &shape, const dimensions_t &dim);
+void fill(QPainter &painter, const std::map<int, std::vector<point_t>> &outline_points, const QColor &color, const dimensions_t &dim);
 void updateDimensions(dimensions_t &dim, const shape_t &shape);
 
 #endif /* FILL_H */
