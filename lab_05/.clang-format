@@ -1,5 +1,5 @@
 ---
-BasedOnStyle: LLVM
+BasedOnStyle: Microsoft
 Language: Cpp
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
@@ -15,9 +15,9 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortCompoundRequirementOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortIfStatementsOnASingleLine: false
 AllowShortLambdasOnASingleLine: Inline
-AllowShortLoopsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
@@ -60,7 +60,7 @@ BreakFunctionDefinitionParameters: false
 BreakInheritanceList: AfterComma
 BreakStringLiterals: true
 BreakTemplateDeclarations: Yes
-ColumnLimit: 80
+ColumnLimit: 110
 CompactNamespaces: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
