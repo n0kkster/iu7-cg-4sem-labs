@@ -25,7 +25,7 @@ private:
     // ======================
 
     // ======== FUNCS ========
-    bool appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex);
+    bool appendToShape(QVector<point_t> &points, QVector<edge_t> &edges, const QPoint &vertex, bool Z);
     bool connectShape(shape_t &shape);
 
     void drawAxis(QPainter &painter);
@@ -45,8 +45,8 @@ signals:
 public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
-    void finishShapeEntering();
-    bool addVertex(const QPoint &vertex);
+    bool finishShapeEntering();
+    bool addVertex(const QPoint &vertex, bool Z = false);
     void enableFill() { fillEnabled = true; }
 
     int getTotalPointsCount() const;
