@@ -725,7 +725,7 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="compareTimeBtn">
+    <widget class="QPushButton" name="fillBtn">
      <property name="geometry">
       <rect>
        <x>10</x>
