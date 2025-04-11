@@ -26,6 +26,7 @@ private slots:
     void onDrawPointBtnClicked();
     void onPlaneClicked(const QPoint &pos);
     void onPlaneShapeFinished();
+    void onFillBtnClicked();
 
 public:
     MainWindow(QWidget *parent = nullptr);

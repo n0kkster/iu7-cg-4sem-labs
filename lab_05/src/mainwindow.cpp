@@ -1,18 +1,13 @@
-#include <QMessageBox>
-#include <QColorDialog>
-
-#include <fstream>
-#include <iostream>
-
-#include <random>
-#include <sys/time.h>
-
 #include "mainwindow.h"
 
 #include "out/ui_mainwindow.h"
+#include <sys/time.h>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+#include <QColorDialog>
+#include <QMessageBox>
+#include <QTableWidgetItem>
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -20,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->clearScreenBtn, &QPushButton::clicked, this, &MainWindow::onClearScreenBtnClicked);
     connect(ui->connectShapeBtn, &QPushButton::clicked, this, &MainWindow::onConnectShapeBtnClicked);
     connect(ui->drawPointBtn, &QPushButton::clicked, this, &MainWindow::onDrawPointBtnClicked);
+    connect(ui->fillBtn, &QPushButton::clicked, this, &MainWindow::onFillBtnClicked);
 
     connect(ui->planeWidget, &Plane::clicked, this, &MainWindow::onPlaneClicked);
     connect(ui->planeWidget, &Plane::shapeFinished, this, &MainWindow::onPlaneShapeFinished);
@@ -28,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::onFillColorBtnClicked()
-{   
+{
     QColor lineColor = QColorDialog::getColor();
     setFillColorDisplayColor(lineColor);
 }
@@ -39,6 +35,12 @@ void MainWindow::onClearScreenBtnClicked()
     ui->planeWidget->clearPlane();
 }
 
+void MainWindow::onFillBtnClicked()
+{
+    ui->planeWidget->enableFill();
+    ui->planeWidget->viewport()->update();
+}
+
 QTableWidgetItem *getCenteredItem(const QString &data)
 {
     QTableWidgetItem *w = new QTableWidgetItem(data);
@@ -46,12 +48,13 @@ QTableWidgetItem *getCenteredItem(const QString &data)
     return w;
 }
 
-#define SET_TABLE_LAST_ROW(table, c1, c2, c3) { \
-    table->insertRow(table->rowCount()); \
-    table->setItem(table->rowCount() - 1, 0, getCenteredItem(c1)); \
-    table->setItem(table->rowCount() - 1, 1, getCenteredItem(c2)); \
-    table->setItem(table->rowCount() - 1, 2, getCenteredItem(c3)); \
-}
+#define SET_TABLE_LAST_ROW(table, c1, c2, c3)                          \
+    {                                                                  \
+        table->insertRow(table->rowCount());                           \
+        table->setItem(table->rowCount() - 1, 0, getCenteredItem(c1)); \
+        table->setItem(table->rowCount() - 1, 1, getCenteredItem(c2)); \
+        table->setItem(table->rowCount() - 1, 2, getCenteredItem(c3)); \
+    }
 
 void MainWindow::onConnectShapeBtnClicked()
 {
@@ -68,7 +71,8 @@ void MainWindow::onPlaneClicked(const QPoint &pos)
 {
     int number = ui->planeWidget->getTotalPointsCount();
 
-    SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(pos.x()), QString::number(pos.y()));
+    SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(pos.x()),
+                       QString::number(pos.y()));
 }
 
 void MainWindow::onDrawPointBtnClicked()
@@ -91,8 +95,7 @@ void MainWindow::onDrawPointBtnClicked()
         return;
     }
 
-    if (!ui->planeWidget->addVertex({x, y}))
-        return;
+    if (!ui->planeWidget->addVertex({ x, y })) return;
 
     ui->planeWidget->viewport()->update();
 
@@ -117,7 +120,4 @@ void MainWindow::setFillColorDisplayColor(const QColor &color)
     ui->fillColorDisplay->show();
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
+MainWindow::~MainWindow() { delete ui; }
