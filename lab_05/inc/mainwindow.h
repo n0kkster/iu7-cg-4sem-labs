@@ -27,6 +27,7 @@ private slots:
     void onPlaneClicked(const QPoint &pos);
     void onPlaneShapeFinished();
     void onFillBtnClicked();
+    void onEnableDelayBtnClicked();
 
 public:
     MainWindow(QWidget *parent = nullptr);

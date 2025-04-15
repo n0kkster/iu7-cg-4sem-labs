@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->connectShapeBtn, &QPushButton::clicked, this, &MainWindow::onConnectShapeBtnClicked);
     connect(ui->drawPointBtn, &QPushButton::clicked, this, &MainWindow::onDrawPointBtnClicked);
     connect(ui->fillBtn, &QPushButton::clicked, this, &MainWindow::onFillBtnClicked);
+    connect(ui->enableDelayBtn, &QPushButton::clicked, this, &MainWindow::onEnableDelayBtnClicked);
 
     connect(ui->planeWidget, &Plane::clicked, this, &MainWindow::onPlaneClicked);
     connect(ui->planeWidget, &Plane::shapeFinished, this, &MainWindow::onPlaneShapeFinished);
@@ -38,7 +39,10 @@ void MainWindow::onClearScreenBtnClicked()
 void MainWindow::onFillBtnClicked()
 {
     ui->planeWidget->enableFill();
-    ui->planeWidget->viewport()->update();
+    if (ui->planeWidget->isDelayEnabled())
+        ui->planeWidget->fillSlowed();
+    else
+        ui->planeWidget->viewport()->update();
 }
 
 QTableWidgetItem *getCenteredItem(const QString &data)
@@ -60,6 +64,20 @@ void MainWindow::onConnectShapeBtnClicked()
 {
     SET_TABLE_LAST_ROW(ui->tableWidget, "=========", "=========", "=========");
     ui->planeWidget->finishShapeEntering();
+}
+
+void MainWindow::onEnableDelayBtnClicked()
+{
+    if (!ui->planeWidget->isDelayEnabled())
+    {
+        ui->planeWidget->enableDelay();
+        ui->enableDelayBtn->setText("Выключить задержку");
+    }
+    else
+    {
+        ui->planeWidget->disableDelay();
+        ui->enableDelayBtn->setText("Включить задержку");
+    }
 }
 
 void MainWindow::onPlaneShapeFinished()
