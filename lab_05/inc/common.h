@@ -18,6 +18,7 @@ typedef struct
     QVector<point_t> vertices;
     QVector<edge_t> edges;
     bool need_fill;
+    bool outlined;
 } shape_t;
 
 
