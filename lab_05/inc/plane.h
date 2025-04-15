@@ -1,21 +1,20 @@
 #ifndef PLANE_H
 #define PLANE_H
 
+#include "common.h"
+
+#include <map>
+#include <QColor>
 #include <QGraphicsView>
 #include <QPainter>
-#include <QVector>
-#include <QColor>
 #include <QPoint>
-#include <map>
-
-#include "common.h"
+#include <QVector>
 
 class Plane : public QGraphicsView
 {
     Q_OBJECT
 
 private:
-
     // ======== DATA ========
     QVector<shape_t> shapes;
     QColor fillColor;
@@ -54,9 +53,25 @@ public:
     void resetShapes();
 
     void enableFill() { fillEnabled = true; }
-    void enableDelay() { delayEnabled = true; resetShapes(); outline_points.clear(); } 
-    void disableDelay() { delayEnabled = false; resetShapes(); outline_points.clear(); fillEnabled = false; }
-    bool isDelayEnabled() const { return delayEnabled; } 
+
+    void enableDelay()
+    {
+        delayEnabled = true;
+        resetShapes();
+        outline_points.clear();
+    }
+
+    void disableDelay()
+    {
+        delayEnabled = false;
+        resetShapes();
+        outline_points.clear();
+        fillEnabled = false;
+    }
+
+    bool isDelayEnabled() const { return delayEnabled; }
+
+    void setFillColor(const QColor &color) { fillColor = color; }
 
     int getTotalPointsCount() const;
 };

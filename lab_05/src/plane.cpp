@@ -18,6 +18,7 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     fillEnabled = false;
     delayEnabled = false;
     stop_line = 0;
+    fillColor = QColor::fromRgb(255, 255, 255);
 }
 
 // ==================================================
@@ -80,7 +81,7 @@ void Plane::paintEvent(QPaintEvent *event)
     if (!outline_points.empty())
     {
         beg = micros();
-        fill(painter, outline_points, Qt::yellow, dim, delayEnabled, stop_line);
+        fill(painter, outline_points, fillColor, dim, delayEnabled, stop_line);
         end = micros();
     }
 

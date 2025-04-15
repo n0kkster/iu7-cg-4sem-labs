@@ -24,10 +24,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setFillColorDisplayColor("white");
 }
 
+
 void MainWindow::onFillColorBtnClicked()
 {
-    QColor lineColor = QColorDialog::getColor();
-    setFillColorDisplayColor(lineColor);
+    QColor fillColor = QColorDialog::getColor();
+    setFillColorDisplayColor(fillColor);
+    ui->planeWidget->setFillColor(fillColor);
 }
 
 void MainWindow::onClearScreenBtnClicked()
