@@ -2,8 +2,6 @@
 
 #include "common.h"
 
-#include <QDebug>
-
 static bool checkEdge(int y, const edge_t &edge)
 {
     int start = edge.start.y, end = edge.end.y;
@@ -46,11 +44,12 @@ void updateDimensions(dimensions_t &dim, const shape_t &shape)
     }
 }
 
+#include <QDebug>
+
 void outline(QPainter &painter, std::map<int, std::vector<point_t>> &outline_points, const shape_t &shape,
              const dimensions_t &dim)
 {
     int x;
-
     for (int y = dim.ymin; y < dim.ymax; y++)
     {
         for (const auto &edge : shape.edges)
@@ -63,6 +62,7 @@ void outline(QPainter &painter, std::map<int, std::vector<point_t>> &outline_poi
         }
     }
 
+
     for (const auto &p : shape.vertices)
     {
         auto it = outline_points.find(p.y);
@@ -71,24 +71,37 @@ void outline(QPainter &painter, std::map<int, std::vector<point_t>> &outline_poi
             outline_points[p.y].push_back(p);
             outline_points[p.y].push_back(p);
         }
-        else
-            if (it->second.size() % 2 == 1)
-                it->second.push_back(p);
+        else if (it->second.size() % 2 == 1)
+            it->second.push_back(p);
     }
 }
 
+#include <QDebug>
+
 void fill(QPainter &painter, const std::map<int, std::vector<point_t>> &outline_points, const QColor &color,
-          const dimensions_t &dim)
+          const dimensions_t &dim, bool delayEnabled, int stop_line)
 {
     painter.setPen({ color, 1 });
 
     bool inside;
+    stop_line += dim.ymin;
+
     for (int y = dim.ymin; y < dim.ymax; y++)
     {
+        if (delayEnabled)
+        {
+            if (y < stop_line)
+                continue;
+            if (y > stop_line)
+                break;
+        }
+
         inside = false;
         for (int x = dim.xmin; x < dim.xmax; x++)
         {
-
+            if (!outline_points.contains(y))
+                continue;
+            
             if (count(outline_points.at(y), x) % 2 != 0)
                 inside = !inside;
             if (inside)

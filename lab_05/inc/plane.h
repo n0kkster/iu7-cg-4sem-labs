@@ -22,6 +22,8 @@ private:
     std::map<int, std::vector<point_t>> outline_points;
 
     bool fillEnabled;
+    bool delayEnabled;
+    int stop_line;
     // ======================
 
     // ======== FUNCS ========
@@ -47,9 +49,16 @@ public:
     void clearPlane();
     bool finishShapeEntering();
     bool addVertex(const QPoint &vertex, bool Z = false);
+    void fillSlowed();
+
+    void resetShapes();
+
     void enableFill() { fillEnabled = true; }
+    void enableDelay() { delayEnabled = true; resetShapes(); outline_points.clear(); } 
+    void disableDelay() { delayEnabled = false; resetShapes(); outline_points.clear(); fillEnabled = false; }
+    bool isDelayEnabled() const { return delayEnabled; } 
 
     int getTotalPointsCount() const;
 };
 
-#endif // PLANE_H
+#endif /* PLANE_H */

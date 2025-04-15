@@ -5,14 +5,20 @@
 #include <sys/time.h>
 
 #include <QDebug>
+#include <QGuiApplication>
 #include <QMessageBox>
 #include <QPaintEvent>
 #include <QPen>
-#include <QGuiApplication>
+#include <QTimer>
 
 // Конструктор
 // ==================================================
-Plane::Plane(QWidget *parent) : QGraphicsView(parent) { fillEnabled = false; }
+Plane::Plane(QWidget *parent) : QGraphicsView(parent)
+{
+    fillEnabled = false;
+    delayEnabled = false;
+    stop_line = 0;
+}
 
 // ==================================================
 
@@ -29,10 +35,14 @@ void Plane::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
     dimensions_t dim = { .xmin = viewport()->width(), .xmax = 0, .ymin = viewport()->height(), .ymax = 0 };
-
     unsigned long long beg, end;
+    std::map<int, std::vector<point_t>> temp_outline;
 
-    beg = micros();
+    if (delayEnabled)
+        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
+    else
+        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
+
     for (shape_t &shape : shapes)
     {
         for (const point_t &vertex : shape.vertices)
@@ -46,21 +56,36 @@ void Plane::paintEvent(QPaintEvent *event)
         if (!shape.need_fill && fillEnabled && !shape.vertices.empty())
             shape.need_fill = true;
 
-        if (shape.need_fill)
-            outline(painter, outline_points, shape, dim);
+        if (!shape.outlined && shape.need_fill)
+        {
+            outline(painter, temp_outline, shape, dim);
+            shape.outlined = true;
+        }
     }
-    end = micros();
 
     if (fillEnabled)
     {
-        qDebug() << "xmin:" << dim.xmin << "xmax:" << dim.xmax << "ymin:" << dim.ymin << "ymax:" << dim.ymax;
-        beg = micros();
-        fill(painter, outline_points, Qt::yellow, dim);
-        end = micros();
-        qDebug() << "time taken to fill:" << (end - beg) / 1000;
+        for (const auto &[y, points] : temp_outline)
+        {
+            if (outline_points.contains(y))
+                for (const auto &point : points)
+                    outline_points[y].push_back(point);
+            else
+                outline_points[y] = points;
+        }
+
+        temp_outline.clear();
     }
 
-    fillEnabled = false;
+    if (!outline_points.empty())
+    {
+        beg = micros();
+        fill(painter, outline_points, Qt::yellow, dim, delayEnabled, stop_line);
+        end = micros();
+    }
+
+    if (!delayEnabled)
+        fillEnabled = false;
 }
 
 void Plane::mousePressEvent(QMouseEvent *event)
@@ -76,7 +101,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
             if (addVertex(event->pos(), Z))
                 emit clicked(event->pos());
-            
+
             break;
 
         case Qt::RightButton:
@@ -93,10 +118,50 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
 // ~================ СОБЫТИЯ ================~
 
+void Plane::resetShapes()
+{
+    for (auto &shape : shapes)
+    {
+        shape.need_fill = false;
+        shape.outlined = false;
+    }
+}
+
+void Plane::fillSlowed()
+{
+    stop_line = 0;
+    dimensions_t dim = { .xmin = viewport()->width(), .xmax = 0, .ymin = viewport()->height(), .ymax = 0 };
+    for (shape_t &shape : shapes)
+        updateDimensions(dim, shape);
+
+    int max_lines = dim.ymax - dim.ymin;
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this,
+            [=, this]()
+            {
+                if (stop_line < max_lines)
+                {
+                    stop_line++;
+                    viewport()->update();
+                }
+                else
+                {
+                    timer->stop();
+                    timer->deleteLater();
+                }
+            });
+    timer->start(10);
+
+    outline_points.clear();
+
+    resetShapes();
+}
+
 bool Plane::addVertex(const QPoint &vertex, bool Z)
 {
     if (shapes.size() == 0)
-        shapes.append(shape_t{ .need_fill = false });
+        shapes.append(shape_t{ .need_fill = false, .outlined = false });
 
     shape_t &shape = shapes.last();
     if (!appendToShape(shape.vertices, shape.edges, vertex, Z))
@@ -147,7 +212,7 @@ bool Plane::finishShapeEntering()
     if (connectShape(shapes.last()) != true)
         return false;
 
-    shapes.append(shape_t{ .need_fill = false });
+    shapes.append(shape_t{ .need_fill = false, .outlined = false });
 
     viewport()->update();
 
@@ -172,6 +237,10 @@ void Plane::clearPlane()
 {
     shapes.clear();
     outline_points.clear();
+
+    if (delayEnabled)
+        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
+
     viewport()->update();
 }
 
