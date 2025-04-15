@@ -23,6 +23,8 @@ private:
     bool fillEnabled;
     bool delayEnabled;
     int stop_line;
+    int fillTime;
+    bool ready;
     // ======================
 
     // ======== FUNCS ========
@@ -74,6 +76,10 @@ public:
     void setFillColor(const QColor &color) { fillColor = color; }
 
     int getTotalPointsCount() const;
+
+    int getFillTime() const { return fillTime; }
+
+    bool isReady() const { return ready; }
 };
 
 #endif /* PLANE_H */

@@ -19,6 +19,8 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     delayEnabled = false;
     stop_line = 0;
     fillColor = QColor::fromRgb(255, 255, 255);
+    fillTime = 0;
+    ready = false;
 }
 
 // ==================================================
@@ -39,11 +41,14 @@ void Plane::paintEvent(QPaintEvent *event)
     unsigned long long beg, end;
     std::map<int, std::vector<point_t>> temp_outline;
 
+    ready = false;
+
     if (delayEnabled)
         viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
     else
         viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
 
+    beg = micros();
     for (shape_t &shape : shapes)
     {
         for (const point_t &vertex : shape.vertices)
@@ -79,10 +84,19 @@ void Plane::paintEvent(QPaintEvent *event)
     }
 
     if (!outline_points.empty())
-    {
-        beg = micros();
         fill(painter, outline_points, fillColor, dim, delayEnabled, stop_line);
-        end = micros();
+    end = micros();
+
+
+    if (!delayEnabled && fillEnabled)
+    {
+        fillTime = (end - beg) / 1000;
+        ready = true;
+    }
+    else
+    {
+        fillTime = 0;
+        ready = false;
     }
 
     if (!delayEnabled)

@@ -6,6 +6,7 @@
 #include <QColorDialog>
 #include <QMessageBox>
 #include <QTableWidgetItem>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -23,7 +24,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     setFillColorDisplayColor("white");
 }
-
 
 void MainWindow::onFillColorBtnClicked()
 {
@@ -45,6 +45,23 @@ void MainWindow::onFillBtnClicked()
         ui->planeWidget->fillSlowed();
     else
         ui->planeWidget->viewport()->update();
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this,
+            [=, this]()
+            {
+                if (ui->planeWidget->isReady())
+                {
+                    QMessageBox::information(this, "Время закраски",
+                                             QString("Время закраски составило ")
+                                                 + QString::number(ui->planeWidget->getFillTime())
+                                                 + QString(" мс."));
+
+                    timer->stop();
+                    timer->deleteLater();
+                }
+            });
+    timer->start(10);
 }
 
 QTableWidgetItem *getCenteredItem(const QString &data)
@@ -115,20 +132,14 @@ void MainWindow::onDrawPointBtnClicked()
         return;
     }
 
-    if (!ui->planeWidget->addVertex({ x, y })) return;
+    if (!ui->planeWidget->addVertex({ x, y }))
+        return;
 
     ui->planeWidget->viewport()->update();
 
     number = ui->planeWidget->getTotalPointsCount();
 
     SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(x), QString::number(y));
-}
-
-unsigned long long micros(void)
-{
-    struct timeval value;
-    gettimeofday(&value, NULL);
-    return (unsigned long long)value.tv_sec * 1000ULL * 1000ULL + value.tv_usec;
 }
 
 void MainWindow::setFillColorDisplayColor(const QColor &color)
