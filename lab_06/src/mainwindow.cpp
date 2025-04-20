@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->enableDelayBtn, &QPushButton::clicked, this, &MainWindow::onEnableDelayBtnClicked);
     connect(ui->drawCircleBtn, &QPushButton::clicked, this, &MainWindow::onDrawCircleBtnClicked);
     connect(ui->drawEllipseBtn, &QPushButton::clicked, this, &MainWindow::onDrawEllipseBtnClicked);
+    connect(ui->drawSeedBtn, &QPushButton::clicked, this, &MainWindow::onDrawSeedBtnClicked);
 
     connect(ui->planeWidget, &Plane::clicked, this, &MainWindow::onPlaneClicked);
     connect(ui->planeWidget, &Plane::shapeFinished, this, &MainWindow::onPlaneShapeFinished);
@@ -216,6 +217,31 @@ void MainWindow::onDrawPointBtnClicked()
 
     SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(x), QString::number(y));
 }
+
+void MainWindow::onDrawSeedBtnClicked()
+{
+    int x, y;
+    bool ok;
+    int number;
+
+    x = ui->xInp->text().toInt(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Координата X должна быть корректным целым числом.");
+        return;
+    }
+
+    y = ui->yInp->text().toInt(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Координата Y должна быть корректным целым числом.");
+        return;
+    }
+
+    ui->planeWidget->addSeed({ x, y });
+    ui->planeWidget->viewport()->update();
+}
+
 
 void MainWindow::setFillColorDisplayColor(const QColor &color)
 {

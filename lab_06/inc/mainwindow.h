@@ -30,6 +30,7 @@ private slots:
     void onEnableDelayBtnClicked();
     void onDrawCircleBtnClicked();
     void onDrawEllipseBtnClicked();
+    void onDrawSeedBtnClicked();
 
 public:
     MainWindow(QWidget *parent = nullptr);
