@@ -28,6 +28,8 @@ private slots:
     void onPlaneShapeFinished();
     void onFillBtnClicked();
     void onEnableDelayBtnClicked();
+    void onDrawCircleBtnClicked();
+    void onDrawEllipseBtnClicked();
 
 public:
     MainWindow(QWidget *parent = nullptr);

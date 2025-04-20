@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->drawPointBtn, &QPushButton::clicked, this, &MainWindow::onDrawPointBtnClicked);
     connect(ui->fillBtn, &QPushButton::clicked, this, &MainWindow::onFillBtnClicked);
     connect(ui->enableDelayBtn, &QPushButton::clicked, this, &MainWindow::onEnableDelayBtnClicked);
+    connect(ui->drawCircleBtn, &QPushButton::clicked, this, &MainWindow::onDrawCircleBtnClicked);
+    connect(ui->drawEllipseBtn, &QPushButton::clicked, this, &MainWindow::onDrawEllipseBtnClicked);
 
     connect(ui->planeWidget, &Plane::clicked, this, &MainWindow::onPlaneClicked);
     connect(ui->planeWidget, &Plane::shapeFinished, this, &MainWindow::onPlaneShapeFinished);
@@ -52,8 +54,8 @@ void MainWindow::onFillBtnClicked()
             {
                 if (ui->planeWidget->isReady())
                 {
-                    QMessageBox::information(this, "Время закраски",
-                                             QString("Время закраски составило ")
+                    QMessageBox::information(this, "Время заполнения",
+                                             QString("Время заполнения составило ")
                                                  + QString::number(ui->planeWidget->getFillTime())
                                                  + QString(" мс."));
 
@@ -110,6 +112,79 @@ void MainWindow::onPlaneClicked(const QPoint &pos)
 
     SET_TABLE_LAST_ROW(ui->tableWidget, QString::number(number), QString::number(pos.x()),
                        QString::number(pos.y()));
+}
+
+void MainWindow::onDrawCircleBtnClicked()
+{
+    double xc, yc, radius;
+    bool ok;
+
+    xc = ui->xcInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Координата X центра должна быть вещественным числом!");
+        return;
+    }
+
+    yc = ui->ycInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Координата Y центра должна быть вещественным числом!");
+        return;
+    }
+
+    radius = ui->circleRInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Радиус должен быть вещественным числом!");
+        return;
+    }
+
+    ui->planeWidget->addCircle({
+        { xc, yc },
+        radius
+    });
+    ui->planeWidget->viewport()->update();
+}
+
+void MainWindow::onDrawEllipseBtnClicked()
+{
+    double xc, yc, rx, ry;
+    bool ok;
+
+    xc = ui->xcInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Координата X центра должна быть вещественным числом!");
+        return;
+    }
+
+    yc = ui->ycInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Координата Y центра должна быть вещественным числом!");
+        return;
+    }
+
+    rx = ui->ellipseRxInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Радиус по оси X должен быть вещественным числом!");
+        return;
+    }
+
+    ry = ui->ellipseRyInp->text().toDouble(&ok);
+    if (!ok)
+    {
+        QMessageBox::critical(this, "Ошибка", "Радиус по оси Y должен быть вещественным числом!");
+        return;
+    }
+
+    ui->planeWidget->addEllipse({
+        { xc, yc },
+        rx, ry
+    });
+    ui->planeWidget->viewport()->update();
 }
 
 void MainWindow::onDrawPointBtnClicked()
