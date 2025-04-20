@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-void drawCicrle(QPainter &painter, const circle_t &circle, bool measure_mode = false);
+void drawCicrle(QPainter &painter, const circle_t &circle);
 
 #endif /* CIRCLE_H */

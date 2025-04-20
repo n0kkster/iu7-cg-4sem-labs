@@ -2,7 +2,7 @@
 
 #include <QPainter>
 
-void drawCicrle(QPainter &painter, const circle_t &circle, bool measure_mode)
+void drawCicrle(QPainter &painter, const circle_t &circle)
 {
     int x, y;
     std::array<QPoint, NUM_TYPES> curr_points;
@@ -15,21 +15,17 @@ void drawCicrle(QPainter &painter, const circle_t &circle, bool measure_mode)
     {
         y = lrintf64(yc + sqrt(r * r - (x - xc) * (x - xc)));
 
-        if (!measure_mode)
-        {
-            curr_points[CURRENT] = { x, y };
-            curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], center.x());
-            curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], center.y());
-            curr_points[M_XY] = mirrorPointByXY(curr_points[CURRENT], center);
+        curr_points[CURRENT] = { x, y };
+        curr_points[M_X] = mirrorPointByX(curr_points[CURRENT], center.x());
+        curr_points[M_Y] = mirrorPointByY(curr_points[CURRENT], center.y());
+        curr_points[M_XY] = mirrorPointByXY(curr_points[CURRENT], center);
 
-            curr_points[M_OCTANT] = mirrorPointByOctant({ x, y }, center);
-            curr_points[M_X_OCTANT] = mirrorPointByX(curr_points[M_OCTANT], center.x());
-            curr_points[M_Y_OCTANT] = mirrorPointByY(curr_points[M_OCTANT], center.y());
-            curr_points[M_XY_OCTANT] = mirrorPointByXY(curr_points[M_OCTANT], center);
-        }
+        curr_points[M_OCTANT] = mirrorPointByOctant({ x, y }, center);
+        curr_points[M_X_OCTANT] = mirrorPointByX(curr_points[M_OCTANT], center.x());
+        curr_points[M_Y_OCTANT] = mirrorPointByY(curr_points[M_OCTANT], center.y());
+        curr_points[M_XY_OCTANT] = mirrorPointByXY(curr_points[M_OCTANT], center);
 
-        if (!measure_mode)
-            for (size_t i = 0; i < curr_points.size(); ++i)
-                painter.drawPoint(curr_points[i]);
+        for (size_t i = 0; i < curr_points.size(); ++i)
+            painter.drawPoint(curr_points[i]);
     }
 }

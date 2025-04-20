@@ -3,6 +3,6 @@
 
 #include "common.h"
 
-void drawEllipse(QPainter &painter, const circle_t &circle, bool measure_mode = false);
+void drawEllipse(QPainter &painter, const ellipse_t &ellipse);
 
 #endif /* ELLIPSE_H */
