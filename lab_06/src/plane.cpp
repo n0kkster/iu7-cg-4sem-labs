@@ -20,12 +20,13 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
     fillEnabled = false;
     delayEnabled = false;
-    stop_line = 0;
+    iter_stop = INT_MAX;
+    iter_max = 100;
     fillColor = QColor::fromRgb(255, 255, 255);
     fillTime = 0;
     ready = false;
 
-    buffer = QImage({900, 780}, QImage::Format_ARGB32);
+    buffer = QImage({ 900, 780 }, QImage::Format_ARGB32);
 }
 
 // ==================================================
@@ -40,13 +41,16 @@ static unsigned long long micros(void)
 // ================= СОБЫТИЯ =================
 void Plane::paintEvent(QPaintEvent *event)
 {
+    if (delayEnabled)
+        buffer.fill({ 39, 40, 41 });
+
     QGraphicsView::paintEvent(event);
     QPainter painter(&buffer);
     QPainter real_painter(this->viewport());
 
     unsigned long long beg, end;
 
-    painter.setPen({Qt::white, 1});
+    painter.setPen({ Qt::white, 1 });
 
     ready = false;
 
@@ -68,15 +72,18 @@ void Plane::paintEvent(QPaintEvent *event)
 
     painter.setPen({ Qt::yellow, 2 });
     for (const point_t &seed : seed_points)
-    {
         painter.drawPoint(seed.x, seed.y);
-    }
     painter.setPen({ Qt::white, 1 });
 
     if (fillEnabled)
     {
+        painter.setPen({ fillColor, 1 });
+        iter_max = 0;
         for (const point_t &seed : seed_points)
-            fill2(painter, buffer, seed, QColor::fromRgb(255, 255, 255), fillColor);
+            iter_max = std::max(
+                fill(painter, buffer, seed, QColor::fromRgb(255, 255, 255), fillColor, iter_stop), iter_max);
+        // qDebug() << "iter max:" << iter_max;
+        painter.setPen({ Qt::white, 1 });
     }
 
     real_painter.drawImage(0, 0, buffer);
@@ -94,11 +101,8 @@ void Plane::paintEvent(QPaintEvent *event)
         ready = false;
     }
 
-
     if (!delayEnabled)
         fillEnabled = false;
-
-    // qDebug() << "color at (0,0):" << this->grab().toImage().pixelColor(0, 0);
 }
 
 void Plane::mousePressEvent(QMouseEvent *event)
@@ -157,25 +161,28 @@ void Plane::resetShapes()
 
 void Plane::fillSlowed()
 {
-    stop_line = 0;
-
-    // QTimer *timer = new QTimer(this);
-    // connect(timer, &QTimer::timeout, this,
-    //         [=, this]()
-    //         {
-    //             if (stop_line < max_lines)
-    //             {
-    //                 stop_line++;
-    //                 viewport()->update();
-    //             }
-    //             else
-    //             {
-    //                 timer->stop();
-    //                 timer->deleteLater();
-    //             }
-    //         });
-    // timer->start(10);
-
+    iter_stop = 0;
+    qDebug() << "slowed filin, iter max:" << iter_max;
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this,
+            [=, this]()
+            {
+                if (iter_stop < iter_max)
+                {
+                    // qDebug() << "inside of timer, stop:" << iter_stop << "max:" << iter_max;
+                    iter_stop += 100;
+                    viewport()->update();
+                }
+                else
+                {
+                    qDebug() << "timer stop";
+                    iter_stop = INT_MAX;
+                    fillEnabled = false;
+                    timer->stop();
+                    timer->deleteLater();
+                }
+            });
+    timer->start(10);
     resetShapes();
 }
 
@@ -262,15 +269,12 @@ bool Plane::connectShape(shape_t &shape)
 
 void Plane::clearPlane()
 {
-    buffer.fill({39, 40, 41});
+    buffer.fill({ 39, 40, 41 });
 
     shapes.clear();
     circles.clear();
     ellipses.clear();
     seed_points.clear();
-
-    if (delayEnabled)
-        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
 
     viewport()->update();
 }

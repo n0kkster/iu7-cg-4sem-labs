@@ -27,7 +27,8 @@ private:
 
     bool fillEnabled;
     bool delayEnabled;
-    int stop_line;
+    int iter_stop;
+    int iter_max;
     int fillTime;
     bool ready;
     // ======================
