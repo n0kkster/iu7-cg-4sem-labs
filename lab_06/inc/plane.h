@@ -16,9 +16,12 @@ class Plane : public QGraphicsView
 
 private:
     // ======== DATA ========
+    QImage buffer;
+
     QVector<shape_t> shapes;
     QVector<circle_t> circles;
     QVector<ellipse_t> ellipses;
+    QVector<point_t> seed_points;
 
     QColor fillColor;
     std::map<int, std::vector<point_t>> outline_points;
@@ -28,7 +31,6 @@ private:
     int stop_line;
     int fillTime;
     bool ready;
-    bool needClear;
     // ======================
 
     // ======== FUNCS ========
@@ -54,15 +56,18 @@ public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
     bool finishShapeEntering();
+    
     bool addVertex(const QPoint &vertex, bool Z = false);
-    void fillSlowed();
-
+    void addSeed(const QPoint &pos);
     void addCircle(const circle_t &circle);
     void addEllipse(const ellipse_t &ellipse);
 
+    void fillSlowed();
+
+
     void resetShapes();
 
-    void enableFill() { fillEnabled = true; needClear = true; }
+    void enableFill() { fillEnabled = true; }
 
     void enableDelay()
     {

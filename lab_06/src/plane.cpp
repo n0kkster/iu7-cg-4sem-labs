@@ -8,6 +8,7 @@
 
 #include <QDebug>
 #include <QGuiApplication>
+#include <QImage>
 #include <QMessageBox>
 #include <QPaintEvent>
 #include <QPen>
@@ -23,7 +24,8 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     fillColor = QColor::fromRgb(255, 255, 255);
     fillTime = 0;
     ready = false;
-    needClear = false;
+
+    buffer = QImage({900, 780}, QImage::Format_ARGB32);
 }
 
 // ==================================================
@@ -39,21 +41,15 @@ static unsigned long long micros(void)
 void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
-    QPainter painter(viewport());
- 
-    if (needClear)
-    {
-        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
-        needClear = false;
-        viewport()->update();
-        return;
-    }
+    QPainter painter(&buffer);
 
     viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
- 
+
     dimensions_t dim = { .xmin = viewport()->width(), .xmax = 0, .ymin = viewport()->height(), .ymax = 0 };
     unsigned long long beg, end;
     std::map<int, std::vector<point_t>> temp_outline;
+
+    painter.setPen({Qt::white, 1});
 
     ready = false;
 
@@ -88,6 +84,12 @@ void Plane::paintEvent(QPaintEvent *event)
         drawEllipse(painter, ellipse);
     }
 
+    painter.setPen({ Qt::yellow, 2 });
+    for (const point_t &seed : seed_points)
+    {
+        painter.drawPoint(seed.x, seed.y);
+    }
+    painter.setPen({ Qt::white, 1 });
 
     if (fillEnabled)
     {
@@ -120,6 +122,11 @@ void Plane::paintEvent(QPaintEvent *event)
 
     if (!delayEnabled)
         fillEnabled = false;
+
+    QPainter real_painter(this->viewport());
+    real_painter.drawImage(0, 0, buffer);
+
+    // qDebug() << "color at (0,0):" << this->grab().toImage().pixelColor(0, 0);
 }
 
 void Plane::mousePressEvent(QMouseEvent *event)
@@ -141,6 +148,10 @@ void Plane::mousePressEvent(QMouseEvent *event)
         case Qt::RightButton:
             if (finishShapeEntering())
                 emit shapeFinished();
+            break;
+
+        case Qt::MiddleButton:
+            addSeed(event->pos());
             break;
 
         default:
@@ -203,15 +214,11 @@ void Plane::fillSlowed()
     resetShapes();
 }
 
-void Plane::addCircle(const circle_t &circle)
-{
-    circles.append(circle);
-}
+void Plane::addCircle(const circle_t &circle) { circles.append(circle); }
 
-void Plane::addEllipse(const ellipse_t &ellipse)
-{
-    ellipses.append(ellipse);
-}
+void Plane::addEllipse(const ellipse_t &ellipse) { ellipses.append(ellipse); }
+
+void Plane::addSeed(const QPoint &pos) { seed_points.append({ pos.x(), pos.y() }); }
 
 bool Plane::addVertex(const QPoint &vertex, bool Z)
 {
@@ -290,7 +297,7 @@ bool Plane::connectShape(shape_t &shape)
 
 void Plane::clearPlane()
 {
-    needClear = true;
+    buffer.fill({39, 40, 41});
 
     shapes.clear();
     circles.clear();
