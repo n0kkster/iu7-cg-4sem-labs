@@ -7,16 +7,8 @@
 #include <QPainter>
 #include <QVector>
 
-typedef struct
-{
-    int xmin, xmax;
-    int ymin, ymax;
-} dimensions_t;
 
-void outline(QPainter &painter, std::map<int, std::vector<point_t>> &outline_points, const shape_t &shape,
-             const dimensions_t &dim);
-void fill(QPainter &painter, const std::map<int, std::vector<point_t>> &outline_points, const QColor &color,
-          const dimensions_t &dim, bool delayEnabled = false, int stop_line = 0);
-void updateDimensions(dimensions_t &dim, const shape_t &shape);
+void fill2(QPainter &painter, const QImage &buffer, const point_t seed, const QColor &border_color,
+           const QColor &fill_color);
 
 #endif /* FILL_H */

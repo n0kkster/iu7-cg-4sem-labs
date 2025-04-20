@@ -24,7 +24,6 @@ private:
     QVector<point_t> seed_points;
 
     QColor fillColor;
-    std::map<int, std::vector<point_t>> outline_points;
 
     bool fillEnabled;
     bool delayEnabled;
@@ -73,14 +72,12 @@ public:
     {
         delayEnabled = true;
         resetShapes();
-        outline_points.clear();
     }
 
     void disableDelay()
     {
         delayEnabled = false;
         resetShapes();
-        outline_points.clear();
         fillEnabled = false;
     }
 

@@ -42,12 +42,9 @@ void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
     QPainter painter(&buffer);
+    QPainter real_painter(this->viewport());
 
-    viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
-
-    dimensions_t dim = { .xmin = viewport()->width(), .xmax = 0, .ymin = viewport()->height(), .ymax = 0 };
     unsigned long long beg, end;
-    std::map<int, std::vector<point_t>> temp_outline;
 
     painter.setPen({Qt::white, 1});
 
@@ -61,28 +58,13 @@ void Plane::paintEvent(QPaintEvent *event)
 
         for (const edge_t &line : shape.edges)
             drawLine(painter, line);
-
-        updateDimensions(dim, shape);
-
-        if (!shape.need_fill && fillEnabled && !shape.vertices.empty())
-            shape.need_fill = true;
-
-        if (!shape.outlined && shape.need_fill)
-        {
-            outline(painter, temp_outline, shape, dim);
-            shape.outlined = true;
-        }
     }
 
     for (const circle_t &circle : circles)
-    {
         drawCicrle(painter, circle);
-    }
 
     for (const ellipse_t &ellipse : ellipses)
-    {
         drawEllipse(painter, ellipse);
-    }
 
     painter.setPen({ Qt::yellow, 2 });
     for (const point_t &seed : seed_points)
@@ -93,20 +75,12 @@ void Plane::paintEvent(QPaintEvent *event)
 
     if (fillEnabled)
     {
-        for (const auto &[y, points] : temp_outline)
-        {
-            if (outline_points.contains(y))
-                for (const auto &point : points)
-                    outline_points[y].push_back(point);
-            else
-                outline_points[y] = points;
-        }
-
-        temp_outline.clear();
+        for (const point_t &seed : seed_points)
+            fill2(painter, buffer, seed, QColor::fromRgb(255, 255, 255), fillColor);
     }
 
-    if (!outline_points.empty() && fillEnabled)
-        fill(painter, outline_points, fillColor, dim, delayEnabled, stop_line);
+    real_painter.drawImage(0, 0, buffer);
+
     end = micros();
 
     if (!delayEnabled && fillEnabled)
@@ -120,11 +94,9 @@ void Plane::paintEvent(QPaintEvent *event)
         ready = false;
     }
 
+
     if (!delayEnabled)
         fillEnabled = false;
-
-    QPainter real_painter(this->viewport());
-    real_painter.drawImage(0, 0, buffer);
 
     // qDebug() << "color at (0,0):" << this->grab().toImage().pixelColor(0, 0);
 }
@@ -186,30 +158,23 @@ void Plane::resetShapes()
 void Plane::fillSlowed()
 {
     stop_line = 0;
-    dimensions_t dim = { .xmin = viewport()->width(), .xmax = 0, .ymin = viewport()->height(), .ymax = 0 };
-    for (shape_t &shape : shapes)
-        updateDimensions(dim, shape);
 
-    int max_lines = dim.ymax - dim.ymin;
-
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this,
-            [=, this]()
-            {
-                if (stop_line < max_lines)
-                {
-                    stop_line++;
-                    viewport()->update();
-                }
-                else
-                {
-                    timer->stop();
-                    timer->deleteLater();
-                }
-            });
-    timer->start(10);
-
-    outline_points.clear();
+    // QTimer *timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this,
+    //         [=, this]()
+    //         {
+    //             if (stop_line < max_lines)
+    //             {
+    //                 stop_line++;
+    //                 viewport()->update();
+    //             }
+    //             else
+    //             {
+    //                 timer->stop();
+    //                 timer->deleteLater();
+    //             }
+    //         });
+    // timer->start(10);
 
     resetShapes();
 }
@@ -302,8 +267,7 @@ void Plane::clearPlane()
     shapes.clear();
     circles.clear();
     ellipses.clear();
-
-    outline_points.clear();
+    seed_points.clear();
 
     if (delayEnabled)
         viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
