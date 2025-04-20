@@ -17,6 +17,9 @@ class Plane : public QGraphicsView
 private:
     // ======== DATA ========
     QVector<shape_t> shapes;
+    QVector<circle_t> circles;
+    QVector<ellipse_t> ellipses;
+
     QColor fillColor;
     std::map<int, std::vector<point_t>> outline_points;
 
@@ -25,6 +28,7 @@ private:
     int stop_line;
     int fillTime;
     bool ready;
+    bool needClear;
     // ======================
 
     // ======== FUNCS ========
@@ -53,9 +57,12 @@ public:
     bool addVertex(const QPoint &vertex, bool Z = false);
     void fillSlowed();
 
+    void addCircle(const circle_t &circle);
+    void addEllipse(const ellipse_t &ellipse);
+
     void resetShapes();
 
-    void enableFill() { fillEnabled = true; }
+    void enableFill() { fillEnabled = true; needClear = true; }
 
     void enableDelay()
     {

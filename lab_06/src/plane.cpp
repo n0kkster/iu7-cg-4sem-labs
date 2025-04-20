@@ -1,5 +1,7 @@
 #include "plane.h"
 
+#include "circle.h"
+#include "ellipse.h"
 #include "fill.h"
 #include "line.h"
 #include <sys/time.h>
@@ -21,6 +23,7 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     fillColor = QColor::fromRgb(255, 255, 255);
     fillTime = 0;
     ready = false;
+    needClear = false;
 }
 
 // ==================================================
@@ -37,16 +40,22 @@ void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
+ 
+    if (needClear)
+    {
+        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
+        needClear = false;
+        viewport()->update();
+        return;
+    }
+
+    viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
+ 
     dimensions_t dim = { .xmin = viewport()->width(), .xmax = 0, .ymin = viewport()->height(), .ymax = 0 };
     unsigned long long beg, end;
     std::map<int, std::vector<point_t>> temp_outline;
 
     ready = false;
-
-    if (delayEnabled)
-        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, true);
-    else
-        viewport()->setAttribute(Qt::WA_OpaquePaintEvent, false);
 
     beg = micros();
     for (shape_t &shape : shapes)
@@ -69,6 +78,17 @@ void Plane::paintEvent(QPaintEvent *event)
         }
     }
 
+    for (const circle_t &circle : circles)
+    {
+        drawCicrle(painter, circle);
+    }
+
+    for (const ellipse_t &ellipse : ellipses)
+    {
+        drawEllipse(painter, ellipse);
+    }
+
+
     if (fillEnabled)
     {
         for (const auto &[y, points] : temp_outline)
@@ -86,7 +106,6 @@ void Plane::paintEvent(QPaintEvent *event)
     if (!outline_points.empty() && fillEnabled)
         fill(painter, outline_points, fillColor, dim, delayEnabled, stop_line);
     end = micros();
-
 
     if (!delayEnabled && fillEnabled)
     {
@@ -184,6 +203,16 @@ void Plane::fillSlowed()
     resetShapes();
 }
 
+void Plane::addCircle(const circle_t &circle)
+{
+    circles.append(circle);
+}
+
+void Plane::addEllipse(const ellipse_t &ellipse)
+{
+    ellipses.append(ellipse);
+}
+
 bool Plane::addVertex(const QPoint &vertex, bool Z)
 {
     if (shapes.size() == 0)
@@ -261,7 +290,12 @@ bool Plane::connectShape(shape_t &shape)
 
 void Plane::clearPlane()
 {
+    needClear = true;
+
     shapes.clear();
+    circles.clear();
+    ellipses.clear();
+
     outline_points.clear();
 
     if (delayEnabled)
