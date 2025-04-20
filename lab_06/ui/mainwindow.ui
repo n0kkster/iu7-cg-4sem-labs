@@ -1084,7 +1084,7 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QLineEdit" name="xcEllipseInp">
+    <widget class="QLineEdit" name="xcInp">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1100,7 +1100,7 @@
       <string>Xц</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="ycEllipseInp">
+    <widget class="QLineEdit" name="ycInp">
      <property name="geometry">
       <rect>
        <x>140</x>
@@ -1187,7 +1187,7 @@
       <string>Радиус</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="drawPointBtn_2">
+    <widget class="QPushButton" name="drawCircleBtn">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1246,7 +1246,7 @@
       <string>Высота</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="drawPointBtn_3">
+    <widget class="QPushButton" name="drawEllipseBtn">
      <property name="geometry">
       <rect>
        <x>140</x>
