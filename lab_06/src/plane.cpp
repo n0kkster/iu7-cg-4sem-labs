@@ -83,7 +83,7 @@ void Plane::paintEvent(QPaintEvent *event)
         temp_outline.clear();
     }
 
-    if (!outline_points.empty())
+    if (!outline_points.empty() && fillEnabled)
         fill(painter, outline_points, fillColor, dim, delayEnabled, stop_line);
     end = micros();
 
@@ -127,6 +127,17 @@ void Plane::mousePressEvent(QMouseEvent *event)
         default:
             break;
     }
+
+    viewport()->update();
+}
+
+void Plane::mouseMoveEvent(QMouseEvent *event)
+{
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+
+    if (addVertex(event->pos()))
+        emit clicked(event->pos());
 
     viewport()->update();
 }
