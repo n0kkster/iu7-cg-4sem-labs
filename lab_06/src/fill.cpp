@@ -21,11 +21,144 @@ int fill(QPainter &painter, const QImage &buffer, const point_t seed, const QCol
 {
     QStack<point_t> points;
     point_t curr;
+    int x, y, tx, ty, xl, xr, x_in;
     int iter = 0;
-    bool need_inc;
+    bool need_inc, flag;
 
     points.push(seed);
+    
+#ifdef BY_LINES
+    while (!points.empty())
+    {
+        curr = points.pop();
 
+        x = curr.x;
+        y = curr.y;
+        tx = x;
+        ty = y;
+
+        painter.drawPoint(x, y);
+
+        ++x;
+
+        while (buffer.pixelColor(x, y) != fill_color && buffer.pixelColor(x, y) != border_color
+               && x < buffer.width())
+        {
+            painter.drawPoint(x, y);
+            ++x;
+        }
+
+        xr = x - 1;
+        x = tx - 1;
+
+        while (buffer.pixelColor(x, y) != fill_color && buffer.pixelColor(x, y) != border_color && x > 0)
+        {
+            painter.drawPoint(x, y);
+            --x;
+        }
+
+        if (iter > iter_stop)
+            return iter_stop;
+
+        iter++;
+
+        xl = x + 1;
+
+        x = xl;
+        if (ty > 0)
+        {
+            y = ty - 1;
+            while (x <= xr)
+            {
+                flag = false;
+                while (buffer.pixelColor(x, y) != fill_color && buffer.pixelColor(x, y) != border_color
+                       && x <= xr)
+                {
+                    flag = true;
+                    ++x;
+                }
+
+                if (flag)
+                {
+                    if (x == xr && buffer.pixelColor(x, y) != fill_color
+                        && buffer.pixelColor(x, y) != border_color)
+                    {
+                        if (y > 0)
+                            points.push({ x, y });
+                    }
+                    else
+                    {
+                        if (y > 0)
+                            points.push({ x - 1, y });
+                    }
+                    flag = false;
+                }
+
+                x_in = x;
+                while ((buffer.pixelColor(x, y) == fill_color || buffer.pixelColor(x, y) == border_color)
+                       && x < xr)
+                {
+                    ++x;
+                }
+
+                if (x == x_in)
+                    ++x;
+            }
+        }
+
+        if (iter > iter_stop)
+            return iter_stop;
+
+        iter++;
+
+        x = xl;
+        if (ty < buffer.height())
+        {
+            y = ty + 1;
+            while (x <= xr)
+            {
+                flag = false;
+                while (buffer.pixelColor(x, y) != fill_color && buffer.pixelColor(x, y) != border_color
+                       && x <= xr)
+                {
+                    flag = true;
+                    ++x;
+                }
+
+                if (flag)
+                {
+                    if (x == xr && buffer.pixelColor(x, y) != fill_color
+                        && buffer.pixelColor(x, y) != border_color)
+                    {
+                        if (y < buffer.height())
+                            points.push({ x, y });
+                    }
+                    else
+                    {
+                        if (y < buffer.height())
+                            points.push({ x - 1, y });
+                    }
+                    flag = false;
+                }
+
+                x_in = x;
+                while ((buffer.pixelColor(x, y) == fill_color || buffer.pixelColor(x, y) == border_color)
+                       && x < xr)
+                {
+                    ++x;
+                }
+
+                if (x == x_in)
+                    ++x;
+            }
+        }
+
+        if (iter > iter_stop)
+            return iter_stop;
+
+        iter++;
+    }
+#else
     while (!points.empty())
     {
         need_inc = false;
@@ -64,6 +197,6 @@ int fill(QPainter &painter, const QImage &buffer, const point_t seed, const QCol
         if (need_inc)
             iter++;
     }
-
+#endif
     return iter;
 }

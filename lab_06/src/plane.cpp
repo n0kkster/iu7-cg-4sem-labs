@@ -167,14 +167,20 @@ void Plane::fillSlowed()
     connect(timer, &QTimer::timeout, this,
             [=, this]()
             {
-                if (iter_stop < iter_max)
+                if (iter_stop <= iter_max)
                 {
                     // qDebug() << "inside of timer, stop:" << iter_stop << "max:" << iter_max;
+                    #ifdef BY_LINES
+                    iter_stop += 1;
+                    #else
                     iter_stop += 100;
+                    #endif
                     viewport()->update();
+                    // qDebug() << "in timer, after:" << iter_stop << "max:" << iter_max;
                 }
                 else
                 {
+                    // qDebug() << "timer stop, stop:" << iter_stop << "max:" << iter_max;
                     qDebug() << "timer stop";
                     iter_stop = INT_MAX;
                     fillEnabled = false;
