@@ -16,6 +16,9 @@ class Plane : public QGraphicsView
 
 private:
     // ======== DATA ========
+    bool lineEnterStarted;
+    QPoint line_start;
+
     QColor lineColor;
     QColor rectColor;
     QColor resColor;
@@ -27,6 +30,7 @@ private:
 
     // ======== FUNCS ========
     void addLine(const line_t &line);
+    void addRect(const QRect &rect);
 
     void drawAxis(QPainter &painter);
     // =======================

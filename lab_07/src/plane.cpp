@@ -15,9 +15,11 @@
 // ==================================================
 Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
-    lineColor = QColor::fromRgb(255, 255, 255);
-    rectColor = QColor::fromRgb(255, 255, 255);
-    resColor = QColor::fromRgb(255, 255, 255);
+    lineColor = QColor::fromRgb(246, 240, 240);
+    rectColor = QColor::fromRgb(126, 172, 181);
+    resColor = QColor::fromRgb(201, 104, 104);
+
+    lineEnterStarted = false;
 }
 
 // ==================================================
@@ -27,12 +29,22 @@ void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
+
+    painter.setPen({ lineColor, 1 });
+
+    if (lineEnterStarted)
+        painter.drawPoint(line_start);
+
+    for (const auto &line : lines)
+        drawLine(painter, line);
 }
 
 void Plane::mousePressEvent(QMouseEvent *event)
 {
     Qt::KeyboardModifiers m;
     bool Z = false;
+    QPoint curr = event->pos();
+
     switch (event->button())
     {
         case Qt::LeftButton:
@@ -40,9 +52,32 @@ void Plane::mousePressEvent(QMouseEvent *event)
             if (m.testFlag(Qt::ControlModifier))
                 Z = true;
 
-            break;
+            if (!lineEnterStarted)
+            {
+                lineEnterStarted = true;
+                line_start = event->pos();
+            }
+            else
+            {
+                lineEnterStarted = false;
+                if (Z) // TODO пофиксить, что-то не так с вычислениями
+                {
+                    int dx, dy;
+                    int lx = line_start.x(), ly = line_start.y();
 
-        case Qt::RightButton:
+                    dx = std::abs(curr.x() - lx);
+                    dy = std::abs(curr.x() - ly);
+
+                    if (dx > dy)
+                        curr.setX(lx);
+                    else
+                        curr.setY(ly);
+                }
+
+                addLine({ line_start.x(), line_start.y(), curr.x(),
+                    curr.y(), lineColor });
+            }
+
             break;
 
         default:
@@ -54,6 +89,8 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
 // ~================ СОБЫТИЯ ================~
 
+void Plane::addLine(const line_t &line) { lines.append(line); }
+
 void Plane::clearPlane()
 {
     lines.clear();
@@ -61,7 +98,6 @@ void Plane::clearPlane()
 
     viewport()->update();
 }
-
 
 // ================= РИСОВАЛКИ =================
 void Plane::drawAxis(QPainter &painter)
@@ -87,6 +123,6 @@ void Plane::drawAxis(QPainter &painter)
         painter.drawLine(0, i, 10, i);
         painter.drawText(5, i - 10, QString().number(i));
     }
-}   
+}
 
 // ~================ РИСОВАЛКИ ================~
