@@ -31,7 +31,10 @@ private slots:
     void onResColorBtnClicked();
 
     void onClearScreenBtnClicked();
+
     void onDrawLineBtnClicked();
+    void onDrawRectBtnClicked();
+    
     void onDoBtnClicked();
 
 public:

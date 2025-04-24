@@ -1202,6 +1202,24 @@
    <header>plane.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>planeWidget</tabstop>
+  <tabstop>lineColorBtn</tabstop>
+  <tabstop>rectColorBtn</tabstop>
+  <tabstop>resColorBtn</tabstop>
+  <tabstop>xsInp</tabstop>
+  <tabstop>ysInp</tabstop>
+  <tabstop>xeInp</tabstop>
+  <tabstop>yeInp</tabstop>
+  <tabstop>drawLineBtn</tabstop>
+  <tabstop>xrsInp</tabstop>
+  <tabstop>yrsInp</tabstop>
+  <tabstop>xreInp</tabstop>
+  <tabstop>yreInp</tabstop>
+  <tabstop>drawRectBtn</tabstop>
+  <tabstop>doBtn</tabstop>
+  <tabstop>clearScreenBtn</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -31,9 +31,6 @@ private:
     // ======================
 
     // ======== FUNCS ========
-    void addLine(const line_t &line);
-    void addRect(const QRect &_rect);
-
     void drawAxis(QPainter &painter);
     // =======================
 
@@ -46,9 +43,16 @@ public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
 
+    void addLine(const line_t &line);
+    void addRect(const QRect &_rect);
+
     void setLineColor(const QColor &color) { lineColor = color; }
     void setRectColor(const QColor &color) { rectColor = color; }
     void setResColor(const QColor &color) { resColor = color; }
+
+    QColor getLineColor() { return lineColor; }
+    QColor getRectColor() { return rectColor; }
+    QColor getResColor() { return resColor; }    
 };
 
 #endif /* PLANE_H */
