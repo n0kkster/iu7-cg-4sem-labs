@@ -1,8 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "plane.h"
-
 #include <QMainWindow>
 
 
@@ -35,7 +33,7 @@ private slots:
     void onDrawLineBtnClicked();
     void onDrawRectBtnClicked();
     
-    void onDoBtnClicked();
+    void onCutBtnClicked();
 
 public:
     MainWindow(QWidget *parent = nullptr);

@@ -19,6 +19,7 @@ private:
     bool lineEnterStarted;
     QPoint line_start;
 
+    bool needCut;
     QPoint rect_start;
 
     QColor lineColor;
@@ -46,13 +47,15 @@ public:
     void addLine(const line_t &line);
     void addRect(const QRect &_rect);
 
+    void enableCut() { needCut = true; }
+
     void setLineColor(const QColor &color) { lineColor = color; }
     void setRectColor(const QColor &color) { rectColor = color; }
     void setResColor(const QColor &color) { resColor = color; }
 
     QColor getLineColor() { return lineColor; }
     QColor getRectColor() { return rectColor; }
-    QColor getResColor() { return resColor; }    
+    QColor getResColor() { return resColor; }
 };
 
 #endif /* PLANE_H */

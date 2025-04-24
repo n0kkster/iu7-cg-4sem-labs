@@ -1,7 +1,7 @@
 #include "plane.h"
 
+#include "cut.h"
 #include "line.h"
-#include <sys/time.h>
 
 #include <QDebug>
 #include <QGuiApplication>
@@ -20,6 +20,7 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     resColor = QColor::fromRgb(201, 104, 104);
 
     lineEnterStarted = false;
+    needCut = false;
 }
 
 // ==================================================
@@ -30,16 +31,33 @@ void Plane::paintEvent(QPaintEvent *event)
     QGraphicsView::paintEvent(event);
     QPainter painter(viewport());
 
+    drawAxis(painter);
+
     painter.setPen({ lineColor, 1 });
 
     if (lineEnterStarted)
         painter.drawPoint(line_start);
 
     for (const auto &line : lines)
+    {
+        painter.setPen({ line.color, 1 });
         drawLine(painter, line);
+    }
 
-    painter.setPen({rectColor, 1});
+    painter.setPen({ rectColor, 1 });
     painter.drawRect(rect);
+
+    if (needCut)
+    {
+        if (!rect.isEmpty())
+        {
+            qDebug() << "rect is not empty, cutting..";
+            for (const line_t &line : lines)
+                cut(painter, rect, line, resColor);
+        }
+
+        needCut = false;
+    }
 }
 
 void Plane::mousePressEvent(QMouseEvent *event)
@@ -77,8 +95,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
                         curr.setY(ly);
                 }
 
-                addLine({ line_start.x(), line_start.y(), curr.x(), curr.y(),
-                          lineColor });
+                addLine({ line_start.x(), line_start.y(), curr.x(), curr.y(), lineColor });
             }
 
             break;
@@ -99,7 +116,7 @@ void Plane::mouseMoveEvent(QMouseEvent *event)
     if (!(event->buttons() & Qt::RightButton))
         return;
 
-    addRect({rect_start, event->pos()});
+    addRect({ rect_start, event->pos() });
 
     viewport()->update();
 }
