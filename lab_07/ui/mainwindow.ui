@@ -408,7 +408,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>ЛР5 КГ. Диваев ИУ7-42Б</string>
+   <string>ЛР7 КГ. Диваев ИУ7-42Б</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -824,7 +824,7 @@
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
-    <widget class="QPushButton" name="doBtn">
+    <widget class="QPushButton" name="cutBtn">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1217,7 +1217,7 @@
   <tabstop>xreInp</tabstop>
   <tabstop>yreInp</tabstop>
   <tabstop>drawRectBtn</tabstop>
-  <tabstop>doBtn</tabstop>
+  <tabstop>cutBtn</tabstop>
   <tabstop>clearScreenBtn</tabstop>
  </tabstops>
  <resources/>
