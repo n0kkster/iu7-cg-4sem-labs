@@ -15,6 +15,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->clearScreenBtn, &QPushButton::clicked, this, &MainWindow::onClearScreenBtnClicked);
     connect(ui->drawLineBtn, &QPushButton::clicked, this, &MainWindow::onDrawLineBtnClicked);
     connect(ui->doBtn, &QPushButton::clicked, this, &MainWindow::onDoBtnClicked);
+    connect(ui->lineColorBtn, &QPushButton::clicked, this, &MainWindow::onLineColorBtnClicked);
+    connect(ui->rectColorBtn, &QPushButton::clicked, this, &MainWindow::onRectColorBtnClicked);
+    connect(ui->resColorBtn, &QPushButton::clicked, this, &MainWindow::onResColorBtnClicked);
+
 
     setLineColorDisplayColor(QColor::fromRgb(246, 240, 240));
     setRectColorDisplayColor(QColor::fromRgb(126, 172, 181));
@@ -26,6 +30,20 @@ void MainWindow::onLineColorBtnClicked()
     QColor fillColor = QColorDialog::getColor();
     setLineColorDisplayColor(fillColor);
     ui->planeWidget->setLineColor(fillColor);
+}
+
+void MainWindow::onRectColorBtnClicked()
+{
+    QColor fillColor = QColorDialog::getColor();
+    setRectColorDisplayColor(fillColor);
+    ui->planeWidget->setRectColor(fillColor);
+}
+
+void MainWindow::onResColorBtnClicked()
+{
+    QColor fillColor = QColorDialog::getColor();
+    setResColorDisplayColor(fillColor);
+    ui->planeWidget->setResColor(fillColor);
 }
 
 void MainWindow::onClearScreenBtnClicked()
