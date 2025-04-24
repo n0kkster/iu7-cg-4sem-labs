@@ -7,6 +7,8 @@ void drawLine(QPainter &painter, const line_t &line)
     double dx, dy, len;
     double x, y;
 
+    painter.setPen({line.color, 1});
+
     if (line.start.x == line.end.x && line.start.y == line.end.y)
     {
         painter.drawPoint(line.start.x, line.start.y);
