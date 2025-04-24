@@ -19,6 +19,8 @@ private:
     bool lineEnterStarted;
     QPoint line_start;
 
+    QPoint rect_start;
+
     QColor lineColor;
     QColor rectColor;
     QColor resColor;
@@ -30,7 +32,7 @@ private:
 
     // ======== FUNCS ========
     void addLine(const line_t &line);
-    void addRect(const QRect &rect);
+    void addRect(const QRect &_rect);
 
     void drawAxis(QPainter &painter);
     // =======================
@@ -38,6 +40,7 @@ private:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 public:
     explicit Plane(QWidget *parent = nullptr);

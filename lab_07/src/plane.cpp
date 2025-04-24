@@ -37,6 +37,9 @@ void Plane::paintEvent(QPaintEvent *event)
 
     for (const auto &line : lines)
         drawLine(painter, line);
+
+    painter.setPen({rectColor, 1});
+    painter.drawRect(rect);
 }
 
 void Plane::mousePressEvent(QMouseEvent *event)
@@ -74,10 +77,14 @@ void Plane::mousePressEvent(QMouseEvent *event)
                         curr.setY(ly);
                 }
 
-                addLine({ line_start.x(), line_start.y(), curr.x(),
-                    curr.y(), lineColor });
+                addLine({ line_start.x(), line_start.y(), curr.x(), curr.y(),
+                          lineColor });
             }
 
+            break;
+
+        case Qt::RightButton:
+            rect_start = event->pos();
             break;
 
         default:
@@ -87,9 +94,21 @@ void Plane::mousePressEvent(QMouseEvent *event)
     viewport()->update();
 }
 
+void Plane::mouseMoveEvent(QMouseEvent *event)
+{
+    if (!(event->buttons() & Qt::RightButton))
+        return;
+
+    addRect({rect_start, event->pos()});
+
+    viewport()->update();
+}
+
 // ~================ СОБЫТИЯ ================~
 
 void Plane::addLine(const line_t &line) { lines.append(line); }
+
+void Plane::addRect(const QRect &_rect) { rect = _rect; }
 
 void Plane::clearPlane()
 {
