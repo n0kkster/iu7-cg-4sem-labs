@@ -51,7 +51,6 @@ void Plane::paintEvent(QPaintEvent *event)
     {
         if (!rect.isEmpty())
         {
-            qDebug() << "rect is not empty, cutting..";
             for (const line_t &line : lines)
                 cut(painter, rect, line, resColor);
         }
@@ -81,7 +80,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
             else
             {
                 lineEnterStarted = false;
-                if (Z) // TODO пофиксить, что-то не так с вычислениями
+                if (Z)
                 {
                     int dx, dy;
                     int lx = line_start.x(), ly = line_start.y();
@@ -89,7 +88,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
                     dx = std::abs(curr.x() - lx);
                     dy = std::abs(curr.x() - ly);
 
-                    if (dx > dy)
+                    if (dx < dy)
                         curr.setX(lx);
                     else
                         curr.setY(ly);
@@ -131,6 +130,7 @@ void Plane::clearPlane()
 {
     lines.clear();
     res_lines.clear();
+    rect.setCoords(0, 0, -1, -1);
 
     viewport()->update();
 }
