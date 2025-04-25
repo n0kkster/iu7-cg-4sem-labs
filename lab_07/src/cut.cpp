@@ -85,7 +85,7 @@ void cut(QPainter &painter, const QRect &rect, line_t line, QColor resColor)
         if (pr == -1)
             return;
 
-        if (pr == -1)
+        if (pr == 1)
         {
             painter.setPen({ resColor, 1 });
             drawLine(painter, line);
@@ -104,17 +104,17 @@ void cut(QPainter &painter, const QRect &rect, line_t line, QColor resColor)
         {
             if (i < 2)
             {
-                line.start.y += m * (window[i] - line.start.x);
+                line.start.y += lrintf64(m * (window[i] - line.start.x));
                 line.start.x = window[i];
             }
             else
             {
-                line.start.x += (window[i] - line.start.y) / m;
+                line.start.x += lrintf64((window[i] - line.start.y) / m);
                 line.start.y = window[i];
             }
         }
     }
 
-    painter.setPen({ resColor, 2 });
+    painter.setPen({ resColor, 1 });
     drawLine(painter, line);
 }
