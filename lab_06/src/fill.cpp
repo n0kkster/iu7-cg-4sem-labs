@@ -5,6 +5,8 @@
 #include <QImage>
 #include <QStack>
 
+#ifndef BY_LINES 
+
 static bool check_pixel(const point_t &pixel, const QImage &buffer, const QColor &border_color,
                         const QColor &fill_color)
 {
@@ -15,19 +17,21 @@ static bool check_pixel(const point_t &pixel, const QImage &buffer, const QColor
 
     return curr_color != fill_color && curr_color != border_color;
 }
+#endif
 
 int fill(QPainter &painter, const QImage &buffer, const point_t seed, const QColor &border_color,
          const QColor &fill_color, int iter_stop)
 {
     QStack<point_t> points;
     point_t curr;
-    int x, y, tx, ty, xl, xr, x_in;
     int iter = 0;
-    bool need_inc, flag;
 
     points.push(seed);
     
 #ifdef BY_LINES
+    int x, y, tx, ty, xl, xr, x_in;
+    bool flag;
+
     while (!points.empty())
     {
         curr = points.pop();
@@ -159,6 +163,8 @@ int fill(QPainter &painter, const QImage &buffer, const point_t seed, const QCol
         iter++;
     }
 #else
+    bool need_inc;
+
     while (!points.empty())
     {
         need_inc = false;

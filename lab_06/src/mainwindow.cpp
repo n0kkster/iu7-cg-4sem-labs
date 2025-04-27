@@ -222,7 +222,6 @@ void MainWindow::onDrawSeedBtnClicked()
 {
     int x, y;
     bool ok;
-    int number;
 
     x = ui->xInp->text().toInt(&ok);
     if (!ok)

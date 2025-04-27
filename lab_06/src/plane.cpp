@@ -152,7 +152,6 @@ void Plane::mouseMoveEvent(QMouseEvent *event)
 void Plane::fillSlowed()
 {
     iter_stop = 0;
-    qDebug() << "slowed filin, iter max:" << iter_max;
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this,
             [=, this]()
@@ -168,7 +167,6 @@ void Plane::fillSlowed()
                 }
                 else
                 {
-                    qDebug() << "timer stop";
                     iter_stop = INT_MAX;
                     fillEnabled = false;
                     timer->stop();
