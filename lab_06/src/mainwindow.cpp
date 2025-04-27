@@ -59,7 +59,7 @@ void MainWindow::onFillBtnClicked()
                                              QString("Время заполнения составило ")
                                                  + QString::number(ui->planeWidget->getFillTime())
                                                  + QString(" мс."));
-
+                    ui->planeWidget->resetSeeds();
                     timer->stop();
                     timer->deleteLater();
                 }

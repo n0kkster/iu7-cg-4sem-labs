@@ -56,7 +56,7 @@ public:
     explicit Plane(QWidget *parent = nullptr);
     void clearPlane();
     bool finishShapeEntering();
-    
+
     bool addVertex(const QPoint &vertex, bool Z = false);
     void addSeed(const QPoint &pos);
     void addCircle(const circle_t &circle);
@@ -64,21 +64,15 @@ public:
 
     void fillSlowed();
 
-
-    void resetShapes();
+    void resetSeeds() { seed_points.clear(); }
 
     void enableFill() { fillEnabled = true; }
 
-    void enableDelay()
-    {
-        delayEnabled = true;
-        resetShapes();
-    }
+    void enableDelay() { delayEnabled = true; }
 
     void disableDelay()
     {
         delayEnabled = false;
-        resetShapes();
         fillEnabled = false;
     }
 

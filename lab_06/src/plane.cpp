@@ -82,7 +82,6 @@ void Plane::paintEvent(QPaintEvent *event)
         for (const point_t &seed : seed_points)
             iter_max = std::max(
                 fill(painter, buffer, seed, QColor::fromRgb(255, 255, 255), fillColor, iter_stop), iter_max);
-        // qDebug() << "iter max:" << iter_max;
         painter.setPen({ Qt::white, 1 });
     }
 
@@ -150,15 +149,6 @@ void Plane::mouseMoveEvent(QMouseEvent *event)
 
 // ~================ СОБЫТИЯ ================~
 
-void Plane::resetShapes()
-{
-    for (auto &shape : shapes)
-    {
-        shape.need_fill = false;
-        shape.outlined = false;
-    }
-}
-
 void Plane::fillSlowed()
 {
     iter_stop = 0;
@@ -169,18 +159,15 @@ void Plane::fillSlowed()
             {
                 if (iter_stop <= iter_max)
                 {
-                    // qDebug() << "inside of timer, stop:" << iter_stop << "max:" << iter_max;
-                    #ifdef BY_LINES
+#ifdef BY_LINES
                     iter_stop += 1;
-                    #else
+#else
                     iter_stop += 100;
-                    #endif
+#endif
                     viewport()->update();
-                    // qDebug() << "in timer, after:" << iter_stop << "max:" << iter_max;
                 }
                 else
                 {
-                    // qDebug() << "timer stop, stop:" << iter_stop << "max:" << iter_max;
                     qDebug() << "timer stop";
                     iter_stop = INT_MAX;
                     fillEnabled = false;
@@ -189,7 +176,6 @@ void Plane::fillSlowed()
                 }
             });
     timer->start(10);
-    resetShapes();
 }
 
 void Plane::addCircle(const circle_t &circle) { circles.append(circle); }
