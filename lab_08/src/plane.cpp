@@ -109,7 +109,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
         case Qt::MiddleButton:
             if (!shapeConnected)
-                connectShape(cutter);
+                connectShape();
             break;
 
         default:
@@ -155,9 +155,9 @@ bool Plane::appendToShape(const QPoint &vertex, bool Z)
     return true;
 }
 
-bool Plane::connectShape(shape_t &shape)
+bool Plane::connectShape()
 {
-    if (shape.vertices.size() <= 2)
+    if (cutter.vertices.size() <= 2)
     {
         QMessageBox::critical(this, "Ошибка",
                               "Невозможно замкнуть фигуру. Фигура должна "
@@ -165,7 +165,7 @@ bool Plane::connectShape(shape_t &shape)
         return false;
     }
 
-    shape.edges.append({ shape.vertices.last(), shape.vertices.first() });
+    cutter.edges.append({ cutter.vertices.last(), cutter.vertices.first() });
     shapeConnected = true;
     return true;
 }

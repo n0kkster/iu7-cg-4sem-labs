@@ -34,7 +34,6 @@ private:
     void drawAxis(QPainter &painter);
 
     bool appendToShape(const QPoint &vertex, bool Z);
-    bool connectShape(shape_t &shape);
     // =======================
 
 protected:
@@ -47,8 +46,7 @@ public:
 
     void addLine(const line_t &line);
     void addShapePoint(const point_t &point);
-
-    bool finishShapeEntering();
+    bool connectShape();
 
     void enableCut() { needCut = true; }
 

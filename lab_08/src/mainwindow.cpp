@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->rectColorBtn, &QPushButton::clicked, this, &MainWindow::onRectColorBtnClicked);
     connect(ui->resColorBtn, &QPushButton::clicked, this, &MainWindow::onResColorBtnClicked);
     connect(ui->cutBtn, &QPushButton::clicked, this, &MainWindow::onCutBtnClicked);
+    connect(ui->connectShapeBtn, &QPushButton::clicked, this, &MainWindow::onConnectBtnClicked);
 
     setLineColorDisplayColor(QColor::fromRgb(246, 240, 240));
     setRectColorDisplayColor(QColor::fromRgb(126, 172, 181));
@@ -45,6 +46,12 @@ void MainWindow::onResColorBtnClicked()
     QColor fillColor = QColorDialog::getColor();
     setResColorDisplayColor(fillColor);
     ui->planeWidget->setResColor(fillColor);
+}
+
+void MainWindow::onConnectBtnClicked()
+{
+    ui->planeWidget->connectShape();
+    ui->planeWidget->viewport()->update();
 }
 
 void MainWindow::onClearScreenBtnClicked()
