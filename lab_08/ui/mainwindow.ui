@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1300</width>
-    <height>780</height>
+    <height>820</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -408,7 +408,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>ЛР7 КГ. Диваев ИУ7-42Б</string>
+   <string>ЛР8 КГ. Диваев ИУ7-42Б</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -423,7 +423,7 @@
       <x>10</x>
       <y>10</y>
       <width>900</width>
-      <height>760</height>
+      <height>800</height>
      </rect>
     </property>
    </widget>
@@ -794,7 +794,7 @@
       <x>920</x>
       <y>650</y>
       <width>370</width>
-      <height>120</height>
+      <height>160</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -851,11 +851,38 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="clearScreenBtn">
+    <widget class="QPushButton" name="addParallelLinesBtn">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>80</y>
+       <width>350</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>Добавить параллельные линии</string>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="clearScreenBtn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
        <width>350</width>
        <height>30</height>
       </rect>
@@ -1191,7 +1218,7 @@
   <tabstop>yInp</tabstop>
   <tabstop>drawPointBtn</tabstop>
   <tabstop>cutBtn</tabstop>
-  <tabstop>clearScreenBtn</tabstop>
+  <tabstop>addParallelLinesBtn</tabstop>
  </tabstops>
  <resources/>
  <connections/>
