@@ -49,6 +49,7 @@ void Plane::paintEvent(QPaintEvent *event)
 
     if (needCut)
     {
+    	rect = rect.normalized();
         if (!rect.isEmpty())
         {
             for (const line_t &line : lines)
