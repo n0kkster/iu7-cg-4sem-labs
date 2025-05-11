@@ -89,7 +89,7 @@ void Plane::mousePressEvent(QMouseEvent *event)
                     int lx = line_start.x(), ly = line_start.y();
 
                     dx = std::abs(curr.x() - lx);
-                    dy = std::abs(curr.x() - ly);
+                    dy = std::abs(curr.y() - ly);
 
                     if (dx < dy)
                         curr.setX(lx);
