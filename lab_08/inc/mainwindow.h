@@ -33,6 +33,7 @@ private slots:
     void onDrawLineBtnClicked();
     void onDrawPointBtnClicked();
     void onConnectBtnClicked();
+    void onAddParallelLinesBtnClicked();
     
     void onCutBtnClicked();
 

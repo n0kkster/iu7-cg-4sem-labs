@@ -21,10 +21,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->resColorBtn, &QPushButton::clicked, this, &MainWindow::onResColorBtnClicked);
     connect(ui->cutBtn, &QPushButton::clicked, this, &MainWindow::onCutBtnClicked);
     connect(ui->connectShapeBtn, &QPushButton::clicked, this, &MainWindow::onConnectBtnClicked);
+    connect(ui->addParallelLinesBtn, &QPushButton::clicked, this, &MainWindow::onAddParallelLinesBtnClicked);
 
     setLineColorDisplayColor(QColor::fromRgb(246, 240, 240));
     setRectColorDisplayColor(QColor::fromRgb(126, 172, 181));
     setResColorDisplayColor(QColor::fromRgb(201, 104, 104));
+}
+
+void MainWindow::onAddParallelLinesBtnClicked()
+{
+    ui->planeWidget->addParallelLines(20);
+    ui->planeWidget->viewport()->update();
 }
 
 void MainWindow::onLineColorBtnClicked()

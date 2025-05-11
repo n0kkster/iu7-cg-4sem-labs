@@ -121,6 +121,45 @@ void Plane::mousePressEvent(QMouseEvent *event)
 
 // ~================ СОБЫТИЯ ================~
 
+void Plane::addParallelLines(int offset)
+{
+    if (cutter.vertices.size() < 2)
+        return;
+
+    for (int i = 0; i < cutter.vertices.size(); i++)
+    {
+        int next = (i + 1) % cutter.vertices.size();
+
+        const point_t &p1 = cutter.vertices[i];
+        const point_t &p2 = cutter.vertices[next];
+
+        // Вычисляем вектор направления стороны
+        point_t edge = {p2.x - p1.x, p2.y - p1.y};
+
+        // Вычисляем перпендикулярный вектор (нормаль)
+        point_t normal = { -edge.y, edge.x };
+
+        // Нормализуем нормаль
+        double length = sqrt(normal.x * normal.x + normal.y * normal.y);
+        if (length > 0)
+        {
+            normal.x = (normal.x / length) * offset;
+            normal.y = (normal.y / length) * offset;
+        }
+
+        // Создаем параллельные отрезки с обеих сторон от ребра
+        point_t parallel1_start = { p1.x + normal.x, p1.y + normal.y };
+        point_t parallel1_end = { p2.x + normal.x, p2.y + normal.y };
+
+        point_t parallel2_start = { p1.x - normal.x, p1.y - normal.y };
+        point_t parallel2_end = { p2.x - normal.x, p2.y - normal.y };
+
+        // Добавляем в массив
+        lines.append({ parallel1_start, parallel1_end, lineColor });
+        lines.append({ parallel2_start, parallel2_end, lineColor });
+    }
+}
+
 void Plane::addShapePoint(const point_t &point)
 {
     appendToShape({ (int)point.x, (int)point.y }, false);

@@ -47,6 +47,7 @@ public:
     void addLine(const line_t &line);
     void addShapePoint(const point_t &point);
     bool connectShape();
+    void addParallelLines(int offset);
 
     void enableCut() { needCut = true; }
 
