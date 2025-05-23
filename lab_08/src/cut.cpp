@@ -69,9 +69,8 @@ static point_t computeInnerNormal(const point_t &p1, const point_t &p2, const po
     point_t normal;
 
     // Нормаль перпендикулярна ребру и направлена внутрь многоугольника
-    normal = { -edge.y, edge.x }; // Поворот на 90 градусов
+    normal = { -edge.y, edge.x };
 
-    // Проверяем направление нормали с помощью третьей точки
     point_t testVec = vectorBetween(p2, p3);
     if (dotProduct(testVec, normal) < 0)
     {
@@ -79,7 +78,6 @@ static point_t computeInnerNormal(const point_t &p1, const point_t &p2, const po
         normal.y = -normal.y;
     }
 
-    // Нормализуем нормаль (не обязательно, но улучшает численную устойчивость)
     double length = sqrt(normal.x * normal.x + normal.y * normal.y);
     if (length > 1e-9)
     {
@@ -102,17 +100,12 @@ QDebug &operator<<(QDebug &os, const point_t &point)
 }
 
 
-void cut(QPainter &painter, const shape_t &clipper, const line_t &line, const QColor &resColor)
+bool cut(QPainter &painter, const shape_t &clipper, const line_t &line, const QColor &resColor)
 {
-    if (clipper.vertices.size() < 3)
-        return;
-
-    // Создаем копию вершин для проверки выпуклости
     QVector<point_t> polygon = clipper.vertices;
     if (!isConvex(polygon))
     {
-        qDebug() << "Clipper is not convex!";
-        return;
+        return false;
     }
 
     double tStart = 0.0;
@@ -142,7 +135,7 @@ void cut(QPainter &painter, const shape_t &clipper, const line_t &line, const QC
         {
             // Линия параллельна ребру
             if (wN < 0)
-                return; // Линия полностью вне
+                return true; // Линия полностью вне
             else
                 continue; // Линия внутри или на границе
         }
@@ -155,7 +148,7 @@ void cut(QPainter &painter, const shape_t &clipper, const line_t &line, const QC
             if (t <= tEnd)
                 tStart = std::max(tStart, t);
             else
-                return; // Нет пересечения
+                return true; // Нет пересечения
         }
         else
         {
@@ -163,11 +156,11 @@ void cut(QPainter &painter, const shape_t &clipper, const line_t &line, const QC
             if (t >= tStart)
                 tEnd = std::min(tEnd, t);
             else
-                return; // Нет пересечения
+                return true; // Нет пересечения
         }
 
         if (tStart > tEnd)
-            return; // Нет видимой части
+            return true; // Нет видимой части
     }
 
     if (tStart <= tEnd)
@@ -184,4 +177,6 @@ void cut(QPainter &painter, const shape_t &clipper, const line_t &line, const QC
         painter.setPen({resColor, 1});
         drawLine(painter, { clippedStart, clippedEnd, resColor });
     }
+
+    return true;
 }

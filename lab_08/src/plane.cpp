@@ -54,10 +54,22 @@ void Plane::paintEvent(QPaintEvent *event)
     for (const line_t &line : cutter.edges)
         drawLine(painter, line);
 
-    if (needCut && shapeConnected)
+    if (needCut)
     {
-        for (const line_t &line : lines)
-            cut(painter, cutter, line, resColor);
+        if (shapeConnected)
+        {
+            for (const line_t &line : lines)
+            {
+                if (!cut(painter, cutter, line, resColor))
+                {
+                    QMessageBox::critical(this, "Ошибка!",
+                                          "Отсекатель не является выпуклым многоугольником!");
+                    break;
+                }
+            }
+        }
+        else
+            QMessageBox::critical(this, "Ошибка!", "Отсекатель не добавлен или не замкнут!");
         needCut = false;
     }
 }
@@ -134,7 +146,7 @@ void Plane::addParallelLines(int offset)
         const point_t &p2 = cutter.vertices[next];
 
         // Вычисляем вектор направления стороны
-        point_t edge = {p2.x - p1.x, p2.y - p1.y};
+        point_t edge = { p2.x - p1.x, p2.y - p1.y };
 
         // Вычисляем перпендикулярный вектор (нормаль)
         point_t normal = { -edge.y, edge.x };
