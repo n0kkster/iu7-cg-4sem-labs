@@ -73,17 +73,19 @@ void Plane::paintEvent(QPaintEvent *event)
 void Plane::mousePressEvent(QMouseEvent *event)
 {
     Qt::KeyboardModifiers m;
-    bool Z = false;
+    bool CTRL = false, SHIFT = false;
 
     switch (event->button())
     {
         case Qt::LeftButton:
             m = QGuiApplication::keyboardModifiers();
             if (m.testFlag(Qt::ControlModifier))
-                Z = true;
+                CTRL = true;
+            else if (m.testFlag(Qt::ShiftModifier))
+                SHIFT = true;
 
             if (!shapeConnected)
-                appendToShape(event->pos(), Z);
+                appendToShape(event->pos(), CTRL, SHIFT);
             break;
 
         case Qt::RightButton:
@@ -116,12 +118,12 @@ void Plane::keyPressEvent(QKeyEvent *event)
             if (!shapeConnected)
                 connectShape();
             break;
-        
+
         case Qt::Key_Return:
             if (!cutterConnected)
                 connectCutter();
             break;
-        
+
         default:
             break;
     }
@@ -133,16 +135,65 @@ void Plane::keyPressEvent(QKeyEvent *event)
 
 void Plane::addShapePoint(const point_t &point)
 {
-    appendToShape({ (int)point.x, (int)point.y }, false);
+    appendToShape({ (int)point.x, (int)point.y }, false, false);
 }
 
-bool Plane::appendToShape(const QPoint &vertex, bool Z)
+bool Plane::appendToShape(const QPoint &vertex, bool CTRL, bool SHIFT)
 {
     point_t _vertex = { (double)vertex.x(), (double)vertex.y() };
+    std::map<double, point_t> dists;
+    double minDist = 1e9, dist;
 
     for (const auto &v : cutter.vertices)
         if (v.x == _vertex.x && v.y == _vertex.y)
             return false;
+
+    if (!cutter.edges.empty() && CTRL)
+    {
+        point_t intersection;
+
+        for (const line_t &edge : cutter.edges)
+        {
+            if (findIntersection(edge, _vertex, intersection))
+            {
+                dist = std::sqrt(std::pow(_vertex.x - intersection.x, 2)
+                                 + std::pow(_vertex.y - intersection.y, 2));
+                dists[dist] = intersection;
+            }
+        }
+
+        // qDebug() << "original: (" << _vertex.x << ";" << _vertex.y << ")";
+        for (const auto &p : dists)
+        {
+            // qDebug() << "dist:" << p.first << "coords:" << p.second.x << p.second.y;
+            if (p.first < minDist)
+            {
+                minDist = p.first;
+                _vertex = p.second;
+            }
+        }
+        // qDebug() << "replaced: (" << _vertex.x << ";" << _vertex.y << ")";
+    }
+    else if (!cutter.vertices.empty() && SHIFT)
+    {
+        for (const point_t &cv : cutter.vertices)
+        {
+            dist = std::sqrt(std::pow(_vertex.x - cv.x, 2) + std::pow(_vertex.y - cv.y, 2));
+            dists[dist] = cv;
+        }
+
+        // qDebug() << "original: (" << _vertex.x << ";" << _vertex.y << ")";
+        for (const auto &p : dists)
+        {
+            // qDebug() << "dist:" << p.first << "coords:" << p.second.x << p.second.y;
+            if (p.first < minDist)
+            {
+                minDist = p.first;
+                _vertex = p.second;
+            }
+        }
+        // qDebug() << "replaced: (" << _vertex.x << ";" << _vertex.y << ")";
+    }
 
     if (shape.vertices.size() > 0)
         shape.edges.append({ shape.vertices.last(), _vertex });
@@ -197,7 +248,7 @@ bool Plane::connectCutter()
     }
 
     cutter.edges.append({ cutter.vertices.last(), cutter.vertices.first() });
-    shapeConnected = true;
+    cutterConnected = true;
     return true;
 }
 
@@ -205,11 +256,11 @@ void Plane::clearPlane()
 {
     shape.edges.clear();
     shape.vertices.clear();
+    shapeConnected = false;
 
     cutter.edges.clear();
     cutter.vertices.clear();
-
-    shapeConnected = false;
+    cutterConnected = false;
 
     viewport()->update();
 }
@@ -241,3 +292,39 @@ void Plane::drawAxis(QPainter &painter)
 }
 
 // ~================ РИСОВАЛКИ ================~
+
+// Функция для нахождения точки пересечения
+bool Plane::findIntersection(const line_t &line, const point_t &p, point_t &intersection)
+{
+    // Вектор направления прямой AB
+    double dx = line.end.x - line.start.x;
+    double dy = line.end.y - line.start.y;
+
+    // Проверка на вырожденный отрезок
+    if (std::abs(dx) < 1e-10 && std::abs(dy) < 1e-10)
+    {
+        return false; // Отрезок вырожден
+    }
+
+    // Уравнение прямой AB: ax + by + c = 0
+    double a = dy;
+    double b = -dx;
+    double c = dx * line.start.y - dy * line.start.x;
+
+    // Вектор направления перпендикуляра: (-dy, dx)
+    // Параметрическое уравнение перпендикуляра: x = x_c - t*dy, y = y_c + t*dx
+    // Подставляем в уравнение прямой AB: a(x_c - t*dy) + b(y_c + t*dx) + c = 0
+    double denom = a * (-dy) + b * dx;
+    if (std::abs(denom) < 1e-10)
+    {
+        return false; // Прямые параллельны (не должно быть, так как перпендикуляр)
+    }
+
+    double t = -(a * p.x + b * p.y + c) / denom;
+
+    // Точка пересечения
+    intersection.x = p.x - t * dy;
+    intersection.y = p.y + t * dx;
+
+    return true;
+}

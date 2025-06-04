@@ -31,8 +31,10 @@ private:
     // ======== FUNCS ========
     void drawAxis(QPainter &painter);
 
-    bool appendToShape(const QPoint &vertex, bool Z);
+    bool appendToShape(const QPoint &vertex, bool CTRL, bool SHIFT);
     bool appendToCutter(const QPoint &vertex);
+
+    bool findIntersection(const line_t &line, const point_t &p, point_t &intersection);
     // =======================
 
 protected:
