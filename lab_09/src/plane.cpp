@@ -54,12 +54,12 @@ void Plane::paintEvent(QPaintEvent *event)
         {
             // for (const line_t &line : lines)
             // {
-            //     if (!cut(painter, cutter, line, resColor))
-            //     {
-            //         QMessageBox::critical(this, "Ошибка!",
-            //                               "Отсекатель не является выпуклым многоугольником!");
-            //         break;
-            //     }
+                if (!cut(painter, cutter, shape, resColor))
+                {
+                    QMessageBox::critical(this, "Ошибка!",
+                                          "Отсекатель не является выпуклым многоугольником!");
+                    // break;
+                }
             // }
         }
         else if (!cutterConnected)
