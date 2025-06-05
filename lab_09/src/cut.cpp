@@ -5,29 +5,6 @@
 
 const double EPSILON = 1e-9;
 
-bool operator==(const point_t &a, const point_t &b)
-{
-    return std::abs(a.x - b.x) < EPSILON && std::abs(a.y - b.y) < EPSILON;
-}
-
-bool operator!=(const point_t &a, const point_t &b)
-{
-    return !(a == b);
-}
-
-bool operator<(const point_t &a, const point_t &b)
-{
-    if (std::abs(a.x - b.x) > EPSILON) // Если x различны
-    {
-        return a.x < b.x;
-    }
-    if (std::abs(a.y - b.y) > EPSILON) // Если x одинаковы, но y различны
-    {
-        return a.y < b.y;
-    }
-    return false; // Точки считаются равными (или очень близкими)
-}
-
 static point_t vectorBetween(const point_t &from, const point_t &to)
 {
     return { to.x - from.x, to.y - from.y };
@@ -38,7 +15,7 @@ static double dotProduct(const point_t &vec1, const point_t &vec2)
     return vec1.x * vec2.x + vec1.y * vec2.y;
 }
 
-// Функция для вычисления векторного произведения двух 2D-векторов (точнее, его Z-компоненты).
+// Функция для вычисления векторного произведения двух 2D-векторов.
 // Векторное произведение (cross product) для 2D векторов (x1, y1) и (x2, y2) равно x1*y2 - y1*x2.
 // Его знак указывает на направление поворота от vec1 к vec2.
 static double crossProduct(const point_t &vec1, const point_t &vec2)
@@ -119,117 +96,6 @@ static point_t computeInnerNormal(const point_t &p1, const point_t &p2, const po
     // т.к. для алгоритма Сазерленда-Ходжмана важен только знак скалярного произведения,
     // а не величина нормали.
     return normal;
-}
-
-// Проверяет, лежит ли точка p на отрезке [seg_start, seg_end].
-bool isPointOnSegment(const point_t &p, const point_t &seg_start, const point_t &seg_end)
-{
-    point_t vec_seg = vectorBetween(seg_start, seg_end); // Вектор самого отрезка
-    point_t vec_start_p = vectorBetween(seg_start, p);   // Вектор от начала отрезка к точке p
-
-    // 1. Проверка коллинеарности:
-    // Если точка p, seg_start и seg_end коллинеарны, то векторное произведение (vec_seg, vec_start_p) должно быть равно 0.
-    if (std::abs(crossProduct(vec_seg, vec_start_p)) > EPSILON)
-        return false; // Точки не коллинеарны, значит p не на отрезке.
-
-    // 2. Проверка принадлежности диапазону отрезка:
-    // Если точки коллинеарны, нужно проверить, лежит ли p между seg_start и seg_end.
-    // Проекция вектора vec_start_p на вектор vec_seg должна быть:
-    // - не отрицательной (p не "левее" или "раньше" seg_start относительно направления vec_seg)
-    // - не больше квадрата длины vec_seg (p не "правее" или "дальше" seg_end).
-    double proj = dotProduct(vec_start_p, vec_seg);
-    double seg_len_sq = dotProduct(vec_seg, vec_seg); // Квадрат длины отрезка
-
-    // Проверяем, что проекция находится в диапазоне [0, длина_отрезка^2].
-    // Используем EPSILON для учета погрешностей вычислений на концах отрезка.
-    return proj >= -EPSILON && proj <= seg_len_sq + EPSILON;
-}
-
-// Разбивает данный отрезок (side_start, side_end) на меньшие отрезки (суб-сегменты)
-// всеми точками из 'all_polygon_points', которые лежат на этом отрезке.
-QVector<line_t> getSubSegments(const point_t &side_start, const point_t &side_end,
-                                                    const QVector<point_t> &all_polygon_points)
-{
-    QVector<point_t> dots_on_segment; // Список точек, лежащих на отрезке, включая его концы.
-    dots_on_segment.append(side_start);
-    dots_on_segment.append(side_end);
-
-    // Ищем все точки из 'all_polygon_points', которые лежат на текущем отрезке.
-    for (const point_t &p : all_polygon_points)
-    {
-        // Не добавляем конечные точки отрезка снова, если они есть в all_polygon_points.
-        if (p == side_start || p == side_end)
-            continue;
-        if (isPointOnSegment(p, side_start, side_end))
-        {
-            dots_on_segment.append(p);
-        }
-    }
-
-    // Сортируем точки на отрезке. Используется operator< для point_t (лексикографическая сортировка).
-    // Это работает корректно для точек, лежащих на одной прямой.
-    std::sort(dots_on_segment.begin(), dots_on_segment.end());
-
-    // Удаляем дубликаты точек, которые могли возникнуть из-за погрешностей или одинаковых точек во входных данных.
-    dots_on_segment.erase(std::unique(dots_on_segment.begin(), dots_on_segment.end()), dots_on_segment.end());
-
-    QVector<line_t> sections_list; // Список результирующих суб-сегментов.
-    // Создаем суб-сегменты из отсортированных уникальных точек.
-    for (int i = 0; i < dots_on_segment.size() - 1; ++i)
-    {
-        // Убеждаемся, что не создаем сегменты нулевой длины (на случай, если unique не идеально сработал).
-        if (dots_on_segment[i] != dots_on_segment[i + 1])
-        {
-            sections_list.append({ dots_on_segment[i], dots_on_segment[i + 1] });
-        }
-    }
-    return sections_list;
-}
-
-// Структура-компаратор для использования line_t в качестве ключа в std::map.
-// Сравнивает пары лексикографически: сначала по start, затем по end.
-struct PointPairLess
-{
-    bool operator()(const line_t &a, const line_t &b) const
-    {
-        if (a.start < b.start) // Сравниваем первые элементы пар
-            return true;
-        if (b.start < a.start) // Если a.start > b.start
-            return false;
-        // Если первые элементы равны, сравниваем вторые элементы пар
-        return a.end < b.end;
-    }
-};
-
-// Обрабатывает список отрезков (сторон), оставляя только те, которые встречаются нечетное количество раз.
-// Перед подсчетом стороны нормализуются (меньшая точка ставится на первое место).
-// Это используется, например, для определения "внешней" границы самопересекающегося полигона.
-QVector<line_t> makeUniqueSides(QVector<line_t> &sides)
-{
-    // Нормализация каждого отрезка: меньшая точка (лексикографически) становится первой.
-    // Это гарантирует, что отрезок (A, B) и (B, A) будут считаться одинаковыми.
-    for (auto &side : sides)
-    {
-        if (side.end < side.start)
-        {
-            std::swap(side.start, side.end);
-        }
-    }
-
-    // Подсчет количества вхождений каждого нормализованного отрезка.
-    std::map<line_t, int, PointPairLess> counts;
-    for (const auto &side : sides)
-    {
-        counts[side]++;
-    }
-
-    QVector<line_t> unique_sides; // Список отрезков, встречающихся нечетное число раз.
-    // Отбираем отрезки с нечетным количеством вхождений.
-    for (const auto &pair_entry : counts)
-        if ((pair_entry.second % 2) == 1)
-            unique_sides.append(pair_entry.first);
-
-    return unique_sides;
 }
 
 // Находит точку пересечения отрезка (subj_p1, subj_p2) с бесконечной прямой,
@@ -332,7 +198,7 @@ QVector<point_t> clipPolygonAgainstEdge(const QVector<point_t> &subject_polygon,
     return result_polygon; // Возвращаем полигон, отсеченный текущей гранью.
 }
 
-// Основная функция отсечения полигона 'subject_shape' выпуклым полигоном 'cutter_shape'.
+// Основная функция отсечения полигона shape выпуклым полигоном cutter.
 // Использует алгоритм Сазерленда-Ходжмана.
 // 'painter' используется для отрисовки результата.
 // 'resColor' - цвет для отрисовки отсеченного полигона.
@@ -381,7 +247,7 @@ bool cut(QPainter &painter, const shape_t &cutter_shape, const shape_t &subject_
         return false; // Результат не является полигоном.
 
     // Отрисовка результирующего отсеченного полигона.
-    painter.setPen({resColor, 3}); // Устанавливаем цвет и толщину линии.
+    painter.setPen({resColor, 2}); // Устанавливаем цвет и толщину линии.
 
     for (size_t i = 0; i < clipped_polygon.size(); i++)
     {
