@@ -13,8 +13,6 @@
 #include <QPen>
 #include <QTimer>
 
-// Конструктор
-// ==================================================
 Plane::Plane(QWidget *parent) : QGraphicsView(parent)
 {
     shapeColor = QColor::fromRgb(246, 240, 240);
@@ -26,9 +24,6 @@ Plane::Plane(QWidget *parent) : QGraphicsView(parent)
     needCut = false;
 }
 
-// ==================================================
-
-// ================= СОБЫТИЯ =================
 void Plane::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
@@ -42,8 +37,6 @@ void Plane::paintEvent(QPaintEvent *event)
         drawLine(painter, line);
 
     painter.setPen(cutterColor);
-    // for (const point_t &vertex : cutter.vertices)
-    // painter.drawPoint(vertex.x, vertex.y);
 
     for (const line_t &line : cutter.edges)
         drawLine(painter, line);
@@ -52,15 +45,8 @@ void Plane::paintEvent(QPaintEvent *event)
     {
         if (shapeConnected && cutterConnected)
         {
-            // for (const line_t &line : lines)
-            // {
-                if (!cut(painter, cutter, shape, resColor))
-                {
-                    QMessageBox::critical(this, "Ошибка!",
-                                          "Отсекатель не является выпуклым многоугольником!");
-                    // break;
-                }
-            // }
+            if (!cut(painter, cutter, shape, resColor))
+                QMessageBox::critical(this, "Ошибка!", "Отсекатель не является выпуклым многоугольником!");
         }
         else if (!cutterConnected)
             QMessageBox::critical(this, "Ошибка!", "Отсекатель не добавлен или не замкнут!");
@@ -130,8 +116,6 @@ void Plane::keyPressEvent(QKeyEvent *event)
 
     viewport()->update();
 }
-
-// ~================ СОБЫТИЯ ================~
 
 void Plane::addShapePoint(const point_t &point)
 {
@@ -265,7 +249,6 @@ void Plane::clearPlane()
     viewport()->update();
 }
 
-// ================= РИСОВАЛКИ =================
 void Plane::drawAxis(QPainter &painter)
 {
     const int w = viewport()->width();
@@ -291,38 +274,28 @@ void Plane::drawAxis(QPainter &painter)
     }
 }
 
-// ~================ РИСОВАЛКИ ================~
-
-// Функция для нахождения точки пересечения
 bool Plane::findIntersection(const line_t &line, const point_t &p, point_t &intersection)
 {
-    // Вектор направления прямой AB
     double dx = line.end.x - line.start.x;
     double dy = line.end.y - line.start.y;
 
-    // Проверка на вырожденный отрезок
     if (std::abs(dx) < 1e-10 && std::abs(dy) < 1e-10)
     {
-        return false; // Отрезок вырожден
+        return false;
     }
 
-    // Уравнение прямой AB: ax + by + c = 0
     double a = dy;
     double b = -dx;
     double c = dx * line.start.y - dy * line.start.x;
 
-    // Вектор направления перпендикуляра: (-dy, dx)
-    // Параметрическое уравнение перпендикуляра: x = x_c - t*dy, y = y_c + t*dx
-    // Подставляем в уравнение прямой AB: a(x_c - t*dy) + b(y_c + t*dx) + c = 0
     double denom = a * (-dy) + b * dx;
     if (std::abs(denom) < 1e-10)
     {
-        return false; // Прямые параллельны (не должно быть, так как перпендикуляр)
+        return false;
     }
 
     double t = -(a * p.x + b * p.y + c) / denom;
 
-    // Точка пересечения
     intersection.x = p.x - t * dy;
     intersection.y = p.y + t * dx;
 
